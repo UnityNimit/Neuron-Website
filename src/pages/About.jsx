@@ -1,5 +1,6 @@
+// src/pages/About.jsx
 import React from 'react';
-import { Info, Github } from 'lucide-react';
+import { Info, Code2, ExternalLink } from 'lucide-react';
 
 export default function About() {
   return (
@@ -12,11 +13,23 @@ export default function About() {
       </p>
 
       <div className="bg-[#141414] border border-slate-800 p-8 rounded-2xl mb-8">
-        <h2 className="text-2xl font-bold text-white mb-4">Project Information</h2>
+        <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <Code2 className="text-blue-400" /> Project Information
+        </h2>
         <div className="space-y-3 text-slate-300 text-sm">
           <p><strong>Lead Architect & Developer:</strong> UnityNimit</p>
-          <p><strong>Primary Repository:</strong> <a href="https://github.com/UnityNimit/Neuron" target="_blank" rel="noreferrer" className="text-blue-400 underline">github.com/UnityNimit/Neuron</a></p>
-          <p><strong>Live Web Application:</strong> <a href="https://neuron-dun.vercel.app" target="_blank" rel="noreferrer" className="text-blue-400 underline">neuron-dun.vercel.app</a></p>
+          <p className="flex items-center gap-2">
+            <strong>Primary Repository:</strong> 
+            <a href="https://github.com/UnityNimit/Neuron" target="_blank" rel="noreferrer" className="text-blue-400 hover:underline flex items-center gap-1">
+              github.com/UnityNimit/Neuron <ExternalLink size={12} />
+            </a>
+          </p>
+          <p className="flex items-center gap-2">
+            <strong>Live Web Application:</strong> 
+            <a href="https://neuron-dun.vercel.app" target="_blank" rel="noreferrer" className="text-blue-400 hover:underline flex items-center gap-1">
+              neuron-dun.vercel.app <ExternalLink size={12} />
+            </a>
+          </p>
         </div>
       </div>
     </div>
