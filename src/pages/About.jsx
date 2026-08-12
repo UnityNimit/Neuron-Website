@@ -1,10 +1,9 @@
-// src/pages/About.jsx
 import React from 'react';
 import { Info, Code2, ExternalLink } from 'lucide-react';
 
 export default function About() {
   return (
-    <div className="min-h-screen bg-[#0f0f0f] text-slate-200 font-sans pt-24 pb-16 px-6 max-w-4xl mx-auto">
+    <div className="pt-24 pb-16 px-6 max-w-4xl mx-auto">
       <h1 className="text-4xl font-bold text-white mb-4 flex items-center gap-3">
         <Info className="text-blue-400" /> About Neuron
       </h1>
@@ -19,13 +18,13 @@ export default function About() {
         <div className="space-y-3 text-slate-300 text-sm">
           <p><strong>Lead Architect & Developer:</strong> UnityNimit</p>
           <p className="flex items-center gap-2">
-            <strong>Primary Repository:</strong> 
+            <strong>Primary Repository:</strong>
             <a href="https://github.com/UnityNimit/Neuron" target="_blank" rel="noreferrer" className="text-blue-400 hover:underline flex items-center gap-1">
               github.com/UnityNimit/Neuron <ExternalLink size={12} />
             </a>
           </p>
           <p className="flex items-center gap-2">
-            <strong>Live Web Application:</strong> 
+            <strong>Live Web Application:</strong>
             <a href="https://neuron-dun.vercel.app" target="_blank" rel="noreferrer" className="text-blue-400 hover:underline flex items-center gap-1">
               neuron-dun.vercel.app <ExternalLink size={12} />
             </a>

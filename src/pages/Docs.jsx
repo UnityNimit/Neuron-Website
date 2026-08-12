@@ -1,9 +1,9 @@
 import React from 'react';
-import { BookOpen, Terminal, Code, Cpu } from 'lucide-react';
+import { BookOpen, Terminal, Cpu } from 'lucide-react';
 
 export default function Docs() {
   return (
-    <div className="min-h-screen bg-[#0f0f0f] text-slate-200 font-sans pt-24 pb-16 px-6 max-w-4xl mx-auto">
+    <div className="pt-24 pb-16 px-6 max-w-4xl mx-auto">
       <h1 className="text-4xl font-bold text-white mb-4 flex items-center gap-3">
         <BookOpen className="text-blue-400" /> Documentation & Architecture
       </h1>

@@ -1,9 +1,9 @@
 import React from 'react';
-import { Download, Terminal, CheckCircle2 } from 'lucide-react';
+import { Download } from 'lucide-react';
 
 export default function Downloads() {
   return (
-    <div className="min-h-screen bg-[#0f0f0f] text-slate-200 font-sans pt-24 pb-16 px-6 max-w-4xl mx-auto">
+    <div className="pt-24 pb-16 px-6 max-w-4xl mx-auto">
       <h1 className="text-4xl font-bold text-white mb-4 flex items-center gap-3">
         <Download className="text-blue-400" /> Downloads & Local Setup
       </h1>
@@ -19,9 +19,9 @@ export default function Downloads() {
               Run Codeforces problems or single-file scripts directly in your browser using Pyodide WebAssembly.
             </p>
           </div>
-          <a 
-            href="https://neuron-dun.vercel.app" 
-            target="_blank" 
+          <a
+            href="https://neuron-dun.vercel.app"
+            target="_blank"
             rel="noopener noreferrer"
             className="w-full bg-blue-600 hover:bg-blue-500 text-white py-2.5 rounded-xl font-semibold text-center text-sm transition-colors block"
           >
@@ -36,9 +36,9 @@ export default function Downloads() {
               Run the FastAPI backend on your laptop to inspect local hard drive folders with zero server limits.
             </p>
           </div>
-          <a 
-            href="https://github.com/UnityNimit/Neuron" 
-            target="_blank" 
+          <a
+            href="https://github.com/UnityNimit/Neuron"
+            target="_blank"
             rel="noopener noreferrer"
             className="w-full bg-slate-800 hover:bg-slate-700 text-white py-2.5 rounded-xl font-semibold text-center text-sm transition-colors block border border-slate-700"
           >

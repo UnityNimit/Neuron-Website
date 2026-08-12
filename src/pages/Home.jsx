@@ -1,15 +1,12 @@
 import React from 'react';
-import { ExternalLink, Cpu, GitBranch, Zap, ShieldCheck, Terminal, Layers } from 'lucide-react';
+import { ExternalLink, Cpu, GitBranch, Zap, Layers } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#0f0f0f] text-slate-200 font-sans pt-24 pb-16 px-6 relative overflow-hidden">
-      {/* Background Grid Accent */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none"></div>
-
+    <div className="pt-24 pb-16 px-6">
       {/* Hero Section */}
-      <section className="max-w-5xl mx-auto text-center flex flex-col items-center relative z-10 my-12">
+      <section className="max-w-5xl mx-auto text-center flex flex-col items-center my-12">
         <div className="inline-flex items-center gap-2 bg-blue-950/60 border border-blue-800/50 text-blue-300 px-4 py-1.5 rounded-full text-xs font-mono mb-8">
           <Zap size={14} className="text-yellow-400" /> WebAssembly & Graph ML Powered Spatial IDE
         </div>
@@ -24,17 +21,17 @@ export default function Home() {
 
         {/* Hero CTA Buttons */}
         <div className="flex flex-wrap items-center justify-center gap-4">
-          <a 
-            href="https://neuron-dun.vercel.app" 
-            target="_blank" 
+          <a
+            href="https://neuron-dun.vercel.app"
+            target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-8 py-3.5 rounded-xl font-semibold transition-all shadow-xl shadow-blue-600/25 hover:scale-105"
           >
             <span>Launch Neuron Online</span>
             <ExternalLink size={18} />
           </a>
-          <Link 
-            to="/downloads" 
+          <Link
+            to="/downloads"
             className="flex items-center gap-2 bg-[#1c1c1e] hover:bg-[#28282b] border border-slate-800 text-slate-200 px-8 py-3.5 rounded-xl font-semibold transition-all hover:border-slate-700"
           >
             <span>Local Daemon Setup</span>
@@ -43,7 +40,7 @@ export default function Home() {
       </section>
 
       {/* Features Grid */}
-      <section className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 my-20 relative z-10">
+      <section className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 my-20">
         <div className="bg-[#141414] border border-slate-800/80 p-8 rounded-2xl flex flex-col gap-4">
           <div className="p-3 bg-blue-950/50 border border-blue-800/50 rounded-xl w-fit text-blue-400">
             <Cpu size={24} />
