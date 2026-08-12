@@ -1,46 +1,69 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ExternalLink, Download, BookOpen, Info, Home as HomeIcon } from 'lucide-react';
+import SpecularButton from './SpecularButton';
 
 export default function Navbar() {
   const location = useLocation();
-
   const isActive = (path) => location.pathname === path;
 
+  // Reusable NavLink to handle active/inactive sleek text states
+  const NavLinkText = ({ to, label }) => (
+    <Link 
+      to={to} 
+      className={`transition-colors text-sm font-medium ${
+        isActive(to) 
+          ? 'text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]' 
+          : 'text-slate-400 hover:text-white'
+      }`}
+    >
+      {label}
+    </Link>
+  );
+
   return (
-    <nav className="h-16 border-b border-slate-800 bg-[#121212]/80 backdrop-blur-md fixed top-0 left-0 w-full z-50 flex items-center justify-between px-8 font-sans text-slate-300">
-      {/* Brand Logo */}
-      <Link to="/" className="flex items-center gap-3 group">
-        <img src="/logo.png" alt="Neuron" className="h-8 w-8 object-contain transition-transform group-hover:scale-110" />
-        <span className="font-bold text-white tracking-wider text-lg">NEURON</span>
-      </Link>
-
-      {/* Navigation Links */}
-      <div className="flex items-center gap-6 text-sm font-medium">
-        <Link to="/" className={`flex items-center gap-1.5 transition-colors ${isActive('/') ? 'text-blue-400 font-semibold' : 'hover:text-white'}`}>
-          <HomeIcon size={16} /> Home
-        </Link>
-        <Link to="/docs" className={`flex items-center gap-1.5 transition-colors ${isActive('/docs') ? 'text-blue-400 font-semibold' : 'hover:text-white'}`}>
-          <BookOpen size={16} /> Documentation
-        </Link>
-        <Link to="/downloads" className={`flex items-center gap-1.5 transition-colors ${isActive('/downloads') ? 'text-blue-400 font-semibold' : 'hover:text-white'}`}>
-          <Download size={16} /> Downloads
-        </Link>
-        <Link to="/about" className={`flex items-center gap-1.5 transition-colors ${isActive('/about') ? 'text-blue-400 font-semibold' : 'hover:text-white'}`}>
-          <Info size={16} /> About
-        </Link>
-      </div>
-
-      {/* CTA Button: Launch Web App */}
-      <a 
-        href="https://neuron-dun.vercel.app" 
-        target="_blank" 
-        rel="noopener noreferrer"
-        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-5 py-2 rounded-lg text-sm font-semibold transition-all shadow-lg shadow-blue-600/20 hover:scale-105"
+    /* Edge-to-Edge Fixed Wrapper */
+    <div className="fixed top-0 left-0 w-full z-50">
+      
+      <nav 
+        className="h-[72px] w-full bg-black border-b border-white/10 flex items-center justify-between px-6 md:px-10 font-sans"
       >
-        <span>Launch Web IDE</span>
-        <ExternalLink size={14} />
-      </a>
-    </nav>
+        {/* Left Side: Brand Logo */}
+        <Link to="/" className="flex items-center gap-3 group">
+          <img src="/logo.png" alt="Neuron" className="h-7 w-7 object-contain transition-transform group-hover:scale-110" />
+          <span className="font-bold text-white tracking-wider text-base md:text-lg">NEURON</span>
+        </Link>
+
+        {/* Right Side: Links & Specular Button */}
+        <div className="hidden md:flex items-center gap-8">
+          <NavLinkText to="/repo" label="Repo" />
+          <NavLinkText to="/docs" label="Docs" />
+          <NavLinkText to="/help" label="Help" />
+          <NavLinkText to="/signin" label="Sign in" />
+          
+          <Link to="/downloads" className="ml-2">
+            <SpecularButton
+              size="sm"
+              radius={8}
+              tint="#ffffff"
+              tintOpacity={0.03}
+              blur={0}
+              textColor="#ffffff"
+              lineColor="#ffffff"
+              baseColor="#1e293b"
+              intensity={1.5}
+              shineSize={12}
+              shineFade={30}
+              thickness={1.5}
+              speed={0.4}
+              followMouse
+              proximity={250}
+              autoAnimate={false}
+            >
+              Download
+            </SpecularButton>
+          </Link>
+        </div>
+      </nav>
+    </div>
   );
 }
