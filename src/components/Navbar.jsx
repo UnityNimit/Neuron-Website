@@ -4,17 +4,12 @@ import SpecularButton from './SpecularButton';
 
 export default function Navbar() {
   const location = useLocation();
-  const isActive = (path) => location.pathname === path;
 
-  // Reusable NavLink to handle active/inactive sleek text states
+  // Reusable NavLink with text height matching the h-7 (28px) logo icon
   const NavLinkText = ({ to, label }) => (
     <Link 
       to={to} 
-      className={`transition-colors text-sm font-medium ${
-        isActive(to) 
-          ? 'text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]' 
-          : 'text-slate-400 hover:text-white'
-      }`}
+      className="h-7 flex items-center text-white font-medium text-[16px] leading-none transition-opacity hover:opacity-80"
     >
       {label}
     </Link>
@@ -24,13 +19,14 @@ export default function Navbar() {
     /* Edge-to-Edge Fixed Wrapper */
     <div className="fixed top-0 left-0 w-full z-50">
       
+      {/* Edge-to-edge navbar without bottom separator line */}
       <nav 
-        className="h-[72px] w-full bg-black border-b border-white/10 flex items-center justify-between px-6 md:px-10 font-sans"
+        className="h-[72px] w-full bg-black flex items-center justify-between px-6 md:px-10 font-sans"
       >
         {/* Left Side: Brand Logo */}
         <Link to="/" className="flex items-center gap-3 group">
           <img src="/logo.png" alt="Neuron" className="h-7 w-7 object-contain transition-transform group-hover:scale-110" />
-          <span className="font-bold text-white tracking-wider text-base md:text-lg">NEURON</span>
+          <span className="h-7 flex items-center font-bold text-white tracking-wider text-[16px] leading-none">NEURON</span>
         </Link>
 
         {/* Right Side: Links & Specular Button */}
@@ -49,7 +45,7 @@ export default function Navbar() {
               blur={0}
               textColor="#ffffff"
               lineColor="#ffffff"
-              baseColor="#1e293b"
+              baseColor="#aab5c0"
               intensity={1.5}
               shineSize={12}
               shineFade={30}

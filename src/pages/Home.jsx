@@ -6,8 +6,8 @@ import {
 import { Link } from 'react-router-dom';
 import PixelBlast from '../components/PixelBlast';
 import ScrambledText from '../components/ScrambledText';
-import SpecularButton from '../components/SpecularButton';
 import GlassPanel from '../components/GlassPanel';
+import Footer from '../components/Footer';
 
 // Reusable elegant placeholder for future UI components
 const UIPlaceholder = ({ title, height = "h-80", icon: Icon = Code2 }) => (
@@ -22,14 +22,13 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-slate-200 font-sans relative selection:bg-blue-500/30">
       
-      {/* Interactive WebGL Background (Increased Opacity for Brightness) */}
+      {/* Interactive WebGL Background */}
       <div className="fixed inset-0 z-0 opacity-60 md:opacity-75 pointer-events-auto">
-        {/* Gradient Overlay (Lighter so the background shines through) */}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0a0a0a]/30 to-[#0a0a0a] z-10 pointer-events-none" />
         <PixelBlast
           variant="square"
           pixelSize={4}
-          color="#60A5FA" // Brighter sky-blue color
+          color="#60A5FA" // Sky Blue
           patternScale={2}
           patternDensity={1.2}
           pixelSizeJitter={0}
@@ -44,21 +43,21 @@ export default function Home() {
         />
       </div>
 
-      {/* Main Content Wrapper (pointer-events-none lets mouse clicks hit the background in empty space) */}
+      {/* Main Content Wrapper */}
       <main className="relative z-10 pt-40 pb-20 px-6 pointer-events-none">
         
         {/* 1. Hero Section */}
         <section className="max-w-5xl mx-auto text-center flex flex-col items-center mb-32">
           
           <div className="flex flex-col items-center gap-2 mb-8 pointer-events-auto">
-            {/* Static Text Without Scramble Animation or Drop Shadows */}
+            {/* Static Text Without Scramble Animation */}
             <span className="text-5xl md:text-[6.5rem] font-black tracking-tighter text-white leading-none">
               THE SPATIAL IDE        
             </span>
             
-            {/* Scrambled Text (Pure blue color, thinner font weight, zero glow) */}
+            {/* Scrambled Text (Sky-Blue color #60A5FA matching background) */}
             <ScrambledText
-              className="!m-0 !max-w-none !font-sans text-2xl md:text-[4rem] font-semibold tracking-tighter text-blue-500 leading-none mt-1"
+              className="!m-0 !max-w-none !font-sans text-2xl md:text-[4rem] font-semibold tracking-tighter text-[#60A5FA] leading-none mt-1"
               radius={150}
               duration={1.5}
               speed={0.4}
@@ -68,39 +67,19 @@ export default function Home() {
             </ScrambledText>
           </div>
 
-          {/* Smaller Horizontal Specular Buttons without Container */}
-          <div className="flex flex-row items-center justify-center gap-3 mt-4 pointer-events-auto">
-            <SpecularButton
-              size="sm"
-              radius={10}
-              tint="#3b82f6"
-              tintOpacity={0.15}
-              textColor="#ffffff"
-              lineColor="#60a5fa"
-              baseColor="#1e3a8a"
-              intensity={1.5}
-              className="whitespace-nowrap"
-            >
-              <span className="flex items-center gap-1.5 text-xs md:text-sm font-medium">
+          {/* GlassPanel Frosted Hero Buttons */}
+          <div className="flex flex-row items-center justify-center gap-4 mt-4 pointer-events-auto">
+            <Link to="/downloads">
+              <GlassPanel className="px-5 py-2.5 rounded-xl hover:bg-white/10 flex items-center gap-2 text-xs md:text-sm font-medium text-white transition-all hover:scale-105 cursor-pointer">
                 Download for Windows <Download size={15} />
-              </span>
-            </SpecularButton>
+              </GlassPanel>
+            </Link>
 
-            <SpecularButton
-              size="sm"
-              radius={10}
-              tint="#ffffff"
-              tintOpacity={0.03}
-              textColor="#ffffff"
-              lineColor="#ffffff"
-              baseColor="#334155"
-              intensity={1.2}
-              className="whitespace-nowrap"
-            >
-              <span className="flex items-center gap-1.5 text-xs md:text-sm font-medium">
+            <a href="#demo">
+              <GlassPanel className="px-5 py-2.5 rounded-xl hover:bg-white/10 flex items-center gap-2 text-xs md:text-sm font-medium text-white transition-all hover:scale-105 cursor-pointer">
                 Request a demo <ArrowRight size={15} />
-              </span>
-            </SpecularButton>
+              </GlassPanel>
+            </a>
           </div>
         </section>
 
@@ -282,110 +261,16 @@ export default function Home() {
           <h2 className="text-5xl md:text-7xl font-medium tracking-tighter text-white mb-10">
             Try Neuron now.
           </h2>
-          <SpecularButton
-            size="md"
-            radius={12}
-            tint="#ffffff"
-            tintOpacity={0.1}
-            textColor="#ffffff"
-            lineColor="#ffffff"
-            baseColor="#334155"
-            intensity={1.5}
-            className="mx-auto whitespace-nowrap pointer-events-auto"
-          >
-            <span className="flex items-center gap-2 font-medium">
-              Download for Windows <Download size={16} />
-            </span>
-          </SpecularButton>
+          <Link to="/downloads">
+            <GlassPanel className="inline-flex items-center gap-2 px-6 py-3 rounded-xl hover:bg-white/10 text-white font-medium transition-all hover:scale-105 cursor-pointer">
+              Download for Windows <Download size={18} />
+            </GlassPanel>
+          </Link>
         </section>
       </main>
 
-      {/* 8. Mega Footer */}
-      <footer className="border-t border-white/10 bg-[#050505] pt-20 pb-10 px-6 relative z-10 pointer-events-auto">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-10 mb-20">
-            
-            {/* Logo Column */}
-            <div className="col-span-2 lg:col-span-2">
-              <Link to="/" className="flex items-center gap-3 mb-6">
-                <img src="/logo.png" alt="Neuron" className="h-8 w-8 object-contain" />
-                <span className="font-bold text-white tracking-wider text-lg">NEURON</span>
-              </Link>
-              <p className="text-slate-500 text-sm max-w-xs leading-relaxed">
-                Neuron is an applied research team focused on building the future of software development.
-              </p>
-              <a href="#" className="inline-flex items-center gap-2 text-white font-medium mt-6 group">
-                Join us <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-              </a>
-            </div>
-
-            {/* Links Columns */}
-            <div>
-              <h4 className="text-white font-medium mb-6">Product</h4>
-              <ul className="space-y-4 text-sm text-slate-500">
-                <li><a href="#" className="hover:text-white transition-colors">Agents</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Teams</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Enterprise</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Pricing</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Code Review</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Cloud Agents</a></li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="text-white font-medium mb-6">Resources</h4>
-              <ul className="space-y-4 text-sm text-slate-500">
-                <li><a href="#" className="hover:text-white transition-colors">Download</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Changelog</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Docs</a></li>
-                <li><a href="#" className="hover:text-white transition-colors flex items-center gap-1">Learn <ArrowRight size={12} className="-rotate-45" /></a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Value Calculator</a></li>
-                <li><a href="#" className="hover:text-white transition-colors flex items-center gap-1">Forum <ArrowRight size={12} className="-rotate-45" /></a></li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="text-white font-medium mb-6">Company</h4>
-              <ul className="space-y-4 text-sm text-slate-500">
-                <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Blog</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Community</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Students</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Brand</a></li>
-                <li><a href="#" className="hover:text-white transition-colors flex items-center gap-1">Anysphere <ArrowRight size={12} className="-rotate-45" /></a></li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="text-white font-medium mb-6">Legal</h4>
-              <ul className="space-y-4 text-sm text-slate-500">
-                <li><a href="#" className="hover:text-white transition-colors">Terms of Service</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Acceptable Use</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Security</a></li>
-                <li className="mt-8 text-white font-medium mb-4">Connect</li>
-                <div className="flex items-center gap-4">
-                  <a href="#" className="hover:text-white transition-colors flex items-center gap-1">X <ArrowRight size={12} className="-rotate-45" /></a>
-                  <a href="#" className="hover:text-white transition-colors flex items-center gap-1">LinkedIn <ArrowRight size={12} className="-rotate-45" /></a>
-                </div>
-              </ul>
-            </div>
-
-          </div>
-
-          <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between text-xs text-slate-600">
-            <div className="flex items-center gap-4 mb-4 md:mb-0">
-              <span>© 2026 Anysphere, Inc.</span>
-              <span className="flex items-center gap-1"><Lock size={12} /> SOC 2 Certified</span>
-            </div>
-            <div className="flex items-center gap-6">
-              <button className="hover:text-slate-300 transition-colors">English ↓</button>
-              <button className="hover:text-slate-300 transition-colors">☉</button>
-              <button className="hover:text-slate-300 transition-colors">☾</button>
-            </div>
-          </div>
-        </div>
-      </footer>
+      {/* 8. Modular Footer Component */}
+      <Footer />
     </div>
   );
 }
