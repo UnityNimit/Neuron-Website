@@ -1,37 +1,39 @@
 // src/pages/Docs.jsx
 import React, { useState, useEffect } from 'react';
 import { 
-  BookOpen, Terminal, Cpu, Network, Zap, 
-  ChevronRight, Search, Menu, X, Box, Code2
+  BookOpen, ChevronRight, Search, Menu, X 
 } from 'lucide-react';
 import GlassPanel from '../components/GlassPanel';
 
+// Import our new Doc Pages!
+import Architecture from './docs/Architecture';
+import MachineLearning from './docs/MachineLearning';
+
 // --- NAVIGATION SCHEMA ---
-// This defines the entire structure of the massive documentation.
 const DOCS_NAVIGATION = [
   {
     category: "Getting Started",
     items: [
-      { id: "intro", label: "Introduction", icon: BookOpen },
-      { id: "install", label: "Installation & Setup", icon: Terminal },
-      { id: "quickstart", label: "Quickstart Guide", icon: Zap },
+      { id: "intro", label: "Introduction" },
+      { id: "install", label: "Installation & Setup" },
+      { id: "quickstart", label: "Quickstart Guide" },
     ]
   },
   {
     category: "Core Architecture",
     items: [
-      { id: "spatial-engine", label: "Spatial Rendering Engine", icon: Box },
-      { id: "physics", label: "D3 Physics & Gravity", icon: Network },
-      { id: "ast-parser", label: "AST Multi-Modal Parser", icon: Code2 },
+      { id: "spatial-engine", label: "Spatial Rendering Engine" },
+      { id: "physics", label: "D3 Physics & Gravity" },
+      { id: "ast-parser", label: "AST Multi-Modal Parser" },
     ]
   },
   {
     category: "Machine Learning",
     items: [
-      { id: "ml-overview", label: "AI & ML Overview", icon: Cpu },
-      { id: "louvain", label: "Louvain Community Nebulas", icon: Network },
-      { id: "risk-model", label: "Random Forest Risk Heuristics", icon: Zap },
-      { id: "llm-peel", label: "Local LLM Semantic Peel", icon: BookOpen },
+      { id: "ml-overview", label: "AI & ML Overview" },
+      { id: "louvain", label: "Louvain Community Nebulas" },
+      { id: "risk-model", label: "Random Forest Risk Heuristics" },
+      { id: "llm-peel", label: "Local LLM Semantic Peel" },
     ]
   }
 ];
@@ -40,6 +42,17 @@ export default function Docs() {
   const [activePage, setActivePage] = useState('intro');
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  
+  // Accordion state for collapsible sections
+  const [openSections, setOpenSections] = useState(() => {
+    const initialState = {};
+    DOCS_NAVIGATION.forEach(sec => initialState[sec.category] = true);
+    return initialState;
+  });
+
+  const toggleSection = (category) => {
+    setOpenSections(prev => ({ ...prev, [category]: !prev[category] }));
+  };
 
   // Lock body scroll when mobile nav is open
   useEffect(() => {
@@ -63,37 +76,53 @@ export default function Docs() {
         />
       </div>
 
-      {/* Navigation Links */}
-      <nav className="flex-1 overflow-y-auto pr-2 pb-20 space-y-8 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-white/10">
+      {/* 
+        Navigation Links 
+        Completely hidden scrollbar, extra padding at bottom 
+      */}
+      <nav className="flex-1 overflow-y-auto pb-20 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {DOCS_NAVIGATION.map((section, idx) => (
-          <div key={idx}>
-            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-[0.15em] mb-3 ml-2">
-              {section.category}
-            </h3>
-            <ul className="space-y-1">
-              {section.items.map((item) => {
-                const isActive = activePage === item.id;
-                const Icon = item.icon;
-                return (
-                  <li key={item.id}>
-                    <button
-                      onClick={() => {
-                        setActivePage(item.id);
-                        setIsMobileNavOpen(false);
-                      }}
-                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                        isActive 
-                          ? 'bg-blue-500/10 text-blue-400 shadow-[inset_2px_0_0_0_#3b82f6]' 
-                          : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'
-                      }`}
-                    >
-                      <Icon size={16} className={isActive ? "opacity-100" : "opacity-50"} />
-                      {item.label}
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
+          <div key={idx} className="mb-6">
+            
+            {/* Interactive Collapsible Heading */}
+            <button 
+              onClick={() => toggleSection(section.category)}
+              className="w-full flex items-center justify-between text-xs font-bold text-slate-500 hover:text-slate-300 uppercase tracking-[0.15em] mb-2 px-1 group transition-colors outline-none"
+            >
+              <span>{section.category}</span>
+              <ChevronRight 
+                size={14} 
+                className={`transition-transform duration-300 ease-in-out ${openSections[section.category] ? 'rotate-90 text-slate-400' : 'text-slate-600'}`} 
+              />
+            </button>
+            
+            {/* Smooth CSS Grid Accordion Animation */}
+            <div className={`grid transition-all duration-300 ease-in-out ${openSections[section.category] ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+              <ul className="overflow-hidden space-y-0.5">
+                {section.items.map((item) => {
+                  const isActive = activePage === item.id;
+                  return (
+                    <li key={item.id}>
+                      <button
+                        onClick={() => {
+                          setActivePage(item.id);
+                          setIsMobileNavOpen(false);
+                        }}
+                        // No wrapping, no icons, pure typography
+                        className={`w-full text-left px-3 py-1.5 rounded-md text-[13px] font-medium transition-all duration-200 whitespace-nowrap outline-none ${
+                          isActive 
+                            ? 'text-blue-400 bg-blue-500/10' 
+                            : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'
+                        }`}
+                      >
+                        {item.label}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+
           </div>
         ))}
       </nav>
@@ -120,14 +149,17 @@ export default function Docs() {
       {isMobileNavOpen && (
         <div className="fixed inset-0 z-40 lg:hidden flex">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsMobileNavOpen(false)} />
-          <GlassPanel className="w-80 h-full max-h-screen relative flex flex-col p-6 rounded-none border-y-0 border-l-0 border-r-white/10">
+          <div className="w-80 h-full max-h-screen relative flex flex-col p-6 bg-[#0a0a0a]">
             <SidebarContent />
-          </GlassPanel>
+          </div>
         </div>
       )}
 
       {/* DESKTOP LEFT SIDEBAR */}
-      <aside className="hidden lg:block w-72 h-[calc(100vh-4rem)] sticky top-16 border-r border-white/5 bg-[#0a0a0a]/50 backdrop-blur-md px-6 py-8 z-20 shrink-0">
+      {/* 
+        Widened to w-80. Removed border-r. Pure background blend. 
+      */}
+      <aside className="hidden lg:block w-80 h-[calc(100vh-4rem)] sticky top-16 bg-[#0a0a0a] px-8 py-8 z-20 shrink-0">
         <SidebarContent />
       </aside>
 
@@ -148,16 +180,23 @@ export default function Docs() {
             </p>
             
             <GlassPanel className="p-8 rounded-2xl mb-12 border-blue-500/20 bg-blue-500/5">
-              <h3 className="text-white font-medium text-lg mb-2">Notice</h3>
+              <h3 className="text-white font-medium text-lg mb-2">Welcome to the future of coding.</h3>
               <p className="text-slate-400 text-sm leading-relaxed">
-                You are currently viewing the placeholder content for the master routing shell. In the next step, we will extract this into dedicated modular files to build out the full, hyper-detailed documentation architecture.
+                Use the sidebar on the left to navigate through the Architecture and Machine Learning documentations.
               </p>
             </GlassPanel>
           </div>
         )}
 
+        {/* --- OUR PRE-BUILT DOC PAGES --- */}
+        {activePage === 'spatial-engine' && <Architecture />}
+        
+        {['ml-overview', 'louvain', 'risk-model'].includes(activePage) && (
+          <MachineLearning activeSection={activePage} />
+        )}
+
         {/* Catch-all for unbuilt pages */}
-        {activePage !== 'intro' && (
+        {(!['intro', 'spatial-engine', 'ml-overview', 'louvain', 'risk-model'].includes(activePage)) && (
           <div className="animate-in fade-in zoom-in-95 duration-300 flex flex-col items-center justify-center h-96 text-slate-500 border border-dashed border-white/10 rounded-3xl bg-white/[0.02]">
             <BookOpen size={48} className="mb-4 opacity-20" />
             <h2 className="text-xl font-medium text-white mb-2">Page Under Construction</h2>
@@ -167,10 +206,10 @@ export default function Docs() {
 
       </main>
 
-      {/* DESKTOP RIGHT SIDEBAR (Table of Contents Placeholder) */}
+      {/* DESKTOP RIGHT SIDEBAR (Table of Contents) */}
       <aside className="hidden xl:block w-64 h-[calc(100vh-4rem)] sticky top-16 py-12 pr-8 shrink-0">
         <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-4">On this page</h4>
-        <ul className="space-y-3 text-sm text-slate-400 border-l border-white/10">
+        <ul className="space-y-3 text-sm text-slate-400">
           <li className="pl-4 border-l border-transparent hover:text-white cursor-pointer transition-colors">Overview</li>
           <li className="pl-4 border-l border-blue-500 text-blue-400 font-medium cursor-pointer transition-colors">Core Concepts</li>
           <li className="pl-4 border-l border-transparent hover:text-white cursor-pointer transition-colors">Machine Learning Pipeline</li>
