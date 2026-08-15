@@ -1,49 +1,74 @@
 // src/pages/Docs.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
-  BookOpen, ChevronRight, Search, Menu, X 
+  BookOpen, Terminal, Cpu, Network, Zap, 
+  ChevronRight, Search, Menu, X, Box, Code2
 } from 'lucide-react';
 import GlassPanel from '../components/GlassPanel';
 
-// Import our new Doc Pages!
+// Documentation Modules
+import GettingStarted from './docs/GettingStarted';
 import Architecture from './docs/Architecture';
 import MachineLearning from './docs/MachineLearning';
+import Reference from './docs/Reference';
 
 // --- NAVIGATION SCHEMA ---
 const DOCS_NAVIGATION = [
   {
     category: "Getting Started",
     items: [
-      { id: "intro", label: "Introduction" },
-      { id: "install", label: "Installation & Setup" },
-      { id: "quickstart", label: "Quickstart Guide" },
+      { id: "intro", label: "Introduction", icon: BookOpen },
+      { id: "install", label: "Installation & Setup", icon: Terminal },
+      { id: "quickstart", label: "Quickstart Guide", icon: Zap },
     ]
   },
   {
     category: "Core Architecture",
     items: [
-      { id: "spatial-engine", label: "Spatial Rendering Engine" },
-      { id: "physics", label: "D3 Physics & Gravity" },
-      { id: "ast-parser", label: "AST Multi-Modal Parser" },
+      { id: "spatial-engine", label: "Spatial Rendering Engine", icon: Box },
+      { id: "physics", label: "D3 Physics & Gravity", icon: Network },
+      { id: "ast-parser", label: "AST Multi-Modal Parser", icon: Code2 },
     ]
   },
   {
     category: "Machine Learning",
     items: [
-      { id: "ml-overview", label: "AI & ML Overview" },
-      { id: "louvain", label: "Louvain Community Nebulas" },
-      { id: "risk-model", label: "Random Forest Risk Heuristics" },
-      { id: "llm-peel", label: "Local LLM Semantic Peel" },
+      { id: "ml-overview", label: "AI & ML Overview", icon: Cpu },
+      { id: "louvain", label: "Louvain Community Nebulas", icon: Network },
+      { id: "risk-model", label: "Random Forest Risk Heuristics", icon: Zap },
+      { id: "llm-peel", label: "Local LLM Semantic Peel", icon: BookOpen },
+    ]
+  },
+  {
+    category: "Reference",
+    items: [
+      { id: "shortcuts", label: "Keyboard Shortcuts", icon: Terminal },
+      { id: "terminal-cli", label: "Terminal & CLI Guide", icon: Code2 },
     ]
   }
 ];
+
+// --- DYNAMIC TABLE OF CONTENTS MAPPER ---
+const getTableOfContents = (pageId) => {
+  const tocMap = {
+    'intro': ['Core Philosophy', 'Dual-Engine Architecture'],
+    'install': ['System Prerequisites', 'Python AI Daemon', 'WebGPU Client'],
+    'quickstart': ['Navigating the Map', 'AI Code Analysis', 'Code Execution'],
+    'spatial-engine': ['Bypassing the React DOM', 'Pure RAM D3 Physics', 'O(1) BFS Focus-Ray'],
+    'ml-overview': ['Multi-Modal AST Extraction', 'Cyclomatic Complexity', 'Semantic Resolution'],
+    'louvain': ['Unsupervised Microservice Discovery', 'Modularity Maximization'],
+    'risk-model': ['The Ensemble Risk Equation', 'Code Smell Diagnosis'],
+    'shortcuts': ['Spatial Map Engine', 'File Operations', 'Edit & Navigation', 'View Controls'],
+    'terminal-cli': ['Terminal Emulation', 'Process Management', 'Multi-Shell Support']
+  };
+  return tocMap[pageId] || [];
+};
 
 export default function Docs() {
   const [activePage, setActivePage] = useState('intro');
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   
-  // Accordion state for collapsible sections
   const [openSections, setOpenSections] = useState(() => {
     const initialState = {};
     DOCS_NAVIGATION.forEach(sec => initialState[sec.category] = true);
@@ -54,17 +79,17 @@ export default function Docs() {
     setOpenSections(prev => ({ ...prev, [category]: !prev[category] }));
   };
 
-  // Lock body scroll when mobile nav is open
   useEffect(() => {
     if (isMobileNavOpen) document.body.style.overflow = 'hidden';
     else document.body.style.overflow = 'auto';
     return () => document.body.style.overflow = 'auto';
   }, [isMobileNavOpen]);
 
-  // --- THE SIDEBAR COMPONENT ---
+  // Derived current active TOC
+  const currentTOC = useMemo(() => getTableOfContents(activePage), [activePage]);
+
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
-      {/* Doc Search Bar */}
       <div className="mb-8 relative group">
         <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
         <input 
@@ -76,27 +101,17 @@ export default function Docs() {
         />
       </div>
 
-      {/* 
-        Navigation Links 
-        Completely hidden scrollbar, extra padding at bottom 
-      */}
       <nav className="flex-1 overflow-y-auto pb-20 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {DOCS_NAVIGATION.map((section, idx) => (
           <div key={idx} className="mb-6">
-            
-            {/* Interactive Collapsible Heading */}
             <button 
               onClick={() => toggleSection(section.category)}
               className="w-full flex items-center justify-between text-xs font-bold text-slate-500 hover:text-slate-300 uppercase tracking-[0.15em] mb-2 px-1 group transition-colors outline-none"
             >
               <span>{section.category}</span>
-              <ChevronRight 
-                size={14} 
-                className={`transition-transform duration-300 ease-in-out ${openSections[section.category] ? 'rotate-90 text-slate-400' : 'text-slate-600'}`} 
-              />
+              <ChevronRight size={14} className={`transition-transform duration-300 ease-in-out ${openSections[section.category] ? 'rotate-90 text-slate-400' : 'text-slate-600'}`} />
             </button>
             
-            {/* Smooth CSS Grid Accordion Animation */}
             <div className={`grid transition-all duration-300 ease-in-out ${openSections[section.category] ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
               <ul className="overflow-hidden space-y-0.5">
                 {section.items.map((item) => {
@@ -104,16 +119,8 @@ export default function Docs() {
                   return (
                     <li key={item.id}>
                       <button
-                        onClick={() => {
-                          setActivePage(item.id);
-                          setIsMobileNavOpen(false);
-                        }}
-                        // No wrapping, no icons, pure typography
-                        className={`w-full text-left px-3 py-1.5 rounded-md text-[13px] font-medium transition-all duration-200 whitespace-nowrap outline-none ${
-                          isActive 
-                            ? 'text-blue-400 bg-blue-500/10' 
-                            : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'
-                        }`}
+                        onClick={() => { setActivePage(item.id); setIsMobileNavOpen(false); }}
+                        className={`w-full text-left px-3 py-1.5 rounded-md text-[13px] font-medium transition-all duration-200 whitespace-nowrap outline-none ${isActive ? 'text-blue-400 bg-blue-500/10' : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'}`}
                       >
                         {item.label}
                       </button>
@@ -122,7 +129,6 @@ export default function Docs() {
                 })}
               </ul>
             </div>
-
           </div>
         ))}
       </nav>
@@ -131,21 +137,14 @@ export default function Docs() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-slate-200 font-sans relative flex pt-16">
-      
-      {/* Background ambient glow */}
       <div className="fixed top-0 left-0 w-[800px] h-[800px] bg-blue-900/5 rounded-full blur-[120px] pointer-events-none -translate-x-1/2 -translate-y-1/2" />
 
-      {/* MOBILE NAV TOGGLE */}
       <div className="lg:hidden fixed bottom-6 right-6 z-50">
-        <button 
-          onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
-          className="bg-blue-600 text-white p-4 rounded-full shadow-[0_0_20px_rgba(37,99,235,0.4)] border border-blue-500"
-        >
+        <button onClick={() => setIsMobileNavOpen(!isMobileNavOpen)} className="bg-blue-600 text-white p-4 rounded-full shadow-[0_0_20px_rgba(37,99,235,0.4)] border border-blue-500">
           {isMobileNavOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
-      {/* MOBILE SIDEBAR OVERLAY */}
       {isMobileNavOpen && (
         <div className="fixed inset-0 z-40 lg:hidden flex">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsMobileNavOpen(false)} />
@@ -155,66 +154,46 @@ export default function Docs() {
         </div>
       )}
 
-      {/* DESKTOP LEFT SIDEBAR */}
-      {/* 
-        Widened to w-80. Removed border-r. Pure background blend. 
-      */}
       <aside className="hidden lg:block w-80 h-[calc(100vh-4rem)] sticky top-16 bg-[#0a0a0a] px-8 py-8 z-20 shrink-0">
         <SidebarContent />
       </aside>
 
-      {/* MAIN CONTENT AREA */}
       <main className="flex-1 max-w-5xl mx-auto w-full px-6 py-12 lg:px-12 xl:px-20 relative z-10 min-h-screen">
         
-        {/* Dynamic Content Router */}
-        {activePage === 'intro' && (
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="flex items-center gap-3 text-blue-400 mb-4 font-mono text-sm">
-              <span>Documentation</span> <ChevronRight size={14} /> <span>Getting Started</span>
-            </div>
-            <h1 className="text-4xl md:text-5xl font-medium tracking-tight text-white mb-6">
-              Introduction to Neuron
-            </h1>
-            <p className="text-slate-400 text-lg leading-relaxed mb-12">
-              Neuron is a next-generation Spatial Intelligence IDE that abandons traditional text-based file trees in favor of a mathematically accurate, Machine Learning-driven physical universe.
-            </p>
-            
-            <GlassPanel className="p-8 rounded-2xl mb-12 border-blue-500/20 bg-blue-500/5">
-              <h3 className="text-white font-medium text-lg mb-2">Welcome to the future of coding.</h3>
-              <p className="text-slate-400 text-sm leading-relaxed">
-                Use the sidebar on the left to navigate through the Architecture and Machine Learning documentations.
-              </p>
-            </GlassPanel>
-          </div>
-        )}
-
-        {/* --- OUR PRE-BUILT DOC PAGES --- */}
+        {/* 🚀 MODULAR CONTENT ROUTING */}
+        {['intro', 'install', 'quickstart'].includes(activePage) && <GettingStarted activeSection={activePage} />}
+        
         {activePage === 'spatial-engine' && <Architecture />}
         
-        {['ml-overview', 'louvain', 'risk-model'].includes(activePage) && (
-          <MachineLearning activeSection={activePage} />
-        )}
+        {['ml-overview', 'louvain', 'risk-model', 'llm-peel'].includes(activePage) && <MachineLearning activeSection={activePage} />}
+        
+        {['shortcuts', 'terminal-cli'].includes(activePage) && <Reference activeSection={activePage} />}
 
-        {/* Catch-all for unbuilt pages */}
-        {(!['intro', 'spatial-engine', 'ml-overview', 'louvain', 'risk-model'].includes(activePage)) && (
+        {/* CATCH-ALL FOR PENDING MODULES */}
+        {(!['intro', 'install', 'quickstart', 'spatial-engine', 'ml-overview', 'louvain', 'risk-model', 'llm-peel', 'shortcuts', 'terminal-cli'].includes(activePage)) && (
           <div className="animate-in fade-in zoom-in-95 duration-300 flex flex-col items-center justify-center h-96 text-slate-500 border border-dashed border-white/10 rounded-3xl bg-white/[0.02]">
-            <BookOpen size={48} className="mb-4 opacity-20" />
-            <h2 className="text-xl font-medium text-white mb-2">Page Under Construction</h2>
-            <p className="text-sm">The documentation for "{DOCS_NAVIGATION.flatMap(c => c.items).find(i => i.id === activePage)?.label}" is being written.</p>
+            <Box size={48} className="mb-4 opacity-20" />
+            <h2 className="text-xl font-medium text-white mb-2">Module Pending Deployment</h2>
+            <p className="text-sm">The documentation vector for this segment is currently compiling.</p>
           </div>
         )}
 
       </main>
 
-      {/* DESKTOP RIGHT SIDEBAR (Table of Contents) */}
+      {/* DYNAMIC RIGHT SIDEBAR (Table of Contents) */}
       <aside className="hidden xl:block w-64 h-[calc(100vh-4rem)] sticky top-16 py-12 pr-8 shrink-0">
-        <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-4">On this page</h4>
-        <ul className="space-y-3 text-sm text-slate-400">
-          <li className="pl-4 border-l border-transparent hover:text-white cursor-pointer transition-colors">Overview</li>
-          <li className="pl-4 border-l border-blue-500 text-blue-400 font-medium cursor-pointer transition-colors">Core Concepts</li>
-          <li className="pl-4 border-l border-transparent hover:text-white cursor-pointer transition-colors">Machine Learning Pipeline</li>
-          <li className="pl-4 border-l border-transparent hover:text-white cursor-pointer transition-colors">Next Steps</li>
-        </ul>
+        {currentTOC.length > 0 ? (
+          <>
+            <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-4">On this page</h4>
+            <ul className="space-y-3 text-sm text-slate-400">
+              {currentTOC.map((heading, i) => (
+                <li key={i} className="pl-4 border-l border-white/10 hover:border-blue-500 hover:text-white cursor-pointer transition-colors">
+                  {heading}
+                </li>
+              ))}
+            </ul>
+          </>
+        ) : null}
       </aside>
 
     </div>

@@ -81,7 +81,6 @@ export const Step = ({ number, title, children }) => (
     <div className="absolute left-0 top-0.5 w-6 h-6 rounded-full bg-[#1e1e1e] border border-white/10 flex items-center justify-center text-xs font-bold text-slate-400 shadow-lg">
       {number}
     </div>
-    {/* Optional connecting line for subsequent steps could go here */}
     <h3 className="text-lg font-semibold text-white mb-3">{title}</h3>
     <div className="text-slate-400 text-sm leading-relaxed">
       {children}
