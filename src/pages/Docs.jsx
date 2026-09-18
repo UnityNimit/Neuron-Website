@@ -545,10 +545,10 @@ export default function Docs() {
   const nextDocId = currentIndex < ALL_DOC_IDS.length - 1 ? ALL_DOC_IDS[currentIndex + 1] : null;
 
   return (
-    <div className="min-h-screen bg-[#050505] text-[#EDEDED] font-sans relative selection:bg-[#3B82F6]/30 selection:text-white flex flex-col justify-between pt-14">
+    <div className="min-h-screen bg-[#050505] text-[#EDEDED] font-sans relative selection:bg-[#3B82F6]/30 selection:text-white flex flex-col justify-between">
       
       {/* Full-width container flush to the left */}
-      <div className="w-full flex-1 flex flex-col md:flex-row px-4 sm:px-6 pt-1 pb-6">
+      <div className="w-full flex-1 flex flex-col md:flex-row px-4 sm:px-6 pt-[72px] pb-6">
         
         {/* LEFT SIDEBAR (Desktop) */}
         <aside className="w-64 border-r border-white/[0.08] hidden md:flex flex-col justify-between pt-0 pb-4 pr-6 shrink-0 font-sans text-xs">

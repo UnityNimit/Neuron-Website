@@ -32,7 +32,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="mt-12 sm:mt-16 border-t border-white/[0.08] bg-[#050505] pt-6 pb-7 px-4 sm:px-6 text-xs font-sans relative z-10 text-slate-400">
+    <footer className="mt-4 sm:mt-6 border-t border-white/[0.08] bg-[#050505] pt-5 pb-6 px-4 sm:px-6 text-xs font-sans relative z-10 text-slate-400">
       <div className="w-full flex flex-col md:flex-row justify-between items-start gap-8">
         
         {/* Left: Brand Column */}
