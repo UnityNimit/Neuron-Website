@@ -33,18 +33,18 @@ export default function Footer() {
 
   return (
     <footer className="mt-4 sm:mt-6 border-t border-white/[0.08] bg-[#050505] pt-5 pb-6 px-4 sm:px-6 text-xs font-sans relative z-10 text-slate-400">
-      <div className="w-full flex flex-col md:flex-row justify-between items-start gap-8">
+      <div className="w-full flex flex-col md:flex-row items-start gap-12 sm:gap-16 md:gap-24">
         
         {/* Left: Brand Column */}
-        <div className="flex flex-col gap-2 max-w-xs">
+        <div className="flex flex-col gap-2 min-w-[120px]">
           <Link to="/" onClick={scrollToTop} className="flex items-center gap-2.5 cursor-pointer">
             <img src="/logo.png" alt="Neuron" className="h-6 w-6 object-contain" />
             <span className="font-semibold text-white tracking-wide text-sm">NEURON</span>
           </Link>
         </div>
 
-        {/* Right: Small Links Grouped on the Right Side */}
-        <div className="flex flex-wrap sm:flex-nowrap gap-12 sm:gap-16 md:gap-20 justify-end text-left">
+        {/* Links Grouped Naturally */}
+        <div className="flex flex-wrap sm:flex-nowrap gap-12 sm:gap-16 md:gap-20 text-left">
           {/* Navigation */}
           <div className="flex flex-col gap-2.5">
             <div className="text-[11px] uppercase tracking-wider text-slate-300 font-semibold mb-1">
