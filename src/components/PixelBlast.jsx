@@ -26,7 +26,7 @@ const createTouchTexture = () => {
   };
   const drawPoint = p => {
     const pos = { x: p.x * size, y: (1 - p.y) * size };
-    let intensity = 1;
+    let intensity;
     const easeOutSine = t => Math.sin((t * Math.PI) / 2);
     const easeOutQuad = t => -t * (t - 2);
     if (p.age < maxAge * 0.3) intensity = easeOutSine(p.age / (maxAge * 0.3));
@@ -146,6 +146,7 @@ uniform float uRippleSpeed;
 uniform float uRippleThickness;
 uniform float uRippleIntensity;
 uniform float uEdgeFade;
+uniform float uScrollY;
 
 uniform int   uShapeType;
 const int SHAPE_SQUARE   = 0;
@@ -184,14 +185,12 @@ float vnoise(vec3 p){
   float n101 = hash11(dot(ip + vec3(1.0,0.0,1.0), vec3(1.0,57.0,113.0)));
   float n011 = hash11(dot(ip + vec3(0.0,1.0,1.0), vec3(1.0,57.0,113.0)));
   float n111 = hash11(dot(ip + vec3(1.0,1.0,1.0), vec3(1.0,57.0,113.0)));
-  vec3 w = fp*fp*fp*(fp*(fp*6.0-15.0)+10.0);
-  float x00 = mix(n000, n100, w.x);
-  float x10 = mix(n010, n110, w.x);
-  float x01 = mix(n001, n101, w.x);
-  float x11 = mix(n011, n111, w.x);
-  float y0  = mix(x00, x10, w.y);
-  float y1  = mix(x01, x11, w.y);
-  return mix(y0, y1, w.z) * 2.0 - 1.0;
+  vec3 u = fp * fp * (3.0 - 2.0 * fp);
+  return mix(
+    mix(mix(n000, n100, u.x), mix(n010, n110, u.x), u.y),
+    mix(mix(n001, n101, u.x), mix(n011, n111, u.x), u.y),
+    u.z
+  );
 }
 
 float fbm2(vec2 uv, float t){
@@ -231,6 +230,7 @@ float maskDiamond(vec2 p, float cov){
 void main(){
   float pixelSize = uPixelSize;
   vec2 fragCoord = gl_FragCoord.xy - uResolution * .5;
+  fragCoord.y -= uScrollY;
   float aspectRatio = uResolution.x / uResolution.y;
 
   vec2 pixelId = floor(fragCoord / pixelSize);
@@ -261,8 +261,11 @@ void main(){
       float r = distance(uv, cuv);
       float waveR = speed * t;
       float ring  = exp(-pow((r - waveR) / thickness, 2.0));
+      // Dense pixel cluster gathering at the click point
+      float gather = exp(-pow(r / (thickness * 2.8), 2.0)) * exp(-dampT * t * 0.6);
+      float burst = max(ring, gather * 2.0);
       float atten = exp(-dampT * t) * exp(-dampR * r);
-      feed = max(feed, ring * atten * uRippleIntensity);
+      feed = max(feed, burst * atten * uRippleIntensity);
     }
   }
 
@@ -348,6 +351,7 @@ const PixelBlast = ({
     if (mustReinit) {
       if (threeRef.current) {
         const t = threeRef.current;
+        if (t.onWindowPointerDown) window.removeEventListener('pointerdown', t.onWindowPointerDown);
         t.resizeObserver?.disconnect();
         cancelAnimationFrame(t.raf);
         t.quad?.geometry.dispose();
@@ -388,7 +392,8 @@ const PixelBlast = ({
         uRippleSpeed: { value: rippleSpeed },
         uRippleThickness: { value: rippleThickness },
         uRippleIntensity: { value: rippleIntensityScale },
-        uEdgeFade: { value: edgeFade }
+        uEdgeFade: { value: edgeFade },
+        uScrollY: { value: 0 }
       };
       const scene = new THREE.Scene();
       const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
@@ -466,8 +471,8 @@ const PixelBlast = ({
       if (composer) composer.setSize(renderer.domElement.width, renderer.domElement.height);
       const mapToPixels = e => {
         const rect = renderer.domElement.getBoundingClientRect();
-        const scaleX = renderer.domElement.width / rect.width;
-        const scaleY = renderer.domElement.height / rect.height;
+        const scaleX = renderer.domElement.width / (rect.width || 1);
+        const scaleY = renderer.domElement.height / (rect.height || 1);
         const fx = (e.clientX - rect.left) * scaleX;
         const fy = (rect.height - (e.clientY - rect.top)) * scaleY;
         return {
@@ -477,10 +482,11 @@ const PixelBlast = ({
           h: renderer.domElement.height
         };
       };
-      const onPointerDown = e => {
+      const onWindowPointerDown = e => {
         const { fx, fy } = mapToPixels(e);
+        const currentScrollY = (window.scrollY || window.pageYOffset || 0) * (renderer.getPixelRatio() || 1);
         const ix = threeRef.current?.clickIx ?? 0;
-        uniforms.uClickPos.value[ix].set(fx, fy);
+        uniforms.uClickPos.value[ix].set(fx, fy - currentScrollY);
         uniforms.uClickTimes.value[ix] = uniforms.uTime.value;
         if (threeRef.current) threeRef.current.clickIx = (ix + 1) % MAX_CLICKS;
       };
@@ -489,19 +495,23 @@ const PixelBlast = ({
         const { fx, fy, w, h } = mapToPixels(e);
         touch.addTouch({ x: fx / w, y: fy / h });
       };
-      renderer.domElement.addEventListener('pointerdown', onPointerDown, {
+      window.addEventListener('pointerdown', onWindowPointerDown, {
         passive: true
       });
       renderer.domElement.addEventListener('pointermove', onPointerMove, {
         passive: true
       });
-      let raf = 0;
+      let raf;
       const animate = () => {
         if (autoPauseOffscreen && !visibilityRef.current.visible) {
           raf = requestAnimationFrame(animate);
+          if (threeRef.current) threeRef.current.raf = raf;
           return;
         }
         uniforms.uTime.value = timeOffset + clock.getElapsedTime() * speedRef.current;
+        const currentScrollY = (window.scrollY || window.pageYOffset || 0) * (renderer.getPixelRatio() || 1);
+        uniforms.uScrollY.value = currentScrollY;
+
         if (liquidEffect) liquidEffect.uniforms.get('uTime').value = uniforms.uTime.value;
         if (composer) {
           if (touch) touch.update();
@@ -516,6 +526,7 @@ const PixelBlast = ({
           composer.render();
         } else renderer.render(scene, camera);
         raf = requestAnimationFrame(animate);
+        if (threeRef.current) threeRef.current.raf = raf;
       };
       raf = requestAnimationFrame(animate);
       threeRef.current = {
@@ -532,7 +543,8 @@ const PixelBlast = ({
         timeOffset,
         composer,
         touch,
-        liquidEffect
+        liquidEffect,
+        onWindowPointerDown
       };
     } else {
       const t = threeRef.current;
@@ -562,6 +574,7 @@ const PixelBlast = ({
       if (threeRef.current && mustReinit) return;
       if (!threeRef.current) return;
       const t = threeRef.current;
+      if (t.onWindowPointerDown) window.removeEventListener('pointerdown', t.onWindowPointerDown);
       t.resizeObserver?.disconnect();
       cancelAnimationFrame(t.raf);
       t.quad?.geometry.dispose();

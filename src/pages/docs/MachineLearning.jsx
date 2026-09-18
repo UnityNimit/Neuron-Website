@@ -1,5 +1,3 @@
-// src/pages/docs/MachineLearning.jsx
-import React from 'react';
 import { DocSection, Callout, CodeBlock, Step } from '../../components/docs/DocComponents';
 
 export default function MachineLearning({ activeSection }) {
@@ -112,6 +110,45 @@ risk_score = (complexity * 0.3) + (churn * 1.5) + (density * 10.0) + (betweennes
             <p className="text-slate-300 leading-relaxed mt-6">
               These diagnoses are immediately injected into the WebGPU engine. Orbs turn Radioactive Red, and zooming into Z-Level 3 reveals the exact AI diagnosis natively on the canvas.
             </p>
+          </DocSection>
+        </>
+      )}
+
+      {activeSection === 'llm-peel' && (
+        <>
+          <h1 className="text-4xl md:text-5xl font-medium tracking-tight text-white mb-6">
+            Local LLM Semantic Peel
+          </h1>
+          <p className="text-slate-400 text-lg leading-relaxed mb-12">
+            Zooming into any function orb transitions the WebGPU camera into the Level-of-Detail (LOD) Semantic Peel. An on-device open-weights LLM interprets AST context in real time, explaining invariants, call contracts, and refactor targets.
+          </p>
+
+          <DocSection id="semantic-zoom" title="Z-Level 3 Semantic Zoom">
+            <Callout type="info" title="Zero Cloud Data Exfiltration">
+              All semantic peel queries execute strictly through the local Python daemon using local weights (Llama-3, Qwen, or local Ollama endpoints). Code never leaves your workstation.
+            </Callout>
+
+            <Step number="1" title="Context Extraction Slices">
+              When the camera passes the zoom threshold ($Z &gt; 2.8$), Neuron slices the active function AST, its incoming call edges, and parent class declarations into a focused prompt envelope.
+            </Step>
+
+            <Step number="2" title="In-Memory Annotation Overlay">
+              The daemon returns structural insights (expected input ranges, potential side-effects, tech debt remediations). These annotations are rendered directly above the node as an illuminated glass tooltip on the canvas.
+            </Step>
+
+            <CodeBlock 
+              title="agent_supervisor.py"
+              language="python"
+              code={`# Real-time local architectural explanation
+async def generate_semantic_peel(node_id: str, ast_slice: dict):
+    prompt = f"""Analyze the following AST function for architectural risks:
+Function: {ast_slice['name']}
+LOC: {ast_slice['loc']}, Density: {ast_slice['density']}
+Callers: {ast_slice['callers']}
+
+Generate a 2-sentence semantic diagnosis and immediate refactor target."""
+    return await local_llm.generate(prompt, max_tokens=90)`} 
+            />
           </DocSection>
         </>
       )}

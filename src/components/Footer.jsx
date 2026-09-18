@@ -1,92 +1,100 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Lock } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
+
+const GithubIcon = ({ size = 14 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
+    <path d="M9 18c-4.51 2-5-2-7-2" />
+  </svg>
+);
 
 export default function Footer() {
   return (
-    <footer className="border-t border-white/10 bg-[#050505] pt-20 pb-10 px-6 relative z-10 pointer-events-auto">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-10 mb-20">
-          
-          {/* Logo Column */}
-          <div className="col-span-2 lg:col-span-2">
-            <Link to="/" className="flex items-center gap-3 mb-6">
-              <img src="/logo.png" alt="Neuron" className="h-8 w-8 object-contain" />
-              <span className="font-bold text-white tracking-wider text-lg">NEURON</span>
+    <footer className="border-t border-white/[0.08] bg-[#050505] pt-14 pb-12 px-4 md:px-8 text-xs font-sans relative z-10 text-slate-400">
+      <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-start gap-12">
+        
+        {/* Left: Brand Column */}
+        <div className="flex flex-col gap-3 max-w-xs">
+          <Link to="/" className="flex items-center gap-2.5">
+            <img src="/logo.png" alt="Neuron" className="h-6 w-6 object-contain" />
+            <span className="font-semibold text-white tracking-wide text-sm font-mono">NEURON</span>
+          </Link>
+          <p className="text-slate-500 text-xs leading-relaxed font-mono">
+            Local-first spatial code intelligence and interactive graph runtime.
+          </p>
+        </div>
+
+        {/* Right: Small Links Grouped on the Right Side */}
+        <div className="flex flex-wrap sm:flex-nowrap gap-12 sm:gap-16 md:gap-20 justify-end text-left">
+          {/* Navigation */}
+          <div className="flex flex-col gap-2.5">
+            <div className="text-[11px] font-mono uppercase tracking-wider text-slate-300 font-semibold mb-1">
+              Navigation
+            </div>
+            <Link to="/" className="text-slate-400 hover:text-white transition-colors">
+              Home
             </Link>
-            <p className="text-slate-500 text-sm max-w-xs leading-relaxed">
-              Neuron is an applied research team focused on building the future of software development.
-            </p>
-            <a href="#" className="inline-flex items-center gap-2 text-white font-medium mt-6 group">
-              Join us <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+            <Link to="/docs" className="text-slate-400 hover:text-white transition-colors">
+              Documentation
+            </Link>
+            <Link to="/downloads" className="text-slate-400 hover:text-white transition-colors">
+              Downloads
+            </Link>
+            <Link to="/help" className="text-slate-400 hover:text-white transition-colors">
+              Help & Support
+            </Link>
+          </div>
+
+          {/* Core Modules */}
+          <div className="flex flex-col gap-2.5">
+            <div className="text-[11px] font-mono uppercase tracking-wider text-slate-300 font-semibold mb-1">
+              Architecture
+            </div>
+            <Link to="/docs" className="text-slate-400 hover:text-white transition-colors">
+              Quickstart Guide
+            </Link>
+            <Link to="/docs" className="text-slate-400 hover:text-white transition-colors">
+              Spatial Architecture
+            </Link>
+            <Link to="/docs" className="text-slate-400 hover:text-white transition-colors">
+              Louvain Partitioning
+            </Link>
+            <Link to="/docs" className="text-slate-400 hover:text-white transition-colors">
+              Agent Studio
+            </Link>
+          </div>
+
+          {/* Community & Project */}
+          <div className="flex flex-col gap-2.5">
+            <div className="text-[11px] font-mono uppercase tracking-wider text-slate-300 font-semibold mb-1">
+              Community
+            </div>
+            <a
+              href="https://github.com/UnityNimit/Neuron"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-slate-400 hover:text-white transition-colors flex items-center gap-1.5"
+            >
+              <GithubIcon size={13} />
+              <span>GitHub Repository</span>
+              <ExternalLink size={10} className="opacity-50" />
             </a>
-          </div>
-
-          {/* Links Columns */}
-          <div>
-            <h4 className="text-white font-medium mb-6">Product</h4>
-            <ul className="space-y-4 text-sm text-slate-500">
-              <li><a href="#" className="hover:text-white transition-colors">Agents</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Teams</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Enterprise</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Pricing</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Code Review</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Cloud Agents</a></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-white font-medium mb-6">Resources</h4>
-            <ul className="space-y-4 text-sm text-slate-500">
-              <li><a href="#" className="hover:text-white transition-colors">Download</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Changelog</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Docs</a></li>
-              <li><a href="#" className="hover:text-white transition-colors flex items-center gap-1">Learn <ArrowRight size={12} className="-rotate-45" /></a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Value Calculator</a></li>
-              <li><a href="#" className="hover:text-white transition-colors flex items-center gap-1">Forum <ArrowRight size={12} className="-rotate-45" /></a></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-white font-medium mb-6">Company</h4>
-            <ul className="space-y-4 text-sm text-slate-500">
-              <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Blog</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Community</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Students</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Brand</a></li>
-              <li><a href="#" className="hover:text-white transition-colors flex items-center gap-1">Anysphere <ArrowRight size={12} className="-rotate-45" /></a></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-white font-medium mb-6">Legal</h4>
-            <ul className="space-y-4 text-sm text-slate-500">
-              <li><a href="#" className="hover:text-white transition-colors">Terms of Service</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Acceptable Use</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Security</a></li>
-              <li className="mt-8 text-white font-medium mb-4">Connect</li>
-              <div className="flex items-center gap-4">
-                <a href="#" className="hover:text-white transition-colors flex items-center gap-1">X <ArrowRight size={12} className="-rotate-45" /></a>
-                <a href="#" className="hover:text-white transition-colors flex items-center gap-1">LinkedIn <ArrowRight size={12} className="-rotate-45" /></a>
-              </div>
-            </ul>
-          </div>
-
-        </div>
-
-        <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between text-xs text-slate-600">
-          <div className="flex items-center gap-4 mb-4 md:mb-0">
-            <span>© 2026 Anysphere, Inc.</span>
-            <span className="flex items-center gap-1"><Lock size={12} /> SOC 2 Certified</span>
-          </div>
-          <div className="flex items-center gap-6">
-            <button className="hover:text-slate-300 transition-colors">English ↓</button>
-            <button className="hover:text-slate-300 transition-colors">☉</button>
-            <button className="hover:text-slate-300 transition-colors">☾</button>
+            <a
+              href="https://github.com/UnityNimit/Neuron/issues"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-slate-400 hover:text-white transition-colors flex items-center gap-1.5"
+            >
+              <span>Issue Tracker</span>
+              <ExternalLink size={10} className="opacity-50" />
+            </a>
+            <Link to="/help" className="text-slate-400 hover:text-white transition-colors">
+              Contact & Mail Queries
+            </Link>
           </div>
         </div>
+
       </div>
     </footer>
   );

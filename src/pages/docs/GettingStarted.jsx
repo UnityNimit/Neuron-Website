@@ -1,5 +1,3 @@
-// src/pages/docs/GettingStarted.jsx
-import React from 'react';
 import { DocSection, Callout, CodeBlock, Step } from '../../components/docs/DocComponents';
 
 export default function GettingStarted({ activeSection }) {

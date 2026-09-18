@@ -1,6 +1,4 @@
-// src/pages/docs/Reference.jsx
-import React from 'react';
-import { DocSection, Callout } from '../../components/docs/DocComponents';
+import { DocSection, Callout, Step } from '../../components/docs/DocComponents';
 
 // 🎹 Custom Component for rendering gorgeous Keyboard Keys
 const Shortcut = ({ keys, description }) => (
