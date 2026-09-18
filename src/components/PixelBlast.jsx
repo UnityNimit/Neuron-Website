@@ -482,9 +482,11 @@ const PixelBlast = ({
           h: renderer.domElement.height
         };
       };
+      const getScrollTop = () => window.scrollY || window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+
       const onWindowPointerDown = e => {
         const { fx, fy } = mapToPixels(e);
-        const currentScrollY = (window.scrollY || window.pageYOffset || 0) * (renderer.getPixelRatio() || 1);
+        const currentScrollY = getScrollTop() * (renderer.getPixelRatio() || 1);
         const ix = threeRef.current?.clickIx ?? 0;
         uniforms.uClickPos.value[ix].set(fx, fy - currentScrollY);
         uniforms.uClickTimes.value[ix] = uniforms.uTime.value;
@@ -509,7 +511,7 @@ const PixelBlast = ({
           return;
         }
         uniforms.uTime.value = timeOffset + clock.getElapsedTime() * speedRef.current;
-        const currentScrollY = (window.scrollY || window.pageYOffset || 0) * (renderer.getPixelRatio() || 1);
+        const currentScrollY = getScrollTop() * (renderer.getPixelRatio() || 1);
         uniforms.uScrollY.value = currentScrollY;
 
         if (liquidEffect) liquidEffect.uniforms.get('uTime').value = uniforms.uTime.value;

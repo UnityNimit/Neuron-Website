@@ -2,17 +2,17 @@ import Navbar from '../components/Navbar';
 
 export default function MainLayout({ children }) {
   return (
-    <div className="min-h-screen bg-[#0f0f0f] text-slate-200 font-sans relative">
+    <div className="min-h-screen bg-[#050505] text-[#EDEDED] font-sans relative flex flex-col">
       {/* Global Background Grid Accent */}
-      <div className="fixed inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none z-0" />
+      <div className="fixed inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none z-0" />
 
       {/* Navigation */}
       <Navbar />
 
-      {/* Dynamic Content Container */}
-      <main className="relative z-10">
+      {/* Content Container */}
+      <div className="relative z-10 flex-1 flex flex-col">
         {children}
-      </main>
+      </div>
     </div>
   );
 }

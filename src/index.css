@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+@theme {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
 /* Hide native scrollbar across Chrome, Safari, Edge, Firefox while preserving smooth scrolling */
 * {
   scrollbar-width: none;
@@ -12,9 +17,25 @@
   height: 0px;
 }
 
-html, body {
+html {
   scrollbar-width: none;
   -ms-overflow-style: none;
-  overflow-y: auto;
+}
+
+body {
+  margin: 0;
   background-color: #050505;
+  color: #EDEDED;
+  font-family: var(--font-sans);
+}
+
+/* Glowing download button in header */
+.header-download-glow {
+  box-shadow: 0 0 16px rgba(59, 130, 246, 0.45), inset 0 0 8px rgba(255, 255, 255, 0.2);
+  transition: all 0.25s ease;
+}
+
+.header-download-glow:hover {
+  box-shadow: 0 0 24px rgba(59, 130, 246, 0.75), inset 0 0 10px rgba(255, 255, 255, 0.3);
+  transform: translateY(-0.5px);
 }

@@ -1,8 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { 
-  Search, Copy, Check, ChevronLeft, ChevronRight, Menu, X, ExternalLink
+  Search, ChevronLeft, ChevronRight, Menu, X
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import Footer from '../components/Footer';
 
 // --- COMPREHENSIVE DOCUMENTATION REGISTRY (Inspired by media_1789742450965.png & media_1789742457799.png) ---
@@ -521,11 +520,9 @@ export default function Docs() {
   const [activeDocId, setActiveDocId] = useState('welcome');
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
 
   const activeDoc = DOCS_DATA[activeDocId] || DOCS_DATA['welcome'];
 
-  // Search filter across doc titles, categories, and points
   const filteredGroups = useMemo(() => {
     if (!searchQuery.trim()) return DOCS_NAV_GROUPS;
     const q = searchQuery.toLowerCase();
@@ -547,37 +544,17 @@ export default function Docs() {
   const prevDocId = currentIndex > 0 ? ALL_DOC_IDS[currentIndex - 1] : null;
   const nextDocId = currentIndex < ALL_DOC_IDS.length - 1 ? ALL_DOC_IDS[currentIndex + 1] : null;
 
-  const handleCopyPage = () => {
-    const textToCopy = `# ${activeDoc.title}\n${activeDoc.subtitle}\n\n` + 
-      activeDoc.sections.map(s => `## ${s.title}\n${s.desc}\n` + s.points.map(p => `- ${p.label}: ${p.text}`).join('\n')).join('\n\n');
-    
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(textToCopy);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
-
-  const scrollToSection = (id) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
-
   return (
     <div className="min-h-screen bg-[#050505] text-[#EDEDED] font-sans relative selection:bg-[#3B82F6]/30 selection:text-white flex flex-col justify-between pt-14">
       
-      {/* Container with Left Sidebar, Main Content, Right TOC */}
-      <div className="max-w-7xl mx-auto w-full flex-1 flex relative">
+      {/* Full-width container flush to the left */}
+      <div className="w-full flex-1 flex flex-col md:flex-row px-4 sm:px-6 pt-1 pb-6">
         
-        {/* ========================================================================= */}
-        {/* LEFT SIDEBAR (Desktop - aligned cleanly to bottom pagination baseline)    */}
-        {/* ========================================================================= */}
-        <aside className="w-64 border-r border-white/[0.08] hidden md:flex flex-col justify-between py-10 pr-6 pl-4 shrink-0 font-sans text-xs">
+        {/* LEFT SIDEBAR (Desktop) */}
+        <aside className="w-64 border-r border-white/[0.08] hidden md:flex flex-col justify-between pt-0 pb-4 pr-6 shrink-0 font-sans text-xs">
           <div>
             {/* Search Box */}
-            <div className="mb-6 relative">
+            <div className="mb-5 relative">
               <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
               <input
                 type="text"
@@ -589,10 +566,10 @@ export default function Docs() {
             </div>
 
             {/* Navigation Groups */}
-            <div className="space-y-6">
+            <div className="space-y-5">
               {filteredGroups.map(group => (
                 <div key={group.category} className="space-y-1">
-                  <div className="text-[11px] font-mono uppercase tracking-wider text-slate-500 font-semibold px-2 mb-1.5">
+                  <div className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold px-2 mb-1">
                     {group.category}
                   </div>
                   <div className="space-y-0.5">
@@ -605,9 +582,9 @@ export default function Docs() {
                             setActiveDocId(item.id);
                             window.scrollTo({ top: 0, behavior: 'smooth' });
                           }}
-                          className={`w-full text-left px-2.5 py-1.5 rounded-md text-[13px] transition-colors cursor-pointer flex items-center justify-between ${
+                          className={`w-full text-left px-2.5 py-1.5 rounded-md text-xs transition-colors cursor-pointer flex items-center justify-between ${
                             isActive
-                              ? 'bg-[#3B82F6]/10 text-[#60A5FA] font-medium border-l-2 border-[#60A5FA]'
+                              ? 'bg-[#3B82F6]/10 text-[#60A5FA] font-semibold border-l-2 border-[#60A5FA]'
                               : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.03]'
                           }`}
                         >
@@ -621,34 +598,59 @@ export default function Docs() {
             </div>
           </div>
 
-          {/* Bottom baseline aligned with Quickstart Guide > border */}
-          <div className="mt-14 pt-6 border-t border-white/[0.08] flex items-center justify-between text-xs font-mono text-slate-600">
+          <div className="mt-8 pt-4 border-t border-white/[0.08] text-[11px] text-slate-600">
             <span>Neuron Docs v1.2.4</span>
           </div>
         </aside>
 
         {/* Mobile Header / Drawer Toggle */}
-        <div className="md:hidden w-full px-4 py-3 border-b border-white/[0.08] flex items-center justify-between bg-[#050505] sticky top-14 z-30">
-          <div className="text-xs font-mono text-slate-400 flex items-center gap-2">
+        <div className="md:hidden w-full py-2.5 border-b border-white/[0.08] flex items-center justify-between mb-2">
+          <div className="text-xs text-slate-400 flex items-center gap-2">
             <span>Docs</span>
             <span>/</span>
-            <span className="text-[#60A5FA]">{activeDoc.title}</span>
+            <span className="text-[#60A5FA] font-medium">{activeDoc.title}</span>
           </div>
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="p-1.5 text-slate-300 hover:text-white"
+            className="p-1.5 text-slate-300 hover:text-white cursor-pointer"
+            aria-label="Toggle docs navigation"
           >
             {isMobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
         </div>
 
+        {/* Split Screen / Mobile Horizontal Doc Tabs */}
+        <div className="md:hidden w-full overflow-x-auto flex items-center gap-1.5 pb-2 mb-4 scrollbar-none border-b border-white/[0.06]">
+          {ALL_DOC_IDS.map(id => {
+            const doc = DOCS_DATA[id];
+            if (!doc) return null;
+            const isActive = activeDocId === id;
+            return (
+              <button
+                key={id}
+                onClick={() => {
+                  setActiveDocId(id);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className={`px-2.5 py-1 rounded-md text-xs whitespace-nowrap cursor-pointer transition-colors shrink-0 ${
+                  isActive
+                    ? 'bg-[#3B82F6]/15 text-[#60A5FA] font-medium border border-[#3B82F6]/30'
+                    : 'text-slate-400 hover:text-slate-200 bg-white/[0.03]'
+                }`}
+              >
+                {doc.title}
+              </button>
+            );
+          })}
+        </div>
+
         {/* Mobile Drawer */}
         {isMobileMenuOpen && (
-          <div className="md:hidden fixed inset-0 top-24 bg-[#050505] z-40 p-6 overflow-y-auto">
+          <div className="md:hidden fixed inset-0 top-14 bg-[#050505] z-40 p-6 overflow-y-auto">
             <div className="space-y-6">
               {DOCS_NAV_GROUPS.map(group => (
                 <div key={group.category} className="space-y-1">
-                  <div className="text-[11px] font-mono uppercase tracking-wider text-slate-500 font-semibold mb-2">
+                  <div className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold mb-2">
                     {group.category}
                   </div>
                   <div className="space-y-1 pl-2">
@@ -674,44 +676,42 @@ export default function Docs() {
           </div>
         )}
 
-        {/* ========================================================================= */}
-        {/* MAIN DOCUMENTATION CONTENT (Matching media_1789742450965.png Exactly)       */}
-        {/* ========================================================================= */}
-        <main className="flex-1 px-6 sm:px-10 lg:px-14 py-10 max-w-3xl min-h-[calc(100vh-8rem)] flex flex-col justify-between">
+        {/* MAIN DOCUMENTATION CONTENT */}
+        <main className="flex-1 md:pl-8 lg:pl-10 pt-0 pb-4 min-h-[calc(100vh-12rem)] flex flex-col justify-between">
           <div>
             {/* Category Tag */}
-            <div className="text-xs font-mono text-slate-500 mb-2 font-medium uppercase tracking-wider">
+            <div className="text-xs text-slate-500 mb-1.5 font-medium uppercase tracking-wider">
               {activeDoc.category}
             </div>
 
             {/* Large Title */}
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white mb-5 leading-tight">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white mb-4 leading-tight">
               {activeDoc.title}
             </h1>
 
             {/* Subtitle / Intro Paragraph */}
-            <p className="text-slate-300 text-sm sm:text-base leading-relaxed mb-10 font-normal">
+            <p className="text-slate-400 text-sm sm:text-base leading-relaxed mb-8 font-normal">
               {activeDoc.subtitle}
             </p>
 
             {/* Document Sections */}
-            <div className="space-y-12">
+            <div className="space-y-10">
               {activeDoc.sections.map(sec => (
                 <section key={sec.id} id={sec.id} className="scroll-mt-24">
-                  <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-white mb-2.5">
+                  <h2 className="text-lg sm:text-xl font-semibold tracking-tight text-white mb-2">
                     {sec.title}
                   </h2>
-                  <p className="text-slate-400 text-xs sm:text-sm leading-relaxed mb-5 font-normal">
+                  <p className="text-slate-400 text-xs sm:text-sm leading-relaxed mb-4 font-normal">
                     {sec.desc}
                   </p>
 
-                  {/* Pointwise Specification with Square Bullets */}
-                  <ul className="space-y-3 pl-1">
+                  {/* Pointwise Specification */}
+                  <ul className="space-y-2.5 pl-1">
                     {sec.points.map((pt, pIdx) => (
                       <li key={pIdx} className="flex items-start text-xs sm:text-sm leading-relaxed text-slate-300">
-                        <span className="text-slate-500 font-bold mr-2.5 select-none text-[10px] mt-1">▪</span>
+                        <span className="text-[#60A5FA] mr-2 select-none">•</span>
                         <div>
-                          <strong className="text-white font-semibold mr-1.5">{pt.label}:</strong>
+                          <strong className="text-white font-medium mr-1.5">{pt.label}:</strong>
                           <span>{pt.text}</span>
                         </div>
                       </li>
@@ -723,7 +723,7 @@ export default function Docs() {
           </div>
 
           {/* Bottom Pagination */}
-          <div className="mt-16 pt-8 border-t border-white/[0.08] flex items-center justify-between text-xs font-mono">
+          <div className="mt-12 pt-6 border-t border-white/[0.08] flex items-center justify-between text-xs">
             {prevDocId ? (
               <button
                 onClick={() => {
@@ -751,46 +751,6 @@ export default function Docs() {
             ) : <div />}
           </div>
         </main>
-
-        {/* ========================================================================= */}
-        {/* RIGHT SIDEBAR: On This Page Table of Contents & Copy Page Button          */}
-        {/* ========================================================================= */}
-        <aside className="w-56 hidden xl:block py-10 pr-6 pl-4 shrink-0 sticky top-14 h-[calc(100vh-3.5rem)] font-sans text-xs">
-          <div className="text-slate-400 font-medium mb-3 text-[11px] uppercase tracking-wider font-mono">
-            On this page
-          </div>
-
-          <ul className="space-y-2 border-l border-white/[0.08] pl-3 mb-8">
-            {activeDoc.sections.map(sec => (
-              <li key={sec.id}>
-                <button
-                  onClick={() => scrollToSection(sec.id)}
-                  className="text-left text-slate-400 hover:text-white transition-colors text-xs cursor-pointer block truncate"
-                >
-                  {sec.title}
-                </button>
-              </li>
-            ))}
-          </ul>
-
-          {/* Copy page button (matching media_1789742457799.png) */}
-          <button
-            onClick={handleCopyPage}
-            className="flex items-center gap-2 text-xs text-slate-400 hover:text-white transition-colors cursor-pointer group"
-          >
-            {copied ? (
-              <>
-                <Check size={13} className="text-emerald-400" />
-                <span className="text-emerald-400">Copied to clipboard</span>
-              </>
-            ) : (
-              <>
-                <Copy size={13} className="text-slate-500 group-hover:text-white" />
-                <span>Copy page</span>
-              </>
-            )}
-          </button>
-        </aside>
 
       </div>
 

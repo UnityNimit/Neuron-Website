@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { 
   Folder, FileCode2, Network, ZoomIn, ZoomOut, RotateCcw,
   Sparkles, Terminal as TerminalIcon, Play,
@@ -488,10 +488,7 @@ export default function NeuronHeroEngine() {
     };
     window.addEventListener('resize', resize);
 
-    let tick = 0;
-
     const loop = () => {
-      tick++;
       const nodes = nodesRef.current;
       const edges = edgesRef.current;
       const curSelected = selectedNodeRef.current;
@@ -525,7 +522,7 @@ export default function NeuronHeroEngine() {
           const distSq = dx * dx + dy * dy || 1;
           const dist = Math.sqrt(distSq);
 
-          let extraDist = 20;
+          let extraDist;
           if (a.type === 'folder' || b.type === 'folder') extraDist = 48;
           else if (a.type === 'file' || b.type === 'file') extraDist = 24;
           else if (a.type === 'symbol' || b.type === 'symbol') extraDist = 13;

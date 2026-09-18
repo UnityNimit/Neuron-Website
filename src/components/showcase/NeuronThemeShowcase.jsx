@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { 
   Files, GitBranch, Sparkles, Settings, 
   Folder, FileCode2, ChevronDown 
@@ -35,21 +35,6 @@ const THEMES = [
     textMuted: '#64748b',
     folderColor: '#dcb67a',
     isDark: true
-  },
-  {
-    id: 'white',
-    name: 'Alabaster White',
-    circleColor: '#ffffff',
-    circleBorder: '#cbd5e1',
-    primary: '#e8eaed',
-    secondary: '#f1f3f4',
-    background: '#ffffff',
-    border: '#dadce0',
-    accent: '#2563eb',
-    text: '#1f2937',
-    textMuted: '#6b7280',
-    folderColor: '#b45309',
-    isDark: false
   },
   {
     id: 'galaxy',
@@ -106,13 +91,8 @@ export default function NeuronThemeShowcase() {
     if (timerRef.current) clearInterval(timerRef.current);
   };
 
-  const scrollToDownload = () => {
-    const el = document.getElementById('download-hero');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-  };
-
   return (
-    <section className="mb-36 md:mb-48 w-full">
+    <section className="mb-24 sm:mb-28 w-full">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
         
         {/* ========================================================================= */}
@@ -165,9 +145,9 @@ export default function NeuronThemeShowcase() {
                 </div>
               </div>
 
-              {/* Explorer Sidebar */}
+              {/* Explorer Sidebar with Single Theme Pill (Always visible) */}
               <div 
-                className="w-48 border-r flex flex-col justify-between p-2.5 font-mono text-[11px] transition-colors duration-700 shrink-0 hidden sm:flex"
+                className="w-40 sm:w-48 border-r flex flex-col justify-between p-2.5 font-mono text-[11px] transition-colors duration-700 shrink-0 flex"
                 style={{ 
                   backgroundColor: activeTheme.secondary,
                   borderColor: activeTheme.border,
@@ -186,8 +166,8 @@ export default function NeuronThemeShowcase() {
 
                   {/* Folder: backend */}
                   <div className="pl-2.5 pt-1 space-y-1 text-[11px]">
-                    <div className="flex items-center gap-1.5 font-medium text-[#e4ef61]">
-                      <Folder size={13} className="text-[#e4ef61]" />
+                    <div className="flex items-center gap-1.5 font-medium" style={{ color: activeTheme.folderColor }}>
+                      <Folder size={13} style={{ color: activeTheme.folderColor }} />
                       <span>backend</span>
                     </div>
                     <div className="pl-4 space-y-1" style={{ color: activeTheme.textMuted }}>
@@ -204,8 +184,8 @@ export default function NeuronThemeShowcase() {
 
                   {/* Folder: frontend */}
                   <div className="pl-2.5 pt-1 space-y-1 text-[11px]">
-                    <div className="flex items-center gap-1.5 font-medium text-[#e4ef61]">
-                      <Folder size={13} className="text-[#e4ef61]" />
+                    <div className="flex items-center gap-1.5 font-medium" style={{ color: activeTheme.folderColor }}>
+                      <Folder size={13} style={{ color: activeTheme.folderColor }} />
                       <span>frontend</span>
                     </div>
                     <div className="pl-4 space-y-1" style={{ color: activeTheme.textMuted }}>
@@ -391,7 +371,7 @@ export default function NeuronThemeShowcase() {
                     </div>
                   </div>
                   <div className="truncate text-[10px] leading-tight" style={{ color: activeTheme.textMuted }}>
-                    Neuron Neural Engine initialized. Ready for spatial inspection & code execution.
+                    Ready
                   </div>
                 </div>
 
@@ -402,16 +382,14 @@ export default function NeuronThemeShowcase() {
           </div>
         </div>
 
-        {/* ========================================================================= */}
-        {/* RIGHT COLUMN: Chic Editorial Theme Presentation                          */}
-        {/* ========================================================================= */}
+        {/* RIGHT COLUMN: Simple theme presentation */}
         <div className="lg:col-span-5 order-1 lg:order-2 text-left flex flex-col justify-center">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight text-white mb-5 leading-[1.12]">
-            Tailored for spatial clarity
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white mb-4 leading-snug">
+            Customizable themes
           </h2>
 
-          <p className="text-[#8e96a4] text-sm sm:text-base leading-relaxed mb-6 font-normal">
-            Crafted for visual focus. Seamlessly switch between dark, light, and vibrant colorways designed to keep your workspace clean and expressive.
+          <p className="text-slate-400 text-sm sm:text-base leading-relaxed font-normal">
+            Switch between carefully calibrated colorways designed for spatial clarity and visual comfort.
           </p>
         </div>
 
