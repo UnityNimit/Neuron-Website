@@ -33,7 +33,7 @@ export default function Footer() {
 
   return (
     <footer className="mt-4 sm:mt-6 border-t border-white/[0.08] bg-[#050505] pt-5 pb-6 px-4 sm:px-6 text-xs font-sans relative z-10 text-slate-400">
-      <div className="w-full flex flex-col md:flex-row items-start gap-12 sm:gap-16 md:gap-24">
+      <div className="w-full flex flex-col md:flex-row justify-between items-start gap-8">
         
         {/* Left: Brand Column */}
         <div className="flex flex-col gap-2 min-w-[120px]">
@@ -43,8 +43,8 @@ export default function Footer() {
           </Link>
         </div>
 
-        {/* Links Grouped Naturally */}
-        <div className="flex flex-wrap sm:flex-nowrap gap-12 sm:gap-16 md:gap-20 text-left">
+        {/* Right: Navigation & Socials on the right side with comfortable inset */}
+        <div className="flex flex-wrap sm:flex-nowrap gap-12 sm:gap-16 md:gap-20 justify-end text-left sm:mr-6 md:mr-16 lg:mr-24">
           {/* Navigation */}
           <div className="flex flex-col gap-2.5">
             <div className="text-[11px] uppercase tracking-wider text-slate-300 font-semibold mb-1">
@@ -54,7 +54,7 @@ export default function Footer() {
               Documentation
             </Link>
             <Link to="/downloads" onClick={scrollToTop} className="text-slate-400 hover:text-white transition-colors cursor-pointer">
-              Downloads
+              Versions
             </Link>
             <Link to="/help" onClick={scrollToTop} className="text-slate-400 hover:text-white transition-colors cursor-pointer">
               Help & Queries

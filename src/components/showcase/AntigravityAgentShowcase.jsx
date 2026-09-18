@@ -82,13 +82,9 @@ export default function AntigravityAgentShowcase() {
         
         {/* LEFT COLUMN: Simplified AI integration copy */}
         <div className="lg:col-span-5 text-left flex flex-col justify-center">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white mb-4 leading-snug">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white mb-2 leading-snug">
             Integrate AI with your codebase
           </h2>
-          
-          <p className="text-slate-400 text-sm sm:text-base leading-relaxed font-normal">
-            Neuron connects AI assistance directly to your 2D spatial canvas. Query code relationships, inspect syntax trees, and evaluate changes without breaking flow.
-          </p>
         </div>
 
         {/* RIGHT COLUMN: Clean Interactive Assistant Window */}

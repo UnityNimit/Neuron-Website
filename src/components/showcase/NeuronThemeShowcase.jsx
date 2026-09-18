@@ -384,13 +384,9 @@ export default function NeuronThemeShowcase() {
 
         {/* RIGHT COLUMN: Simple theme presentation */}
         <div className="lg:col-span-5 order-1 lg:order-2 text-left flex flex-col justify-center">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white mb-4 leading-snug">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white mb-2 leading-snug">
             Customizable themes
           </h2>
-
-          <p className="text-slate-400 text-sm sm:text-base leading-relaxed font-normal">
-            Switch between carefully calibrated colorways designed for spatial clarity and visual comfort.
-          </p>
         </div>
 
       </div>

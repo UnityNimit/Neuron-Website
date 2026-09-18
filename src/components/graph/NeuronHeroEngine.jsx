@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { 
   Folder, FileCode2, Network, ZoomIn, ZoomOut, RotateCcw,
-  Sparkles, Terminal as TerminalIcon, Play,
+  Sparkles, Terminal as TerminalIcon,
   Trash2, ChevronDown, ChevronRight, Type, Files, GitBranch, Settings
 } from 'lucide-react';
 
@@ -1056,16 +1056,6 @@ export default function NeuronHeroEngine() {
 
             {/* HUD Controls */}
             <div className="flex items-center gap-1.5">
-              {/* Replay Celestial Birth Growth Animation */}
-              <button
-                onClick={startCelestialGrowthAnimation}
-                className="px-2 py-0.5 rounded text-[10px] font-mono border border-[#3b82f6]/40 bg-[#3b82f6]/10 text-[#60a5fa] hover:bg-[#3b82f6]/20 transition-all cursor-pointer flex items-center gap-1"
-                title="Replay Celestial Growth Animation"
-              >
-                <Play size={10} />
-                <span>Replay Birth</span>
-              </button>
-
               <button
                 onClick={() => setShowLabels(!showLabels)}
                 className={`px-2 py-0.5 rounded text-[10px] font-mono border transition-all cursor-pointer flex items-center gap-1 ${

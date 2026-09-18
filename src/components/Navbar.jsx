@@ -63,7 +63,7 @@ export default function Navbar() {
               isActive('/downloads') ? 'text-white font-semibold' : 'text-[#888888] hover:text-[#EDEDED]'
             }`}
           >
-            Downloads
+            Versions
           </Link>
           <Link 
             to="/help" 
@@ -118,7 +118,7 @@ export default function Navbar() {
             onClick={() => setIsMobileMenuOpen(false)}
             className={`py-1.5 ${isActive('/downloads') ? 'text-white font-semibold' : 'text-[#888888] hover:text-white'}`}
           >
-            Downloads & Releases
+            Versions
           </Link>
           <Link 
             to="/help" 
