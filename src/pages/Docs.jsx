@@ -597,10 +597,6 @@ export default function Docs() {
               ))}
             </div>
           </div>
-
-          <div className="mt-8 pt-4 border-t border-white/[0.08] text-[11px] text-slate-600">
-            <span>Neuron Docs v1.2.4</span>
-          </div>
         </aside>
 
         {/* Mobile Header / Drawer Toggle */}
