@@ -2,6 +2,7 @@ import PixelBlast from '../components/PixelBlast';
 import ScrambledText from '../components/ScrambledText';
 import Footer from '../components/Footer';
 import NeuronHeroEngine from '../components/graph/NeuronHeroEngine';
+import SpatialSnippetsShowcase from '../components/showcase/SpatialSnippetsShowcase';
 import AntigravityAgentShowcase from '../components/showcase/AntigravityAgentShowcase';
 import NeuronThemeShowcase from '../components/showcase/NeuronThemeShowcase';
 
@@ -76,6 +77,11 @@ export default function Home() {
             <NeuronHeroEngine />
           </div>
         </section>
+
+        {/* ========================================================================= */}
+        {/* SPATIAL OBSERVABILITY FEATURE SNIPPETS WALKTHROUGH                         */}
+        {/* ========================================================================= */}
+        <SpatialSnippetsShowcase />
 
         {/* ========================================================================= */}
         {/* AI INTEGRATION SHOWCASE                                                   */}
