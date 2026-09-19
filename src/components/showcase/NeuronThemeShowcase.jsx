@@ -68,6 +68,44 @@ const THEMES = [
   }
 ];
 
+// File row with theme-aware hover color (never disappears in light pink or dark themes)
+function ShowcaseFileItem({ activeTheme, iconColor, name }) {
+  const [hovered, setHovered] = useState(false);
+  const hoverColor = activeTheme.isDark ? '#ffffff' : activeTheme.accent;
+
+  return (
+    <div 
+      className="flex items-center gap-1.5 transition-colors cursor-pointer select-none"
+      style={{ color: hovered ? hoverColor : activeTheme.textMuted }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <FileCode2 size={12} className={iconColor} />
+      <span>{name}</span>
+    </div>
+  );
+}
+
+// Activity bar icon with theme-aware hover
+function ShowcaseActivityIcon({ activeTheme, icon: Icon, size = 16 }) {
+  const [hovered, setHovered] = useState(false);
+  const hoverColor = activeTheme.isDark ? '#ffffff' : activeTheme.accent;
+
+  return (
+    <div 
+      className="p-1 transition-colors cursor-pointer"
+      style={{ 
+        color: hovered ? hoverColor : activeTheme.textMuted,
+        opacity: hovered ? 1 : 0.7 
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <Icon size={size} />
+    </div>
+  );
+}
+
 export default function NeuronThemeShowcase() {
   const [activeThemeIndex, setActiveThemeIndex] = useState(0); // Starts on Sakura Rose matching screenshot
   const [userInterrupted, setUserInterrupted] = useState(false);
@@ -118,22 +156,16 @@ export default function NeuronThemeShowcase() {
                   borderColor: activeTheme.border 
                 }}
               >
-                <div className="flex flex-col items-center gap-4 text-slate-400">
-                  <div className="p-1 rounded text-white" style={{ color: activeTheme.accent }}>
+                <div className="flex flex-col items-center gap-4">
+                  <div className="p-1 rounded" style={{ color: activeTheme.accent }}>
                     <Files size={16} />
                   </div>
-                  <div className="p-1 hover:text-white transition-colors opacity-70">
-                    <GitBranch size={16} />
-                  </div>
-                  <div className="p-1 hover:text-white transition-colors opacity-70">
-                    <Sparkles size={16} />
-                  </div>
+                  <ShowcaseActivityIcon activeTheme={activeTheme} icon={GitBranch} size={16} />
+                  <ShowcaseActivityIcon activeTheme={activeTheme} icon={Sparkles} size={16} />
                 </div>
 
                 <div className="flex flex-col items-center gap-3 relative">
-                  <div className="p-1 text-slate-400 hover:text-white transition-colors opacity-70">
-                    <Settings size={15} />
-                  </div>
+                  <ShowcaseActivityIcon activeTheme={activeTheme} icon={Settings} size={15} />
 
                   {/* Avatar S */}
                   <div 
@@ -155,7 +187,7 @@ export default function NeuronThemeShowcase() {
                 }}
               >
                 <div className="space-y-1">
-                  <div className="flex items-center justify-between text-slate-400 text-[10px] font-sans uppercase tracking-wider pb-1">
+                  <div className="flex items-center justify-between text-[10px] font-sans uppercase tracking-wider pb-1" style={{ color: activeTheme.textMuted }}>
                     <span>Explorer</span>
                   </div>
 
@@ -171,14 +203,8 @@ export default function NeuronThemeShowcase() {
                       <span>backend</span>
                     </div>
                     <div className="pl-4 space-y-1" style={{ color: activeTheme.textMuted }}>
-                      <div className="flex items-center gap-1.5 hover:text-white transition-colors">
-                        <FileCode2 size={12} className="text-[#ef4444]" />
-                        <span>parser.py</span>
-                      </div>
-                      <div className="flex items-center gap-1.5 hover:text-white transition-colors">
-                        <FileCode2 size={12} className="text-[#f97316]" />
-                        <span>server.py</span>
-                      </div>
+                      <ShowcaseFileItem activeTheme={activeTheme} iconColor="text-[#ef4444]" name="parser.py" />
+                      <ShowcaseFileItem activeTheme={activeTheme} iconColor="text-[#f97316]" name="server.py" />
                     </div>
                   </div>
 
@@ -189,19 +215,13 @@ export default function NeuronThemeShowcase() {
                       <span>frontend</span>
                     </div>
                     <div className="pl-4 space-y-1" style={{ color: activeTheme.textMuted }}>
-                      <div className="flex items-center gap-1.5 hover:text-white transition-colors">
-                        <FileCode2 size={12} className="text-[#ef4444]" />
-                        <span>App.jsx</span>
-                      </div>
-                      <div className="flex items-center gap-1.5 hover:text-white transition-colors">
-                        <FileCode2 size={12} className="text-[#f97316]" />
-                        <span>usePhysicsEngine.js</span>
-                      </div>
+                      <ShowcaseFileItem activeTheme={activeTheme} iconColor="text-[#ef4444]" name="App.jsx" />
+                      <ShowcaseFileItem activeTheme={activeTheme} iconColor="text-[#f97316]" name="usePhysicsEngine.js" />
                     </div>
                   </div>
                 </div>
 
-                {/* 🎨 FLOATING THEME PILL (Replicating media_1789744762417.png) */}
+                {/* FLOATING THEME PILL */}
                 <div 
                   className="p-1.5 rounded-full border flex items-center justify-between gap-1 shadow-2xl backdrop-blur-md transition-all duration-500 mt-2"
                   style={{
@@ -269,7 +289,7 @@ export default function NeuronThemeShowcase() {
                   </div>
                 </div>
 
-                {/* 🌟 THEME-ADAPTIVE CODE EDITOR VIEWPORT */}
+                {/* THEME-ADAPTIVE CODE EDITOR VIEWPORT */}
                 <div 
                   className="flex-1 p-4 font-mono text-xs leading-relaxed overflow-hidden select-none flex flex-col justify-start transition-colors duration-700"
                   style={{ backgroundColor: activeTheme.background }}

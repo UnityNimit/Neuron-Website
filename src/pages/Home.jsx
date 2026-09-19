@@ -9,25 +9,27 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#050505] text-[#EDEDED] font-sans relative selection:bg-[#3B82F6]/30 selection:text-white">
 
-      {/* Subtle Ambient WebGL PixelBlast Background */}
-      <div className="fixed inset-0 z-0 pointer-events-none w-full h-full overflow-hidden">
+      {/* Interactive WebGL Background (Original PixelBlast) */}
+      <div className="fixed inset-0 z-0 opacity-60 md:opacity-75 pointer-events-auto">
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050505]/30 to-[#050505] z-10 pointer-events-none" />
         <PixelBlast
           variant="square"
-          pixelSize={5}
-          color="#2563EB"
-          patternScale={3.5}
-          patternDensity={0.18}
+          pixelSize={4}
+          color="#60A5FA"
+          patternScale={2}
+          patternDensity={1.2}
           pixelSizeJitter={0}
           enableRipples={true}
-          rippleSpeed={0.2}
-          rippleThickness={0.1}
-          rippleIntensityScale={0.3}
-          speed={0.15}
+          rippleSpeed={0.4}
+          rippleThickness={0.12}
+          rippleIntensityScale={1.5}
+          liquid={false}
+          speed={0.5}
+          edgeFade={0.2}
           transparent={true}
-          edgeFade={0.5}
-          className="w-full h-full opacity-15"
+          className="w-full h-full"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#050505]/30 via-transparent to-[#050505]/50 pointer-events-none" />
       </div>
 
       {/* Main Content Area */}
@@ -58,35 +60,35 @@ export default function Home() {
             </ScrambledText>
           </div>
 
-          {/* Utilitarian CTA (No icon, uniform size, tight gap) */}
+          {/* Utilitarian CTA (Uniform button styling) */}
           <div id="download-hero" className="flex flex-col items-center gap-3 mb-16 sm:mb-20 w-full max-w-md">
             <a 
               href="/Neuron-Setup.exe"
               download="Neuron-Setup.exe"
-              className="h-9 px-6 rounded-lg bg-white text-black font-semibold text-xs hover:bg-slate-100 transition-all duration-200 inline-flex items-center justify-center cursor-pointer active:scale-[0.98] shadow-sm"
+              className="h-8 px-4 rounded-lg bg-white text-black font-semibold text-xs hover:bg-slate-100 transition-all inline-flex items-center justify-center cursor-pointer active:scale-[0.98] shadow-sm"
             >
               <span>Download for Windows</span>
             </a>
           </div>
 
-          {/* 🌟 CENTERPIECE: Massive High-Framerate Interactive Hero Graph Canvas */}
+          {/* CENTERPIECE: Massive High-Framerate Interactive Hero Graph Canvas */}
           <div className="w-full text-left">
             <NeuronHeroEngine />
           </div>
         </section>
 
         {/* ========================================================================= */}
-        {/* 🌟 AI INTEGRATION SHOWCASE                                                */}
+        {/* AI INTEGRATION SHOWCASE                                                   */}
         {/* ========================================================================= */}
         <AntigravityAgentShowcase />
 
         {/* ========================================================================= */}
-        {/* 🌟 THEME SHOWCASE                                                         */}
+        {/* THEME SHOWCASE                                                            */}
         {/* ========================================================================= */}
         <NeuronThemeShowcase />
 
         {/* ========================================================================= */}
-        {/* 🌟 BOTTOM CALL-TO-ACTION                                                 */}
+        {/* BOTTOM CALL-TO-ACTION                                                     */}
         {/* ========================================================================= */}
         <section className="text-center mb-16 max-w-3xl mx-auto px-4">
           <h2 
@@ -99,7 +101,7 @@ export default function Home() {
             <a 
               href="/Neuron-Setup.exe"
               download="Neuron-Setup.exe"
-              className="h-9 px-6 rounded-lg bg-white text-black font-semibold text-xs hover:bg-slate-100 transition-all inline-flex items-center justify-center cursor-pointer active:scale-[0.98] shadow-sm"
+              className="h-8 px-4 rounded-lg bg-white text-black font-semibold text-xs hover:bg-slate-100 transition-all inline-flex items-center justify-center cursor-pointer active:scale-[0.98] shadow-sm"
             >
               <span>Download for Windows</span>
             </a>

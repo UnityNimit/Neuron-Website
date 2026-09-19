@@ -24,7 +24,7 @@ const RedditIcon = ({ size = 14 }) => (
   </svg>
 );
 
-export default function Footer() {
+export default function Footer({ className = "mt-4 sm:mt-6" }) {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     document.documentElement.scrollTop = 0;
@@ -32,7 +32,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="mt-4 sm:mt-6 border-t border-white/[0.08] bg-[#050505] pt-5 pb-6 px-4 sm:px-6 text-xs font-sans relative z-10 text-slate-400">
+    <footer className={`border-t border-white/[0.08] bg-[#050505] pt-5 pb-6 px-4 sm:px-6 text-xs font-sans relative z-10 text-slate-400 ${className}`}>
       <div className="w-full flex flex-col md:flex-row justify-between items-start gap-8">
         
         {/* Left: Brand Column */}
@@ -53,7 +53,7 @@ export default function Footer() {
             <Link to="/docs" onClick={scrollToTop} className="text-slate-400 hover:text-white transition-colors cursor-pointer">
               Documentation
             </Link>
-            <Link to="/downloads" onClick={scrollToTop} className="text-slate-400 hover:text-white transition-colors cursor-pointer">
+            <Link to="/versions" onClick={scrollToTop} className="text-slate-400 hover:text-white transition-colors cursor-pointer">
               Versions
             </Link>
             <Link to="/help" onClick={scrollToTop} className="text-slate-400 hover:text-white transition-colors cursor-pointer">

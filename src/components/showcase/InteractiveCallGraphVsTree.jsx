@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FolderTree, Network, AlertTriangle, CheckCircle2, CornerDownRight } from 'lucide-react';
+import { FolderTree, Network, AlertTriangle, CheckCircle2, CornerDownRight, Folder, FileCode2 } from 'lucide-react';
 
 export default function InteractiveCallGraphVsTree() {
   const [activeMode, setActiveMode] = useState('spatial'); // 'tree' | 'spatial'
@@ -94,10 +94,10 @@ export default function InteractiveCallGraphVsTree() {
               </p>
               
               <div className="p-3 bg-[#0d0d0d] border border-white/[0.08] rounded-lg text-[11px] text-slate-500 space-y-1">
-                <div>📁 src/</div>
-                <div className="pl-4">📁 middleware/</div>
-                <div className="pl-8 text-slate-300">📄 {currentFile.name} (Silent dependencies)</div>
-                <div className="pl-4">📁 services/ (18 callers unseen)</div>
+                <div className="flex items-center gap-1.5"><Folder size={12} className="text-slate-500" /><span>src/</span></div>
+                <div className="pl-4 flex items-center gap-1.5"><Folder size={12} className="text-slate-500" /><span>middleware/</span></div>
+                <div className="pl-8 text-slate-300 flex items-center gap-1.5"><FileCode2 size={12} className="text-slate-400" /><span>{currentFile.name} (Silent dependencies)</span></div>
+                <div className="pl-4 flex items-center gap-1.5"><Folder size={12} className="text-slate-500" /><span>services/ (18 callers unseen)</span></div>
               </div>
             </div>
           ) : (

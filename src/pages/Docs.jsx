@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { 
   Search, ChevronLeft, ChevronRight, Menu, X
 } from 'lucide-react';
@@ -516,23 +516,77 @@ const DOCS_NAV_GROUPS = [
 
 const ALL_DOC_IDS = DOCS_NAV_GROUPS.flatMap(g => g.items.map(i => i.id));
 
+// Helper for comprehensive deep text search across sections and bullet points
+const docMatchesQuery = (doc, q) => {
+  if (!doc) return false;
+  if (doc.title?.toLowerCase().includes(q)) return true;
+  if (doc.subtitle?.toLowerCase().includes(q)) return true;
+  if (doc.category?.toLowerCase().includes(q)) return true;
+  if (Array.isArray(doc.sections)) {
+    for (const sec of doc.sections) {
+      if (sec.title?.toLowerCase().includes(q)) return true;
+      if (sec.desc?.toLowerCase().includes(q)) return true;
+      if (Array.isArray(sec.points)) {
+        for (const pt of sec.points) {
+          if (pt.label?.toLowerCase().includes(q)) return true;
+          if (pt.text?.toLowerCase().includes(q)) return true;
+        }
+      }
+    }
+  }
+  return false;
+};
+
 export default function Docs() {
-  const [activeDocId, setActiveDocId] = useState('welcome');
+  const getInitialDocId = () => {
+    if (typeof window !== 'undefined' && window.location.hash) {
+      const hash = window.location.hash.replace('#', '').trim();
+      if (ALL_DOC_IDS.includes(hash)) {
+        return hash;
+      }
+    }
+    return 'welcome';
+  };
+
+  const [activeDocId, setActiveDocId] = useState(getInitialDocId);
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Sync hash to activeDocId and listen to back/forward navigation
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace('#', '').trim();
+      if (hash && ALL_DOC_IDS.includes(hash)) {
+        setActiveDocId(hash);
+      }
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  useEffect(() => {
+    if (activeDocId && window.location.hash !== `#${activeDocId}`) {
+      window.location.hash = activeDocId;
+    }
+  }, [activeDocId]);
+
+  const selectDoc = (id) => {
+    setActiveDocId(id);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const activeDoc = DOCS_DATA[activeDocId] || DOCS_DATA['welcome'];
 
   const filteredGroups = useMemo(() => {
     if (!searchQuery.trim()) return DOCS_NAV_GROUPS;
-    const q = searchQuery.toLowerCase();
+    const q = searchQuery.toLowerCase().trim();
     return DOCS_NAV_GROUPS.map(group => {
       const items = group.items.filter(item => {
         const doc = DOCS_DATA[item.id];
         return (
           item.label.toLowerCase().includes(q) ||
           group.category.toLowerCase().includes(q) ||
-          (doc && doc.subtitle.toLowerCase().includes(q))
+          docMatchesQuery(doc, q)
         );
       });
       return { ...group, items };
@@ -548,10 +602,10 @@ export default function Docs() {
     <div className="min-h-screen bg-[#050505] text-[#EDEDED] font-sans relative selection:bg-[#3B82F6]/30 selection:text-white flex flex-col justify-between">
       
       {/* Full-width container flush to the left */}
-      <div className="w-full flex-1 flex flex-col md:flex-row px-4 sm:px-6 pt-[72px] pb-6">
+      <div className="w-full flex-1 flex flex-col md:flex-row px-4 sm:px-6 pt-[72px] pb-0">
         
         {/* LEFT SIDEBAR (Desktop) */}
-        <aside className="w-64 border-r border-white/[0.08] hidden md:flex flex-col justify-between pt-0 pb-4 pr-6 shrink-0 font-sans text-xs">
+        <aside className="w-52 border-r border-white/[0.08] hidden md:flex flex-col justify-between pt-0 pb-8 pr-4 shrink-0 font-sans text-xs">
           <div>
             {/* Search Box */}
             <div className="mb-5 relative">
@@ -565,50 +619,61 @@ export default function Docs() {
               />
             </div>
 
-            {/* Navigation Groups */}
-            <div className="space-y-5">
-              {filteredGroups.map(group => (
-                <div key={group.category} className="space-y-1">
-                  <div className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold px-2 mb-1">
-                    {group.category}
+            {/* Navigation Groups or Empty State */}
+            {filteredGroups.length === 0 ? (
+              <div className="py-8 px-2 text-center text-slate-500 text-xs space-y-2">
+                <p className="text-slate-300 font-medium">No results found for &ldquo;{searchQuery}&rdquo;</p>
+                <p className="text-[11px] text-slate-500 leading-relaxed">Try keywords like GPU, Tree-Sitter, shortcuts, or Ollama.</p>
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="mt-2 inline-block text-[11px] text-[#60A5FA] hover:underline cursor-pointer"
+                >
+                  Clear search
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-5">
+                {filteredGroups.map(group => (
+                  <div key={group.category} className="space-y-1">
+                    <div className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold px-2 mb-1">
+                      {group.category}
+                    </div>
+                    <div className="space-y-0.5">
+                      {group.items.map(item => {
+                        const isActive = activeDocId === item.id;
+                        return (
+                          <button
+                            key={item.id}
+                            onClick={() => selectDoc(item.id)}
+                            className={`w-full text-left px-2.5 py-1.5 rounded-md text-xs transition-colors cursor-pointer flex items-center justify-between ${
+                              isActive
+                                ? 'text-white font-semibold'
+                                : 'text-slate-400 hover:text-slate-200'
+                            }`}
+                          >
+                            <span>{item.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
-                  <div className="space-y-0.5">
-                    {group.items.map(item => {
-                      const isActive = activeDocId === item.id;
-                      return (
-                        <button
-                          key={item.id}
-                          onClick={() => {
-                            setActiveDocId(item.id);
-                            window.scrollTo({ top: 0, behavior: 'smooth' });
-                          }}
-                          className={`w-full text-left px-2.5 py-1.5 rounded-md text-xs transition-colors cursor-pointer flex items-center justify-between ${
-                            isActive
-                              ? 'bg-[#3B82F6]/10 text-[#60A5FA] font-semibold border-l-2 border-[#60A5FA]'
-                              : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.03]'
-                          }`}
-                        >
-                          <span>{item.label}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </aside>
 
         {/* Mobile Header / Drawer Toggle */}
         <div className="md:hidden w-full py-2.5 border-b border-white/[0.08] flex items-center justify-between mb-2">
-          <div className="text-xs text-slate-400 flex items-center gap-2">
+          <div className="text-xs text-slate-400 flex items-center gap-2 truncate pr-2">
             <span>Docs</span>
             <span>/</span>
-            <span className="text-[#60A5FA] font-medium">{activeDoc.title}</span>
+            <span className="text-[#60A5FA] font-medium truncate">{activeDoc.title}</span>
           </div>
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="p-1.5 text-slate-300 hover:text-white cursor-pointer"
+            className="p-1.5 text-slate-300 hover:text-white cursor-pointer shrink-0"
             aria-label="Toggle docs navigation"
           >
             {isMobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
@@ -624,14 +689,11 @@ export default function Docs() {
             return (
               <button
                 key={id}
-                onClick={() => {
-                  setActiveDocId(id);
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
+                onClick={() => selectDoc(id)}
                 className={`px-2.5 py-1 rounded-md text-xs whitespace-nowrap cursor-pointer transition-colors shrink-0 ${
                   isActive
-                    ? 'bg-[#3B82F6]/15 text-[#60A5FA] font-medium border border-[#3B82F6]/30'
-                    : 'text-slate-400 hover:text-slate-200 bg-white/[0.03]'
+                    ? 'text-white font-medium bg-white/[0.08]'
+                    : 'text-slate-400 hover:text-slate-200 bg-white/[0.02]'
                 }`}
               >
                 {doc.title}
@@ -640,40 +702,64 @@ export default function Docs() {
           })}
         </div>
 
-        {/* Mobile Drawer */}
+        {/* Mobile Drawer with Search */}
         {isMobileMenuOpen && (
           <div className="md:hidden fixed inset-0 top-14 bg-[#050505] z-40 p-6 overflow-y-auto">
-            <div className="space-y-6">
-              {DOCS_NAV_GROUPS.map(group => (
-                <div key={group.category} className="space-y-1">
-                  <div className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold mb-2">
-                    {group.category}
-                  </div>
-                  <div className="space-y-1 pl-2">
-                    {group.items.map(item => (
-                      <button
-                        key={item.id}
-                        onClick={() => {
-                          setActiveDocId(item.id);
-                          setIsMobileMenuOpen(false);
-                          window.scrollTo({ top: 0, behavior: 'smooth' });
-                        }}
-                        className={`w-full text-left py-1.5 text-sm ${
-                          activeDocId === item.id ? 'text-[#60A5FA] font-semibold' : 'text-slate-400'
-                        }`}
-                      >
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              ))}
+            {/* Mobile Search Box */}
+            <div className="mb-6 relative">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search docs (e.g. GPU, Tree-Sitter)..."
+                className="w-full bg-[#0d0e12] border border-white/[0.12] focus:border-[#60A5FA]/50 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none transition-colors"
+              />
             </div>
+
+            {filteredGroups.length === 0 ? (
+              <div className="py-6 px-2 text-center text-slate-500 text-xs space-y-2">
+                <p className="text-slate-300 font-medium">No results found for &ldquo;{searchQuery}&rdquo;</p>
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="mt-2 text-xs text-[#60A5FA] hover:underline cursor-pointer"
+                >
+                  Clear search
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {filteredGroups.map(group => (
+                  <div key={group.category} className="space-y-1">
+                    <div className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold mb-2">
+                      {group.category}
+                    </div>
+                    <div className="space-y-1 pl-2">
+                      {group.items.map(item => (
+                        <button
+                          key={item.id}
+                          onClick={() => {
+                            selectDoc(item.id);
+                            setIsMobileMenuOpen(false);
+                          }}
+                          className={`w-full text-left py-1.5 text-sm ${
+                            activeDocId === item.id ? 'text-white font-semibold' : 'text-slate-400'
+                          }`}
+                        >
+                          {item.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
         {/* MAIN DOCUMENTATION CONTENT */}
-        <main className="flex-1 md:pl-8 lg:pl-10 pt-0 pb-4 min-h-[calc(100vh-12rem)] flex flex-col justify-between">
+        <main className="flex-1 md:pl-6 lg:pl-8 pt-0 pb-8 min-h-[calc(100vh-12rem)] flex flex-col justify-between">
           <div>
             {/* Category Tag */}
             <div className="text-xs text-slate-500 mb-1.5 font-medium uppercase tracking-wider">
@@ -718,14 +804,11 @@ export default function Docs() {
             </div>
           </div>
 
-          {/* Bottom Pagination */}
-          <div className="mt-12 pt-6 border-t border-white/[0.08] flex items-center justify-between text-xs">
+          {/* Bottom Pagination (border extends flush from sidebar border-r to right edge) */}
+          <div className="mt-12 pt-6 -ml-4 sm:-ml-6 md:-ml-6 lg:-ml-8 -mr-4 sm:-mr-6 pl-4 sm:pl-6 md:pl-6 lg:pl-8 pr-4 sm:pr-6 border-t border-white/[0.08] flex items-center justify-between text-xs">
             {prevDocId ? (
               <button
-                onClick={() => {
-                  setActiveDocId(prevDocId);
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
+                onClick={() => selectDoc(prevDocId)}
                 className="flex items-center gap-1.5 text-slate-400 hover:text-white transition-colors cursor-pointer"
               >
                 <ChevronLeft size={14} />
@@ -735,10 +818,7 @@ export default function Docs() {
 
             {nextDocId ? (
               <button
-                onClick={() => {
-                  setActiveDocId(nextDocId);
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
+                onClick={() => selectDoc(nextDocId)}
                 className="flex items-center gap-1.5 text-[#60A5FA] hover:text-[#93c5fd] transition-colors cursor-pointer"
               >
                 <span>{DOCS_DATA[nextDocId]?.title}</span>
@@ -750,7 +830,7 @@ export default function Docs() {
 
       </div>
 
-      <Footer />
+      <Footer className="mt-0" />
     </div>
   );
 }

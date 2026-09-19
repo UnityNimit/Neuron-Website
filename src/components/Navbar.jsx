@@ -2,39 +2,28 @@ import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, ExternalLink } from 'lucide-react';
 
-const NavLink = ({ to, label, isActive, isExternal = false }) => {
-  if (isExternal) {
-    return (
-      <a 
-        href={to} 
-        target="_blank" 
-        rel="noopener noreferrer" 
-        className="text-[13px] font-medium text-[#888888] hover:text-[#EDEDED] transition-colors flex items-center gap-1.5"
-      >
-        <span>{label}</span>
-        <ExternalLink size={11} className="opacity-50" />
-      </a>
-    );
-  }
-  return (
-    <Link 
-      to={to} 
-      className={`text-[13px] font-medium transition-colors ${
-        isActive ? 'text-[#EDEDED] font-semibold' : 'text-[#888888] hover:text-[#EDEDED]'
-      }`}
-    >
-      {label}
-    </Link>
-  );
-};
-
 export default function Navbar() {
-  const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const location = useLocation();
+  const pathname = location.pathname;
 
-  const isActive = (path) => {
-    return location.pathname.startsWith(path);
-  };
+  const isDocs = pathname.startsWith('/docs');
+  const isVersions = pathname.startsWith('/versions');
+  const isHelp = pathname.startsWith('/help');
+
+  const getLinkClasses = (isActive) =>
+    `text-xs sm:text-[13px] transition-colors ${
+      isActive 
+        ? 'font-semibold text-white' 
+        : 'font-medium text-slate-400 hover:text-white'
+    }`;
+
+  const getMobileLinkClasses = (isActive) =>
+    `py-1.5 transition-colors ${
+      isActive 
+        ? 'font-semibold text-white' 
+        : 'font-medium text-slate-400 hover:text-white'
+    }`;
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-[#050505]/90 backdrop-blur-md border-b border-white/[0.08]">
@@ -51,29 +40,31 @@ export default function Navbar() {
         <div className="hidden min-[520px]:flex items-center gap-3 sm:gap-5 md:gap-7">
           <Link 
             to="/docs" 
-            className={`text-xs sm:text-[13px] font-medium transition-colors ${
-              isActive('/docs') ? 'text-white font-semibold' : 'text-[#888888] hover:text-[#EDEDED]'
-            }`}
+            className={getLinkClasses(isDocs)}
           >
             Documentation
           </Link>
           <Link 
-            to="/downloads" 
-            className={`text-xs sm:text-[13px] font-medium transition-colors ${
-              isActive('/downloads') ? 'text-white font-semibold' : 'text-[#888888] hover:text-[#EDEDED]'
-            }`}
+            to="/versions" 
+            className={getLinkClasses(isVersions)}
           >
             Versions
           </Link>
           <Link 
             to="/help" 
-            className={`text-xs sm:text-[13px] font-medium transition-colors ${
-              isActive('/help') ? 'text-white font-semibold' : 'text-[#888888] hover:text-[#EDEDED]'
-            }`}
+            className={getLinkClasses(isHelp)}
           >
             Help
           </Link>
-          <NavLink to="https://github.com/UnityNimit/Neuron" label="GitHub" isExternal />
+          <a 
+            href="https://github.com/UnityNimit/Neuron" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="text-xs sm:text-[13px] font-medium text-slate-400 hover:text-white transition-colors flex items-center gap-1.5 group"
+          >
+            <span>GitHub</span>
+            <ExternalLink size={11} className="opacity-70 group-hover:opacity-100 transition-opacity" />
+          </a>
           
           <a 
             href="/Neuron-Setup.exe"
@@ -109,21 +100,21 @@ export default function Navbar() {
           <Link 
             to="/docs" 
             onClick={() => setIsMobileMenuOpen(false)}
-            className={`py-1.5 ${isActive('/docs') ? 'text-white font-semibold' : 'text-[#888888] hover:text-white'}`}
+            className={getMobileLinkClasses(isDocs)}
           >
             Documentation
           </Link>
           <Link 
-            to="/downloads" 
+            to="/versions" 
             onClick={() => setIsMobileMenuOpen(false)}
-            className={`py-1.5 ${isActive('/downloads') ? 'text-white font-semibold' : 'text-[#888888] hover:text-white'}`}
+            className={getMobileLinkClasses(isVersions)}
           >
             Versions
           </Link>
           <Link 
             to="/help" 
             onClick={() => setIsMobileMenuOpen(false)}
-            className={`py-1.5 ${isActive('/help') ? 'text-white font-semibold' : 'text-[#888888] hover:text-white'}`}
+            className={getMobileLinkClasses(isHelp)}
           >
             Help & Queries
           </Link>
@@ -132,10 +123,10 @@ export default function Navbar() {
             target="_blank" 
             rel="noopener noreferrer" 
             onClick={() => setIsMobileMenuOpen(false)}
-            className="py-1.5 text-[#888888] hover:text-white flex items-center justify-between"
+            className="py-1.5 font-medium text-slate-400 hover:text-white transition-colors flex items-center justify-between"
           >
             <span>GitHub Repository</span>
-            <ExternalLink size={12} className="opacity-50" />
+            <ExternalLink size={12} className="opacity-70" />
           </a>
         </div>
       )}

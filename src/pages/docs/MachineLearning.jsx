@@ -50,7 +50,7 @@ export default function MachineLearning({ activeSection }) {
             <CodeBlock 
               title="analyzer.py"
               language="python"
-              code={`# 🚀 The Weighted ML Execution Graph
+              code={`# The Weighted ML Execution Graph
 for e in edges:
     if e["source"] != e["target"]:
         # ML WEIGHTING: Force the AI to group by Business Logic, not folders!

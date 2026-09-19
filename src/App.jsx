@@ -28,7 +28,8 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/docs" element={<Docs />} />
-          <Route path="/downloads" element={<Downloads />} />
+          <Route path="/versions" element={<Downloads />} />
+          <Route path="/downloads" element={<Navigate to="/versions" replace />} />
           <Route path="/help" element={<Help />} />
           {/* Catch-all redirect to Home */}
           <Route path="*" element={<Navigate to="/" replace />} />

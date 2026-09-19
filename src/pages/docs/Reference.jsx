@@ -1,6 +1,6 @@
 import { DocSection, Callout, Step } from '../../components/docs/DocComponents';
 
-// 🎹 Custom Component for rendering gorgeous Keyboard Keys
+// Custom Component for rendering Keyboard Keys
 const Shortcut = ({ keys, description }) => (
   <div className="flex items-center justify-between py-3 border-b border-white/5 last:border-0 group">
     <span className="text-slate-300 text-sm group-hover:text-white transition-colors">{description}</span>
@@ -31,7 +31,7 @@ export default function Reference({ activeSection }) {
             On macOS, substitute <kbd className="font-mono text-xs">Ctrl</kbd> with <kbd className="font-mono text-xs">Cmd (⌘)</kbd>, and <kbd className="font-mono text-xs">Alt</kbd> with <kbd className="font-mono text-xs">Option (⌥)</kbd>.
           </Callout>
 
-          <DocSection id="spatial-commands" title="🌌 Spatial Map Engine">
+          <DocSection id="spatial-commands" title="Spatial Map Engine">
             <div className="bg-[#0f0f0f] border border-white/10 rounded-xl px-5 py-2 shadow-xl mb-8">
               <Shortcut description="Trigger AI Impact Analysis (Blast Radius)" keys={['Alt', 'I']} />
               <Shortcut description="Isolate execution path (Focus Mode)" keys={['F']} />
@@ -42,7 +42,7 @@ export default function Reference({ activeSection }) {
             </div>
           </DocSection>
 
-          <DocSection id="file-commands" title="📄 File Operations">
+          <DocSection id="file-commands" title="File Operations">
             <div className="bg-[#0f0f0f] border border-white/10 rounded-xl px-5 py-2 shadow-xl mb-8">
               <Shortcut description="Create New File" keys={['Ctrl', 'N']} />
               <Shortcut description="Open New IDE Window" keys={['Ctrl', 'Shift', 'N']} />
@@ -51,7 +51,7 @@ export default function Reference({ activeSection }) {
             </div>
           </DocSection>
 
-          <DocSection id="edit-commands" title="✏️ Edit & Navigation">
+          <DocSection id="edit-commands" title="Edit & Navigation">
             <div className="bg-[#0f0f0f] border border-white/10 rounded-xl px-5 py-2 shadow-xl mb-8">
               <Shortcut description="Find inside current file" keys={['Ctrl', 'F']} />
               <Shortcut description="Replace inside current file" keys={['Ctrl', 'H']} />
@@ -62,7 +62,7 @@ export default function Reference({ activeSection }) {
             </div>
           </DocSection>
 
-          <DocSection id="view-commands" title="👁️ View & Layout Controls">
+          <DocSection id="view-commands" title="View & Layout Controls">
             <div className="bg-[#0f0f0f] border border-white/10 rounded-xl px-5 py-2 shadow-xl mb-8">
               <Shortcut description="Open Command Palette (Omnibar)" keys={['Ctrl', 'K']} />
               <Shortcut description="Show All Commands" keys={['Ctrl', 'Shift', 'P']} />

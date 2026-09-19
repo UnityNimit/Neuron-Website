@@ -29,7 +29,7 @@ export default function Architecture({ activeSection = 'spatial-engine' }) {
             <CodeBlock 
               title="PixiSpatialEngine.jsx"
               language="javascript"
-              code={`// 🚀 1M Node Sprite Batching Trick
+              code={`// 1M Node Sprite Batching Trick
 const circleGraphics = new PIXI.Graphics().circle(0, 0, 64).fill(0xffffff);
 const circleTexture = app.renderer.generateTexture(circleGraphics);
 
@@ -54,7 +54,7 @@ simDataRef.current.nodes.forEach(node => {
             <CodeBlock 
               title="usePhysicsEngine.js"
               language="javascript"
-              code={`// 🚀 NO TICK HANDLER. PURE MEMORY.
+              code={`// NO TICK HANDLER. PURE MEMORY.
 const simulation = d3.forceSimulation(simNodes)
   .force("link", d3.forceLink(simEdges))
   .force("charge", d3.forceManyBody().distanceMax(1500))
