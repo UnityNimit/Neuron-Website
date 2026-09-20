@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import * as d3 from 'd3-force';
+import { polygonHull } from 'd3-polygon';
 import { 
   Folder, FileCode2, ZoomIn, ZoomOut, RotateCcw, Type,
   Minus, Square, X, Files, GitBranch, Sparkles, Settings,
   Palette, ChevronDown, ChevronRight, FilePlus, FolderPlus,
-  RefreshCw, ListCollapse, Network, Play, Trash2, Bell, Check, CheckCircle2, UserCircle
+  RefreshCw, ListCollapse, Network, Play, Bell, Check, CheckCircle2
 } from 'lucide-react';
 
 // The 5 official built-in themes directly matching frontend/src/config/themeConfig.js
@@ -120,301 +122,267 @@ const THEMES_MAP = {
   }
 };
 
-// =========================================================================
-// NEURON SPATIAL UNIVERSE: 40-FOLDER ORGANIC ECOSYSTEM (500+ NODES)
-// -------------------------------------------------------------------------
-// 1. 40 Yellow Folder Hubs (#facc15) forming the living directory backbone
-// 2. Diverse Asymmetric Morphologies (Starburts, Honeycombs, Trees, Meshes)
-// 3. Clean Explorer (Focused on key modules without bloated clutter)
-// 4. Liquid Viscous Cursor Physics ("Stone Moving Through Water"):
-//    * Proximity Repulsion Wake (< 110px): parts nodes like liquid
-//    * Viscosity Damping (0.85): lush mercury / gelatin jiggle & momentum
-//    * Chain-Reaction Waves: pushed nodes pull connected neighbors & moons
-// 5. Conflict-Free Scroll & Zoom:
-//    * Non-passive native wheel listener prevents whole-website zoom
-//    * Normal scroll lets page scroll smoothly; Ctrl+Scroll or Focus zooms graph
-//    * Elegant toast: "Ctrl + scroll to zoom graph"
-// 6. 9 Calm Heartbeat Data Transfer Packets across major highways
-// 7. Semantic Color Notation & Clearly Visible Ambient Cosmic Nebulae
-// =========================================================================
-
-// 40 Realistic Folders across 5 Major Architectural Territories (Generously spaced)
-const FOLDERS_DATA = [
-  // --- Domain 1: Core Engine & Graphics (Center) ---
-  { id: 'dir_engine', label: 'engine', x: 620, y: 340, radius: 22, isHub: true, theme: 'cyan' },
-  { id: 'dir_core', label: 'core', x: 380, y: 200, radius: 19, theme: 'cyan' },
-  { id: 'dir_renderer', label: 'renderer', x: 880, y: 220, radius: 20, isHub: true, theme: 'cyan' },
-  { id: 'dir_shaders', label: 'shaders', x: 1100, y: 120, radius: 17, theme: 'cyan' },
-  { id: 'dir_pipeline', label: 'pipeline', x: 460, y: 50, radius: 17, theme: 'cyan' },
-  { id: 'dir_webgpu', label: 'webgpu', x: 920, y: 50, radius: 18, theme: 'cyan' },
-  { id: 'dir_viewport', label: 'viewport', x: 680, y: 150, radius: 16, theme: 'cyan' },
-  { id: 'dir_canvas', label: 'canvas', x: 220, y: 90, radius: 17, theme: 'cyan' },
-
-  // --- Domain 2: Parser, AST & Compiler (Right) ---
-  { id: 'dir_parser', label: 'parser', x: 1560, y: 320, radius: 22, isHub: true, theme: 'coral' },
-  { id: 'dir_ast', label: 'ast', x: 1800, y: 200, radius: 20, isHub: true, theme: 'coral' },
-  { id: 'dir_lexer', label: 'lexer', x: 1360, y: 180, radius: 17, theme: 'coral' },
-  { id: 'dir_tokens', label: 'tokens', x: 1560, y: 70, radius: 16, theme: 'coral' },
-  { id: 'dir_grammar', label: 'grammar', x: 1800, y: 50, radius: 17, theme: 'coral' },
-  { id: 'dir_tree_sitter', label: 'tree_sitter', x: 2020, y: 200, radius: 19, theme: 'coral' },
-  { id: 'dir_symbols', label: 'symbols', x: 1660, y: 500, radius: 17, theme: 'coral' },
-  { id: 'dir_codegen', label: 'codegen', x: 1920, y: 380, radius: 18, theme: 'coral' },
-
-  // --- Domain 3: Agent, Reasoning & LLM (Left) ---
-  { id: 'dir_agent', label: 'agent', x: -200, y: 320, radius: 22, isHub: true, theme: 'purple' },
-  { id: 'dir_orchestrator', label: 'orchestrator', x: -440, y: 190, radius: 20, isHub: true, theme: 'purple' },
-  { id: 'dir_prompts', label: 'prompts', x: -320, y: 50, radius: 17, theme: 'purple' },
-  { id: 'dir_context', label: 'context', x: -80, y: 130, radius: 17, theme: 'purple' },
-  { id: 'dir_tools', label: 'tools', x: -540, y: 350, radius: 18, theme: 'purple' },
-  { id: 'dir_llm', label: 'llm', x: -660, y: 200, radius: 17, theme: 'purple' },
-  { id: 'dir_memory', label: 'memory', x: -400, y: 500, radius: 17, theme: 'purple' },
-  { id: 'dir_reasoning', label: 'reasoning', x: -200, y: 560, radius: 16, theme: 'purple' },
-
-  // --- Domain 4: Physics & Simulation (Bottom-Left) ---
-  { id: 'dir_physics', label: 'physics', x: 180, y: 1040, radius: 22, isHub: true, theme: 'indigo' },
-  { id: 'dir_coulomb', label: 'coulomb', x: -20, y: 900, radius: 19, theme: 'indigo' },
-  { id: 'dir_barnes_hut', label: 'barnes_hut', x: 420, y: 940, radius: 18, theme: 'indigo' },
-  { id: 'dir_quadtree', label: 'quadtree', x: 340, y: 1180, radius: 17, theme: 'indigo' },
-  { id: 'dir_forces', label: 'forces', x: 100, y: 1200, radius: 17, theme: 'indigo' },
-  { id: 'dir_simulation', label: 'simulation', x: 600, y: 1080, radius: 18, theme: 'indigo' },
-  { id: 'dir_math', label: 'math', x: -100, y: 1060, radius: 16, theme: 'indigo' },
-  { id: 'dir_geometry', label: 'geometry', x: 0, y: 1320, radius: 16, theme: 'indigo' },
-
-  // --- Domain 5: Runtime, Storage & Graph (Bottom-Right) ---
-  { id: 'dir_runtime', label: 'runtime', x: 1460, y: 1020, radius: 22, isHub: true, theme: 'amber' },
-  { id: 'dir_sandbox', label: 'sandbox', x: 1700, y: 900, radius: 20, theme: 'amber' },
-  { id: 'dir_cache', label: 'cache', x: 1240, y: 900, radius: 18, theme: 'amber' },
-  { id: 'dir_sqlite', label: 'sqlite', x: 1660, y: 1160, radius: 18, theme: 'amber' },
-  { id: 'dir_wasm', label: 'wasm', x: 1860, y: 1020, radius: 17, theme: 'amber' },
-  { id: 'dir_vfs', label: 'vfs', x: 1360, y: 1200, radius: 17, theme: 'amber' },
-  { id: 'dir_graph', label: 'graph', x: 800, y: 1120, radius: 22, isHub: true, theme: 'amber' },
-  { id: 'dir_clustering', label: 'clustering', x: 1040, y: 1200, radius: 19, theme: 'amber' }
-];
-
-// Backbone links between folders (Hierarchical directory tree structure)
-const FOLDER_LINKS = [
-  // Engine cluster
-  { source: 'dir_engine', target: 'dir_core' },
-  { source: 'dir_engine', target: 'dir_renderer' },
-  { source: 'dir_engine', target: 'dir_viewport' },
-  { source: 'dir_renderer', target: 'dir_shaders' },
-  { source: 'dir_core', target: 'dir_pipeline' },
-  { source: 'dir_renderer', target: 'dir_webgpu' },
-  { source: 'dir_core', target: 'dir_canvas' },
-
-  // Parser cluster
-  { source: 'dir_parser', target: 'dir_ast' },
-  { source: 'dir_parser', target: 'dir_lexer' },
-  { source: 'dir_ast', target: 'dir_tokens' },
-  { source: 'dir_ast', target: 'dir_grammar' },
-  { source: 'dir_ast', target: 'dir_tree_sitter' },
-  { source: 'dir_parser', target: 'dir_symbols' },
-  { source: 'dir_ast', target: 'dir_codegen' },
-
-  // Agent cluster
-  { source: 'dir_agent', target: 'dir_orchestrator' },
-  { source: 'dir_agent', target: 'dir_context' },
-  { source: 'dir_orchestrator', target: 'dir_prompts' },
-  { source: 'dir_agent', target: 'dir_tools' },
-  { source: 'dir_orchestrator', target: 'dir_llm' },
-  { source: 'dir_agent', target: 'dir_memory' },
-  { source: 'dir_memory', target: 'dir_reasoning' },
-
-  // Physics cluster
-  { source: 'dir_physics', target: 'dir_coulomb' },
-  { source: 'dir_physics', target: 'dir_barnes_hut' },
-  { source: 'dir_physics', target: 'dir_quadtree' },
-  { source: 'dir_physics', target: 'dir_forces' },
-  { source: 'dir_barnes_hut', target: 'dir_simulation' },
-  { source: 'dir_forces', target: 'dir_geometry' },
-  { source: 'dir_coulomb', target: 'dir_math' },
-
-  // Runtime cluster
-  { source: 'dir_runtime', target: 'dir_sandbox' },
-  { source: 'dir_runtime', target: 'dir_cache' },
-  { source: 'dir_runtime', target: 'dir_sqlite' },
-  { source: 'dir_sandbox', target: 'dir_wasm' },
-  { source: 'dir_runtime', target: 'dir_vfs' },
-  { source: 'dir_graph', target: 'dir_clustering' },
-
-  // Major Cross-Domain Arterial Highways
-  { source: 'dir_engine', target: 'dir_parser' },
-  { source: 'dir_engine', target: 'dir_agent' },
-  { source: 'dir_engine', target: 'dir_physics' },
-  { source: 'dir_engine', target: 'dir_graph' },
-  { source: 'dir_agent', target: 'dir_runtime' },
-  { source: 'dir_parser', target: 'dir_runtime' },
-  { source: 'dir_physics', target: 'dir_graph' },
-  { source: 'dir_graph', target: 'dir_runtime' }
-];
-
-// Exactly 3 high-visibility data transfer packets flowing steadily along cross-domain highways
-const DATA_PULSES = [
-  // Highway 1: Simulation -> Engine
-  { source: 'dir_simulation_node_0', target: 'dir_engine_node_0', speed: 0.00085, offset: 0.0, size: 3.8, glowSize: 11 },
-  // Highway 2: Physics -> Parser
-  { source: 'dir_physics_node_0', target: 'dir_parser_node_0', speed: 0.00092, offset: 0.35, size: 3.8, glowSize: 11 },
-  // Highway 3: Agent -> Runtime
-  { source: 'dir_agent_node_0', target: 'dir_runtime_node_0', speed: 0.00080, offset: 0.70, size: 3.8, glowSize: 11 }
-];
-
-// Arterial highways: strictly the conduits where active data transfers flow (Zero empty blue lines)
-const FILE_HIGHWAYS = DATA_PULSES.map(p => ({ source: p.source, target: p.target }));
-
-// Authentic Software File Names for Nodes Across All 40 Directories
-const FOLDER_FILE_TEMPLATES = {
-  dir_engine: ['canvas.tsx', 'renderer.ts', 'viewport.ts', 'render_loop.ts', 'scene_graph.ts', 'compositor.ts', 'fps_counter.ts'],
-  dir_core: ['event_bus.ts', 'lifecycle.ts', 'scheduler.ts', 'allocator.rs', 'dispatcher.ts', 'context.ts'],
-  dir_renderer: ['webgpu_ctx.ts', 'framebuffer.ts', 'rasterizer.ts', 'texture_atlas.ts', 'blend_mode.ts', 'draw_calls.ts'],
-  dir_shaders: ['spatial_vert.wgsl', 'pbr_frag.wgsl', 'bloom_pass.wgsl', 'fxaa.wgsl', 'compute_grid.wgsl', 'tone_map.wgsl'],
-  dir_pipeline: ['compute_pass.ts', 'render_pipeline.ts', 'command_encoder.ts', 'bind_group.ts', 'depth_stencil.ts'],
-  dir_webgpu: ['device_init.ts', 'adapter.ts', 'buffer_pool.ts', 'swapchain.ts', 'uniforms.ts', 'limits.ts'],
-  dir_viewport: ['camera_pan.ts', 'zoom_matrix.ts', 'frustum.ts', 'coords.ts', 'projection.ts'],
-  dir_canvas: ['retina_scale.ts', 'hud_overlay.ts', 'pixel_ratio.ts', 'canvas_worker.ts', 'input_events.ts'],
-  dir_parser: ['ast_scanner.py', 'token_stream.py', 'semantic_pass.py', 'scope_analyser.py', 'visitor.py'],
-  dir_ast: ['ast_nodes.py', 'tree_walker.py', 'visitor.py', 'folding.py', 'ast_printer.py', 'traversal.py'],
-  dir_lexer: ['char_stream.rs', 'dfa_matcher.rs', 'token_emitter.rs', 'span_tracker.rs', 'unicode_lut.rs'],
-  dir_tokens: ['keyword_map.rs', 'token_kind.rs', 'operator_table.rs', 'punct.rs', 'literal.rs'],
-  dir_grammar: ['syntax_spec.g4', 'precedence.rs', 'rule_engine.rs', 'conflict_resolver.rs'],
-  dir_tree_sitter: ['ts_wasm_bridge.rs', 'cursor_walk.rs', 'query_matcher.rs', 'edit_tracker.rs', 'parser_arena.rs'],
-  dir_symbols: ['symbol_table.rs', 'scope_tree.rs', 'def_use_chain.rs', 'mangling.rs', 'visibility.rs'],
-  dir_codegen: ['llvm_builder.rs', 'ir_generator.rs', 'opt_pass.rs', 'byte_emitter.rs', 'target_arch.rs'],
-  dir_agent: ['orchestrator.py', 'agent_loop.py', 'task_planner.py', 'reflexion.py', 'action_space.py'],
-  dir_orchestrator: ['byok_client.ts', 'stream_router.py', 'tool_broker.py', 'parallel_exec.py', 'cost_tracker.py'],
-  dir_prompts: ['system_core.md', 'coder_persona.json', 'chain_prompt.json', 'eval_rubric.md', 'few_shot.json'],
-  dir_context: ['sliding_window.ts', 'token_budget.ts', 'context_compressor.ts', 'cache_pin.ts', 'eviction.ts'],
-  dir_tools: ['bash_tool.py', 'file_patcher.py', 'git_diff.py', 'linter_hook.py', 'grep_engine.py'],
-  dir_llm: ['gemini_stream.py', 'anthropic_api.py', 'openai_compat.py', 'rate_limiter.py', 'retry_policy.py'],
-  dir_memory: ['working_memory.ts', 'vector_store.ts', 'semantic_index.ts', 'episodic_log.ts'],
-  dir_reasoning: ['cot_planner.py', 'tree_search.py', 'hypothesis_tester.py', 'backtracker.py'],
-  dir_physics: ['coulomb.js', 'simulation_core.ts', 'verlet_solver.js', 'particle_pool.ts', 'spatial_hash.js'],
-  dir_coulomb: ['repulsion_field.js', 'coulomb_grid.js', 'charge_point.js', 'potential_map.js'],
-  dir_barnes_hut: ['octree_accel.ts', 'mass_center.ts', 'theta_eval.ts', 'node_cell.ts', 'multipole.ts'],
-  dir_quadtree: ['quad_split.ts', 'leaf_insert.ts', 'bounding_query.ts', 'range_search.ts'],
-  dir_forces: ['hooke_spring.js', 'viscosity_damping.js', 'wake_repulsion.js', 'centripetal.js'],
-  dir_simulation: ['rk4_integrator.ts', 'time_step.ts', 'substep_tick.ts', 'energy_metric.ts'],
-  dir_math: ['vec2.ts', 'mat3x3.ts', 'quaternion.ts', 'spline.ts', 'fast_inv_sqrt.ts'],
-  dir_geometry: ['convex_hull.ts', 'delaunay_tri.ts', 'voronoi_mesh.ts', 'bounding_sphere.ts'],
-  dir_runtime: ['vfs_layer.ts', 'wasm_env.rs', 'process_pipe.rs', 'signal_handler.rs', 'syscall_table.rs'],
-  dir_sandbox: ['sandbox_jail.rs', 'syscall_filter.rs', 'seccomp_bpf.rs', 'chroot_env.rs'],
-  dir_cache: ['lru_cache.ts', 'mmap_buffer.rs', 'page_eviction.rs', 'disk_storage.rs'],
-  dir_sqlite: ['sqlite_wal.rs', 'schema_v2.sql', 'query_plan.rs', 'transact_pool.rs', 'btree_cursor.rs'],
-  dir_wasm: ['runtime_glue.js', 'memory_bridge.rs', 'export_table.rs', 'import_bind.rs'],
-  dir_vfs: ['virtual_inode.ts', 'path_resolver.ts', 'mount_manager.ts', 'file_handle.ts'],
-  dir_graph: ['d3_worker.js', 'force_layout.ts', 'topology_builder.ts', 'edge_bundle.ts', 'spectral_layout.ts'],
-  dir_clustering: ['louvain_cluster.ts', 'modularity_score.ts', 'spectral_cut.ts', 'dendrogram.ts']
-};
-
-// Dynamic Cluster Color Halos (moves organically with the files & folders)
-const CLUSTER_GLOW_COLORS = {
-  cyan: 'rgba(6, 182, 212, 0.28)',
-  coral: 'rgba(239, 68, 68, 0.28)',
-  purple: 'rgba(168, 85, 247, 0.28)',
-  indigo: 'rgba(129, 140, 248, 0.28)',
-  amber: 'rgba(245, 158, 11, 0.28)'
-};
-
-// Complete Static Sidebar Hierarchy that fits the entire box without scrolling
-const EXPLORER_MODULES = [
-  {
-    label: 'engine',
-    color: '#facc15',
-    files: ['canvas.tsx', 'viewport.ts', 'render.ts']
+// Official engine theme and physics constants directly from src/config/engineConfig.js
+const ENGINE_LAWS = {
+  PHYSICS: {
+    GRAVITY_PULL: 0.025,
+    REPULSION: {
+      folder: -2600,
+      file: -900,
+      function: -240
+    },
+    SPRING_DISTANCE: {
+      moonOrbit: 45,
+      planetOrbit: 95,
+      neuralCall: 180
+    },
+    SPRING_STRENGTH: {
+      structural: 0.95,
+      bridge: 0.35,
+      neural: 0.25
+    },
+    COLLISION_RADIUS: {
+      folder: 58,
+      file: 36,
+      function: 25
+    },
+    ALPHA_DECAY: 0.012,
+    VELOCITY_DECAY: 0.52,
+    RESTING_ALPHA: 0.018,
+    DRAGGING_ALPHA: 0.25
   },
-  {
-    label: 'renderer',
-    color: '#facc15',
-    files: ['webgpu_ctx.ts', 'framebuffer.ts', 'spatial_vert.wgsl']
-  },
-  {
-    label: 'parser',
-    color: '#facc15',
-    files: ['ast_scanner.py', 'tree_sitter.rs', 'tokens.rs']
-  },
-  {
-    label: 'agent',
-    color: '#facc15',
-    files: ['orchestrator.py', 'byok_client.ts', 'planner.py']
-  },
-  {
-    label: 'physics',
-    color: '#facc15',
-    files: ['coulomb.js', 'd3_worker.js', 'barnes_hut.ts']
-  },
-  {
-    label: 'runtime',
-    color: '#facc15',
-    files: ['sqlite_wal.rs', 'sandbox.rs', 'vfs.ts']
+  THEME: {
+    sizes: {
+      folder: 36,
+      file: 18,
+      function: 10
+    },
+    nodes: {
+      folder: '#e4ef61',
+      file: '#3b82f6',
+      function: '#8b5cf6',
+      riskHigh: '#ef4444',
+      riskMedium: '#f59e0b'
+    },
+    edges: {
+      hierarchy: '#6d6d6d',
+      call: '#9f00ad',
+      bridge: '#00f0ff',
+      hierarchyGlow: '#60a5fa',
+      callGlow: '#c084fc',
+      opacityNormal: 0.45,
+      opacityDimmed: 0.04,
+      widthHierarchy: 1.0,
+      widthCall: 1.5,
+      widthBridge: 2.5,
+      widthHoverGlow: 3.8
+    },
+    nebula: {
+      blurRadius: 35,
+      padding: 85,
+      strokeWidth: 80,
+      fillOpacity: 0.08,
+      strokeOpacity: 0.22,
+      colors: [
+        { fill: '#3b82f6', stroke: '#3b82f6' }, // Community 0: Core Backend
+        { fill: '#a855f7', stroke: '#a855f7' }, // Community 1: Graph ML Analyzer
+        { fill: '#22c55e', stroke: '#22c55e' }, // Community 2: AI & Microservices
+        { fill: '#ec4899', stroke: '#ec4899' }, // Community 3: Spatial Engine
+        { fill: '#eab308', stroke: '#eab308' }, // Community 4: UI & Layout
+        { fill: '#f97316', stroke: '#f97316' }  // Community 5: Hooks & State
+      ]
+    }
   }
-];
-
-const CLUSTER_PALETTES = {
-  coral: ['#ef4444', '#f87171', '#fb7185', '#dc2626', '#fca5a5'],
-  purple: ['#a855f7', '#c084fc', '#9333ea', '#7c3aed', '#d8b4fe'],
-  amber: ['#f59e0b', '#fbbf24', '#d97706', '#b45309', '#fcd34d'],
-  cyan: ['#06b6d4', '#22d3ee', '#38bdf8', '#0ea5e9', '#67e8f9'],
-  blue: ['#3b82f6', '#60a5fa', '#93c5fd', '#2563eb', '#bfdbfe'],
-  indigo: ['#818cf8', '#6366f1', '#a78bfa', '#4f46e5', '#c7d2fe']
 };
 
-// Cross-cluster bridge palettes: in each cluster, 1 or 2 nodes have foreign cluster colors
-const CROSS_CLUSTER_PALETTES = {
-  coral: ['#38bdf8', '#a855f7', '#fbbf24'],   // In Red cluster: Cyan, Purple, Amber
-  purple: ['#ef4444', '#38bdf8', '#fbbf24'],  // In Purple cluster: Red, Cyan, Amber
-  cyan: ['#a855f7', '#ef4444', '#fbbf24'],    // In Cyan cluster: Purple, Red, Amber
-  indigo: ['#38bdf8', '#ef4444', '#a855f7'],  // In Indigo cluster: Cyan, Red, Purple
-  amber: ['#38bdf8', '#a855f7', '#ef4444']    // In Amber cluster: Cyan, Purple, Red
+// Elastic bounce popping easing function for procedural celestial emergence
+const easeOutBack = (x) => {
+  const c1 = 1.70158;
+  const c3 = c1 + 1;
+  return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2);
 };
 
-// Massive Unified Cluster Nebulae (Soft, atmospheric, dulled-down ambient cosmic clouds)
-const CLUSTER_NEBULA_THEMES = {
-  coral: {
-    // Parser, AST & Compiler: Soft Crimson Cosmic Nebula ("all of it is red")
-    inner: 'rgba(239, 68, 68, 0.16)',
-    mid: 'rgba(220, 38, 38, 0.08)',
-    outer: 'rgba(185, 28, 28, 0.02)',
-    edge: 'rgba(8, 9, 12, 0)'
-  },
-  purple: {
-    // Agent, Reasoning & LLM: Soft Cosmic Purple Nebula
-    inner: 'rgba(168, 85, 247, 0.14)',
-    mid: 'rgba(147, 51, 234, 0.07)',
-    outer: 'rgba(126, 34, 206, 0.015)',
-    edge: 'rgba(8, 9, 12, 0)'
-  },
-  cyan: {
-    // Core Engine & Graphics: Soft Electric Cyan Aurora
-    inner: 'rgba(6, 182, 212, 0.14)',
-    mid: 'rgba(14, 165, 233, 0.07)',
-    outer: 'rgba(2, 132, 199, 0.015)',
-    edge: 'rgba(8, 9, 12, 0)'
-  },
-  indigo: {
-    // Physics & Simulation: Soft Indigo Celestial Void
-    inner: 'rgba(99, 102, 241, 0.14)',
-    mid: 'rgba(79, 70, 229, 0.07)',
-    outer: 'rgba(67, 56, 202, 0.015)',
-    edge: 'rgba(8, 9, 12, 0)'
-  },
-  amber: {
-    // Runtime, Storage & Graph: Soft Warm Amber Stellar Cloud
-    inner: 'rgba(245, 158, 11, 0.13)',
-    mid: 'rgba(217, 119, 6, 0.06)',
-    outer: 'rgba(180, 83, 9, 0.015)',
-    edge: 'rgba(8, 9, 12, 0)'
-  }
+// Official Neuron Codebase Graph Specification
+const NEURON_GRAPH_DATA = {
+  nodes: [
+    // --- Root Folders (Tier 0) ---
+    { id: 'backend', label: 'backend', nodeType: 'folder', tier: 0, community: 0 },
+    { id: 'frontend', label: 'frontend', nodeType: 'folder', tier: 0, community: 3 },
+
+    // --- Backend Subfolders ---
+    { id: 'backend/core', label: 'core', parentId: 'backend', nodeType: 'folder', tier: 0, community: 0 },
+    { id: 'backend/ml', label: 'ml', parentId: 'backend', nodeType: 'folder', tier: 0, community: 1 },
+    { id: 'backend/ai', label: 'ai', parentId: 'backend', nodeType: 'folder', tier: 0, community: 2 },
+    { id: 'backend/api', label: 'api', parentId: 'backend', nodeType: 'folder', tier: 0, community: 0 },
+    { id: 'backend/services', label: 'services', parentId: 'backend', nodeType: 'folder', tier: 0, community: 2 },
+
+    // --- Frontend Subfolders ---
+    { id: 'frontend/canvas', label: 'canvas', parentId: 'frontend', nodeType: 'folder', tier: 0, community: 3 },
+    { id: 'frontend/layout', label: 'layout', parentId: 'frontend', nodeType: 'folder', tier: 0, community: 4 },
+    { id: 'frontend/ai', label: 'ai', parentId: 'frontend', nodeType: 'folder', tier: 0, community: 2 },
+    { id: 'frontend/hooks', label: 'hooks', parentId: 'frontend', nodeType: 'folder', tier: 0, community: 5 },
+    { id: 'frontend/config', label: 'config', parentId: 'frontend', nodeType: 'folder', tier: 0, community: 5 },
+
+    // --- Community 0: Backend Core & API (Files) ---
+    { id: 'backend/core/parser.py', label: 'parser.py', parentId: 'backend/core', nodeType: 'file', tier: 1, community: 0, risk: 'high' },
+    { id: 'backend/core/mutator.py', label: 'mutator.py', parentId: 'backend/core', nodeType: 'file', tier: 1, community: 0, risk: 'medium' },
+    { id: 'backend/core/state.py', label: 'state.py', parentId: 'backend/core', nodeType: 'file', tier: 1, community: 0 },
+    { id: 'backend/core/js_mutator.py', label: 'js_mutator.py', parentId: 'backend/core', nodeType: 'file', tier: 1, community: 0 },
+    { id: 'backend/api/websocket_router.py', label: 'websocket_router.py', parentId: 'backend/api', nodeType: 'file', tier: 1, community: 0 },
+
+    // --- Community 1: ML Analyzer & Layout (Files) ---
+    { id: 'backend/ml/analyzer.py', label: 'analyzer.py', parentId: 'backend/ml', nodeType: 'file', tier: 1, community: 1, risk: 'high' },
+    { id: 'backend/ml/layout.py', label: 'layout.py', parentId: 'backend/ml', nodeType: 'file', tier: 1, community: 1 },
+    { id: 'backend/ml/modularity.py', label: 'modularity.py', parentId: 'backend/ml', nodeType: 'file', tier: 1, community: 1 },
+
+    // --- Community 2: AI Supervisor & Microservices (Files) ---
+    { id: 'backend/ai/agent_supervisor.py', label: 'agent_supervisor.py', parentId: 'backend/ai', nodeType: 'file', tier: 1, community: 2 },
+    { id: 'backend/ai/csp_guard.py', label: 'csp_guard.py', parentId: 'backend/ai', nodeType: 'file', tier: 1, community: 2 },
+    { id: 'backend/ai/vector_search.py', label: 'vector_search.py', parentId: 'backend/ai', nodeType: 'file', tier: 1, community: 2 },
+    { id: 'backend/services/ai_service.py', label: 'ai_service.py', parentId: 'backend/services', nodeType: 'file', tier: 1, community: 2 },
+    { id: 'backend/services/file_service.py', label: 'file_service.py', parentId: 'backend/services', nodeType: 'file', tier: 1, community: 2 },
+    { id: 'backend/services/terminal_service.py', label: 'terminal_service.py', parentId: 'backend/services', nodeType: 'file', tier: 1, community: 2 },
+    { id: 'frontend/ai/AiChatView.jsx', label: 'AiChatView.jsx', parentId: 'frontend/ai', nodeType: 'file', tier: 1, community: 2 },
+
+    // --- Community 3: Spatial Graphics Engine (Files) ---
+    { id: 'frontend/canvas/PixiSpatialEngine.jsx', label: 'PixiSpatialEngine.jsx', parentId: 'frontend/canvas', nodeType: 'file', tier: 1, community: 3, risk: 'high' },
+    { id: 'frontend/canvas/SpatialMinimap.jsx', label: 'SpatialMinimap.jsx', parentId: 'frontend/canvas', nodeType: 'file', tier: 1, community: 3 },
+    { id: 'frontend/canvas/ViewportManager.js', label: 'ViewportManager.js', parentId: 'frontend/canvas', nodeType: 'file', tier: 1, community: 3 },
+    { id: 'frontend/canvas/NebulaMesh.js', label: 'NebulaMesh.js', parentId: 'frontend/canvas', nodeType: 'file', tier: 1, community: 3 },
+
+    // --- Community 4: IDE Layout & Workspace UI (Files) ---
+    { id: 'frontend/layout/TopBar.jsx', label: 'TopBar.jsx', parentId: 'frontend/layout', nodeType: 'file', tier: 1, community: 4 },
+    { id: 'frontend/layout/Sidebar.jsx', label: 'Sidebar.jsx', parentId: 'frontend/layout', nodeType: 'file', tier: 1, community: 4 },
+    { id: 'frontend/layout/StatusBar.jsx', label: 'StatusBar.jsx', parentId: 'frontend/layout', nodeType: 'file', tier: 1, community: 4 },
+    { id: 'frontend/layout/CodeEditor.jsx', label: 'CodeEditor.jsx', parentId: 'frontend/layout', nodeType: 'file', tier: 1, community: 4 },
+    { id: 'frontend/layout/TerminalPanel.jsx', label: 'TerminalPanel.jsx', parentId: 'frontend/layout', nodeType: 'file', tier: 1, community: 4 },
+    { id: 'frontend/layout/ThemeSelector.jsx', label: 'ThemeSelector.jsx', parentId: 'frontend/layout', nodeType: 'file', tier: 1, community: 4 },
+
+    // --- Community 5: Hooks & Configuration (Files) ---
+    { id: 'frontend/hooks/usePhysicsEngine.js', label: 'usePhysicsEngine.js', parentId: 'frontend/hooks', nodeType: 'file', tier: 1, community: 5, risk: 'medium' },
+    { id: 'frontend/hooks/useWorkspace.js', label: 'useWorkspace.js', parentId: 'frontend/hooks', nodeType: 'file', tier: 1, community: 5 },
+    { id: 'frontend/hooks/useCompiler.js', label: 'useCompiler.js', parentId: 'frontend/hooks', nodeType: 'file', tier: 1, community: 5 },
+    { id: 'frontend/config/engineConfig.js', label: 'engineConfig.js', parentId: 'frontend/config', nodeType: 'file', tier: 1, community: 5 },
+    { id: 'frontend/config/themeConfig.js', label: 'themeConfig.js', parentId: 'frontend/config', nodeType: 'file', tier: 1, community: 5 },
+
+    // --- Orbiting Functions (Tier 2 Moons) ---
+    { id: 'parser.py::parse_ast()', label: 'def parse_ast()', parentId: 'backend/core/parser.py', nodeType: 'function', tier: 2, community: 0 },
+    { id: 'parser.py::extract_symbols()', label: 'def extract_symbols()', parentId: 'backend/core/parser.py', nodeType: 'function', tier: 2, community: 0 },
+    { id: 'parser.py::build_call_graph()', label: 'def build_call_graph()', parentId: 'backend/core/parser.py', nodeType: 'function', tier: 2, community: 0 },
+    { id: 'mutator.py::apply_refactor()', label: 'def apply_refactor()', parentId: 'backend/core/mutator.py', nodeType: 'function', tier: 2, community: 0 },
+    { id: 'mutator.py::rollback_state()', label: 'def rollback_state()', parentId: 'backend/core/mutator.py', nodeType: 'function', tier: 2, community: 0 },
+    { id: 'websocket_router.py::ws_handler()', label: 'def ws_handler()', parentId: 'backend/api/websocket_router.py', nodeType: 'function', tier: 2, community: 0 },
+    { id: 'analyzer.py::analyze_graph_ml()', label: 'def analyze_graph_ml()', parentId: 'backend/ml/analyzer.py', nodeType: 'function', tier: 2, community: 1 },
+    { id: 'analyzer.py::compute_shannon_entropy()', label: 'def compute_shannon_entropy()', parentId: 'backend/ml/analyzer.py', nodeType: 'function', tier: 2, community: 1 },
+    { id: 'analyzer.py::detect_communities()', label: 'def detect_communities()', parentId: 'backend/ml/analyzer.py', nodeType: 'function', tier: 2, community: 1 },
+    { id: 'agent_supervisor.py::supervise_step()', label: 'def supervise_step()', parentId: 'backend/ai/agent_supervisor.py', nodeType: 'function', tier: 2, community: 2 },
+    { id: 'agent_supervisor.py::evaluate_csp()', label: 'def evaluate_csp()', parentId: 'backend/ai/agent_supervisor.py', nodeType: 'function', tier: 2, community: 2 },
+    { id: 'AiChatView.jsx::sendMessage()', label: 'function sendMessage()', parentId: 'frontend/ai/AiChatView.jsx', nodeType: 'function', tier: 2, community: 2 },
+    { id: 'PixiSpatialEngine.jsx::initWebGPU()', label: 'function initWebGPU()', parentId: 'frontend/canvas/PixiSpatialEngine.jsx', nodeType: 'function', tier: 2, community: 3 },
+    { id: 'PixiSpatialEngine.jsx::renderTick()', label: 'function renderTick()', parentId: 'frontend/canvas/PixiSpatialEngine.jsx', nodeType: 'function', tier: 2, community: 3 },
+    { id: 'PixiSpatialEngine.jsx::renderNebula()', label: 'function renderNebula()', parentId: 'frontend/canvas/PixiSpatialEngine.jsx', nodeType: 'function', tier: 2, community: 3 },
+    { id: 'CodeEditor.jsx::handleEditorChange()', label: 'function handleEditorChange()', parentId: 'frontend/layout/CodeEditor.jsx', nodeType: 'function', tier: 2, community: 4 },
+    { id: 'usePhysicsEngine.js::usePhysicsEngine()', label: 'function usePhysicsEngine()', parentId: 'frontend/hooks/usePhysicsEngine.js', nodeType: 'function', tier: 2, community: 5 },
+    { id: 'usePhysicsEngine.js::emitNextNode()', label: 'function emitNextNode()', parentId: 'frontend/hooks/usePhysicsEngine.js', nodeType: 'function', tier: 2, community: 5 },
+    { id: 'useWorkspace.js::syncNodeMove()', label: 'function syncNodeMove()', parentId: 'frontend/hooks/useWorkspace.js', nodeType: 'function', tier: 2, community: 5 }
+  ],
+  edges: [
+    // Subfolder hierarchy
+    { id: 'e-b-core', source: 'backend', target: 'backend/core', type: 'hierarchy' },
+    { id: 'e-b-ml', source: 'backend', target: 'backend/ml', type: 'hierarchy' },
+    { id: 'e-b-ai', source: 'backend', target: 'backend/ai', type: 'hierarchy' },
+    { id: 'e-b-api', source: 'backend', target: 'backend/api', type: 'hierarchy' },
+    { id: 'e-b-srv', source: 'backend', target: 'backend/services', type: 'hierarchy' },
+
+    { id: 'e-f-can', source: 'frontend', target: 'frontend/canvas', type: 'hierarchy' },
+    { id: 'e-f-lay', source: 'frontend', target: 'frontend/layout', type: 'hierarchy' },
+    { id: 'e-f-ai', source: 'frontend', target: 'frontend/ai', type: 'hierarchy' },
+    { id: 'e-f-hk', source: 'frontend', target: 'frontend/hooks', type: 'hierarchy' },
+    { id: 'e-f-cfg', source: 'frontend', target: 'frontend/config', type: 'hierarchy' },
+
+    // Files hierarchy
+    { id: 'e-p-parse', source: 'backend/core', target: 'backend/core/parser.py', type: 'hierarchy' },
+    { id: 'e-p-mut', source: 'backend/core', target: 'backend/core/mutator.py', type: 'hierarchy' },
+    { id: 'e-p-state', source: 'backend/core', target: 'backend/core/state.py', type: 'hierarchy' },
+    { id: 'e-p-jsm', source: 'backend/core', target: 'backend/core/js_mutator.py', type: 'hierarchy' },
+    { id: 'e-p-ws', source: 'backend/api', target: 'backend/api/websocket_router.py', type: 'hierarchy' },
+
+    { id: 'e-p-an', source: 'backend/ml', target: 'backend/ml/analyzer.py', type: 'hierarchy' },
+    { id: 'e-p-laym', source: 'backend/ml', target: 'backend/ml/layout.py', type: 'hierarchy' },
+    { id: 'e-p-mod', source: 'backend/ml', target: 'backend/ml/modularity.py', type: 'hierarchy' },
+
+    { id: 'e-p-sup', source: 'backend/ai', target: 'backend/ai/agent_supervisor.py', type: 'hierarchy' },
+    { id: 'e-p-csp', source: 'backend/ai', target: 'backend/ai/csp_guard.py', type: 'hierarchy' },
+    { id: 'e-p-vec', source: 'backend/ai', target: 'backend/ai/vector_search.py', type: 'hierarchy' },
+    { id: 'e-p-ais', source: 'backend/services', target: 'backend/services/ai_service.py', type: 'hierarchy' },
+    { id: 'e-p-fls', source: 'backend/services', target: 'backend/services/file_service.py', type: 'hierarchy' },
+    { id: 'e-p-tms', source: 'backend/services', target: 'backend/services/terminal_service.py', type: 'hierarchy' },
+    { id: 'e-p-aiv', source: 'frontend/ai', target: 'frontend/ai/AiChatView.jsx', type: 'hierarchy' },
+
+    { id: 'e-p-pix', source: 'frontend/canvas', target: 'frontend/canvas/PixiSpatialEngine.jsx', type: 'hierarchy' },
+    { id: 'e-p-smm', source: 'frontend/canvas', target: 'frontend/canvas/SpatialMinimap.jsx', type: 'hierarchy' },
+    { id: 'e-p-vpm', source: 'frontend/canvas', target: 'frontend/canvas/ViewportManager.js', type: 'hierarchy' },
+    { id: 'e-p-nbm', source: 'frontend/canvas', target: 'frontend/canvas/NebulaMesh.js', type: 'hierarchy' },
+
+    { id: 'e-p-top', source: 'frontend/layout', target: 'frontend/layout/TopBar.jsx', type: 'hierarchy' },
+    { id: 'e-p-sd', source: 'frontend/layout', target: 'frontend/layout/Sidebar.jsx', type: 'hierarchy' },
+    { id: 'e-p-st', source: 'frontend/layout', target: 'frontend/layout/StatusBar.jsx', type: 'hierarchy' },
+    { id: 'e-p-ce', source: 'frontend/layout', target: 'frontend/layout/CodeEditor.jsx', type: 'hierarchy' },
+    { id: 'e-p-tp', source: 'frontend/layout', target: 'frontend/layout/TerminalPanel.jsx', type: 'hierarchy' },
+    { id: 'e-p-ts', source: 'frontend/layout', target: 'frontend/layout/ThemeSelector.jsx', type: 'hierarchy' },
+
+    { id: 'e-p-ph', source: 'frontend/hooks', target: 'frontend/hooks/usePhysicsEngine.js', type: 'hierarchy' },
+    { id: 'e-p-wsy', source: 'frontend/hooks', target: 'frontend/hooks/useWorkspace.js', type: 'hierarchy' },
+    { id: 'e-p-cmp', source: 'frontend/hooks', target: 'frontend/hooks/useCompiler.js', type: 'hierarchy' },
+    { id: 'e-p-ec', source: 'frontend/config', target: 'frontend/config/engineConfig.js', type: 'hierarchy' },
+    { id: 'e-p-tc', source: 'frontend/config', target: 'frontend/config/themeConfig.js', type: 'hierarchy' },
+
+    // Functions hierarchy (File to Moon Functions)
+    { id: 'e-f1', source: 'backend/core/parser.py', target: 'parser.py::parse_ast()', type: 'hierarchy' },
+    { id: 'e-f2', source: 'backend/core/parser.py', target: 'parser.py::extract_symbols()', type: 'hierarchy' },
+    { id: 'e-f3', source: 'backend/core/parser.py', target: 'parser.py::build_call_graph()', type: 'hierarchy' },
+    { id: 'e-f4', source: 'backend/core/mutator.py', target: 'mutator.py::apply_refactor()', type: 'hierarchy' },
+    { id: 'e-f5', source: 'backend/core/mutator.py', target: 'mutator.py::rollback_state()', type: 'hierarchy' },
+    { id: 'e-f6', source: 'backend/api/websocket_router.py', target: 'websocket_router.py::ws_handler()', type: 'hierarchy' },
+    { id: 'e-f7', source: 'backend/ml/analyzer.py', target: 'analyzer.py::analyze_graph_ml()', type: 'hierarchy' },
+    { id: 'e-f8', source: 'backend/ml/analyzer.py', target: 'analyzer.py::compute_shannon_entropy()', type: 'hierarchy' },
+    { id: 'e-f9', source: 'backend/ml/analyzer.py', target: 'analyzer.py::detect_communities()', type: 'hierarchy' },
+    { id: 'e-f10', source: 'backend/ai/agent_supervisor.py', target: 'agent_supervisor.py::supervise_step()', type: 'hierarchy' },
+    { id: 'e-f11', source: 'backend/ai/agent_supervisor.py', target: 'agent_supervisor.py::evaluate_csp()', type: 'hierarchy' },
+    { id: 'e-f12', source: 'frontend/ai/AiChatView.jsx', target: 'AiChatView.jsx::sendMessage()', type: 'hierarchy' },
+    { id: 'e-f13', source: 'frontend/canvas/PixiSpatialEngine.jsx', target: 'PixiSpatialEngine.jsx::initWebGPU()', type: 'hierarchy' },
+    { id: 'e-f14', source: 'frontend/canvas/PixiSpatialEngine.jsx', target: 'PixiSpatialEngine.jsx::renderTick()', type: 'hierarchy' },
+    { id: 'e-f15', source: 'frontend/canvas/PixiSpatialEngine.jsx', target: 'PixiSpatialEngine.jsx::renderNebula()', type: 'hierarchy' },
+    { id: 'e-f16', source: 'frontend/layout/CodeEditor.jsx', target: 'CodeEditor.jsx::handleEditorChange()', type: 'hierarchy' },
+    { id: 'e-f17', source: 'frontend/hooks/usePhysicsEngine.js', target: 'usePhysicsEngine.js::usePhysicsEngine()', type: 'hierarchy' },
+    { id: 'e-f18', source: 'frontend/hooks/usePhysicsEngine.js', target: 'usePhysicsEngine.js::emitNextNode()', type: 'hierarchy' },
+    { id: 'e-f19', source: 'frontend/hooks/useWorkspace.js', target: 'useWorkspace.js::syncNodeMove()', type: 'hierarchy' },
+
+    // Neural Call Edges (Purple Conduits)
+    { id: 'call-1', source: 'backend/api/websocket_router.py', target: 'backend/ml/analyzer.py', type: 'call' },
+    { id: 'call-2', source: 'backend/ml/analyzer.py', target: 'backend/core/parser.py', type: 'call' },
+    { id: 'call-3', source: 'backend/ai/agent_supervisor.py', target: 'backend/core/mutator.py', type: 'call' },
+    { id: 'call-4', source: 'frontend/canvas/PixiSpatialEngine.jsx', target: 'frontend/hooks/usePhysicsEngine.js', type: 'call' },
+    { id: 'call-5', source: 'frontend/hooks/usePhysicsEngine.js', target: 'frontend/config/engineConfig.js', type: 'call' },
+    { id: 'call-6', source: 'frontend/layout/CodeEditor.jsx', target: 'backend/core/parser.py', type: 'call' },
+
+    // Cross-Stack Laser Bridges (Cyan High-Speed Conduits with Dual Traveling Photons)
+    { id: 'bridge-1', source: 'frontend/hooks/useWorkspace.js', target: 'backend/api/websocket_router.py', type: 'network_bridge' },
+    { id: 'bridge-2', source: 'frontend/ai/AiChatView.jsx', target: 'backend/services/ai_service.py', type: 'network_bridge' },
+    { id: 'bridge-3', source: 'frontend/layout/TerminalPanel.jsx', target: 'backend/services/terminal_service.py', type: 'network_bridge' }
+  ]
 };
 
 export default function NeuronHeroEngine() {
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
 
-  // Viewport Zoom & Pan: Starts deeply zoomed in on root node dir_engine, gracefully revealing the growing tree
-  const zoomRef = useRef(1.85);
+  // Viewport Zoom & Pan
+  const zoomRef = useRef(0.95);
   const panRef = useRef({ x: 0, y: 0 });
-  const [zoomDisplay, setZoomDisplay] = useState(185);
+  const [zoomDisplay, setZoomDisplay] = useState(95);
 
-  // 5 Official Themes directly matching themeConfig.js
+  // Active theme matching Obsidian Black by default
   const [activeThemeId, setActiveThemeId] = useState('black');
   const activeTheme = THEMES_MAP[activeThemeId] || THEMES_MAP.black;
   const activeThemeRef = useRef(activeTheme);
@@ -430,66 +398,55 @@ export default function NeuronHeroEngine() {
   const [activeTerminalTab, setActiveTerminalTab] = useState('powershell');
   const [terminalInput, setTerminalInput] = useState('');
   const [terminalHistory, setTerminalHistory] = useState([
-    { 
-      cmd: 'git status', 
-      stdout: 'On branch main\nYour branch is up to date with \'origin/main\'.\nChanges not staged for commit:\n  modified:   src/App.jsx\n  modified:   src/components/canvas/PixiSpatialEngine.jsx\n\nUntracked files:\n  src/services/astBridge.ts' 
-    }
+    { cmd: 'git status', stdout: 'On branch main\nYour branch is up to date with \'origin/main\'.' },
+    { cmd: 'python -m backend.ml.analyzer', stdout: '[Neuron ML] Louvain modularity detected 6 communities (Q=0.742).\n[Neuron Engine] Spatial Graph synchronized with 58 nodes and 56 links.' }
   ]);
+
   const [openFolders, setOpenFolders] = useState({
     neuron: true,
     backend: true,
+    backendCore: false,
+    backendMl: false,
+    backendAi: false,
+    backendApi: false,
+    backendServices: false,
     frontend: true,
-    src: true,
-    components: false,
-    config: false
+    frontendCanvas: true,
+    frontendLayout: false,
+    frontendAi: false,
+    frontendHooks: false,
+    frontendConfig: false
   });
+
+  const [showLabels, setShowLabels] = useState(true);
+  const [selectedNode, setSelectedNode] = useState(null);
+  const [hoveredNode, setHoveredNode] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isCanvasFocused, setIsCanvasFocused] = useState(false);
+  const [showScrollHint, setShowScrollHint] = useState(false);
+
   const menuRef = useRef(null);
   const themePopoverRef = useRef(null);
   const themeButtonRef = useRef(null);
 
-  useEffect(() => {
-    const handleOutside = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
-        setActiveMenu(null);
-      }
-      if (
-        themePopoverRef.current && 
-        !themePopoverRef.current.contains(e.target) &&
-        themeButtonRef.current &&
-        !themeButtonRef.current.contains(e.target)
-      ) {
-        setIsThemePickerOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleOutside);
-    return () => document.removeEventListener('mousedown', handleOutside);
-  }, []);
-
-  const [selectedNode, setSelectedNode] = useState(null);
-  const [hoveredNode, setHoveredNode] = useState(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [showLabels, setShowLabels] = useState(true);
-  const [showScrollHint, setShowScrollHint] = useState(false);
-  const [isCanvasFocused, setIsCanvasFocused] = useState(false);
-
   const selectedNodeRef = useRef(selectedNode);
-  const hoveredNodeRef = useRef(hoveredNode);
-  const isCanvasFocusedRef = useRef(isCanvasFocused);
-  const userInteractedRef = useRef(false);
   selectedNodeRef.current = selectedNode;
+  const hoveredNodeRef = useRef(hoveredNode);
   hoveredNodeRef.current = hoveredNode;
+  const isCanvasFocusedRef = useRef(isCanvasFocused);
   isCanvasFocusedRef.current = isCanvasFocused;
-
+  const userInteractedRef = useRef(false);
   const hintTimeoutRef = useRef(null);
 
-  const nodesRef = useRef([]);
-  const edgesRef = useRef([]);
+  // Graph Simulation & Lifecycle Refs
+  const allNodesRef = useRef([]);
+  const allEdgesRef = useRef([]);
+  const activeNodesRef = useRef([]);
+  const activeEdgesRef = useRef([]);
+  const simulationRef = useRef(null);
   const animFrameRef = useRef(null);
-  const birthStartRef = useRef(0);
-  const isBirthPlayingRef = useRef(false);
-  const hasStartedAnimRef = useRef(false);
-  const isRefactoringRef = useRef(false);
-  const refactorStartRef = useRef(0);
+  const spawnTimerRef = useRef(null);
+  const isSpawningCompleteRef = useRef(false);
   const isVisibleRef = useRef(false);
   const renderTriggerRef = useRef(null);
 
@@ -502,7 +459,7 @@ export default function NeuronHeroEngine() {
     isPanning: false,
     panStart: { x: 0, y: 0 },
     draggedNode: null,
-    lastDragPos: { x: 0, y: 0 }
+    dragOffset: { x: 0, y: 0 }
   });
 
   const screenToWorld = useCallback((sx, sy) => {
@@ -512,379 +469,241 @@ export default function NeuronHeroEngine() {
     };
   }, []);
 
-  // Build the 40-Folder Universe with 500+ Organic Nodes & Tree-Growing Hierarchy
-  const buildGalaxyTopology = useCallback(() => {
-    const nodes = [];
-    const edges = [];
-    const folderMap = new Map();
-
-    // 1. Synchronize folder birth with the multi-waypoint camera tour:
-    // Waypoint 1: Cyan (Engine) -> Waypoint 2: Coral (Parser) -> Waypoint 3: Indigo (Physics) -> Full Reveal (Purple & Amber)
-    const treeOrderMap = new Map();
-    const domainBaseTimes = {
-      cyan: 150,     // 0 - 2200ms: Camera centered on dir_engine
-      coral: 3300,   // 3400 - 5200ms: Camera centered on dir_parser
-      indigo: 6300,  // 6400 - 7600ms: Camera centered on dir_physics
-      purple: 7600,  // 7600 - 9400ms: Full galaxy pullback
-      amber: 7600    // 7600 - 9400ms: Full galaxy pullback
-    };
-
-    const domainCounters = { cyan: 0, coral: 0, indigo: 0, purple: 0, amber: 0 };
-    FOLDERS_DATA.forEach((f, idx) => {
-      const theme = f.theme || 'cyan';
-      const base = domainBaseTimes[theme] || 7600;
-      const count = domainCounters[theme]++;
-      const isDomainLead = (f.id === 'dir_engine' || f.id === 'dir_parser' || f.id === 'dir_physics' || f.id === 'dir_agent' || f.id === 'dir_runtime');
-      const birthStart = isDomainLead ? base : base + 100 + count * 65;
-      treeOrderMap.set(f.id, {
-        order: idx,
-        depth: isDomainLead ? 0 : 1,
-        parentId: null,
-        birthStart
-      });
-    });
-
-    // 2. Add All 40 Yellow Folder Suns (Unpinned & Floating with Natural Micro-Drift)
-    FOLDERS_DATA.forEach((fold) => {
-      const treeInfo = treeOrderMap.get(fold.id) || { order: 0, depth: 0, birthStart: 0 };
-
-      const folderNode = {
-        id: fold.id,
-        label: fold.label,
-        type: 'folder',
-        x: fold.x,
-        y: fold.y,
-        baseX: fold.x,
-        baseY: fold.y,
-        targetX: fold.x,
-        targetY: fold.y,
-        cleanX: fold.x,
-        cleanY: fold.y,
-        radius: 0,
-        baseRadius: fold.radius,
-        color: '#facc15', // Yellow for folders
-        isHub: fold.isHub || false,
-        theme: fold.theme,
-        clusterTheme: fold.theme,
-        isFixed: false, // NOT STICKY - 100% Fluid & Movable!
-        vx: 0,
-        vy: 0,
-        alpha: 1.0,
-        targetAlpha: 1.0,
-        treeOrder: treeInfo.order,
-        treeDepth: treeInfo.depth,
-        birthStart: treeInfo.birthStart,
-        seedX: fold.id.charCodeAt(0) * 11,
-        seedY: fold.id.charCodeAt(fold.id.length - 1) * 13
-      };
-      nodes.push(folderNode);
-      folderMap.set(fold.id, folderNode);
-    });
-
-    // 3. Folder-to-Folder Backbone Conduits (with tree growth time windows)
-    FOLDER_LINKS.forEach((link, lIdx) => {
-      const sInfo = treeOrderMap.get(link.source) || { order: 0, depth: 0, birthStart: 0 };
-      const tInfo = treeOrderMap.get(link.target) || { order: 0, depth: 0, birthStart: 0 };
-      
-      const isParentSource = sInfo.depth <= tInfo.depth;
-      const parentNode = isParentSource ? link.source : link.target;
-      const childNode = isParentSource ? link.target : link.source;
-      const childInfo = isParentSource ? tInfo : sInfo;
-
-      const growthEnd = childInfo.birthStart;
-      const growthStart = Math.max(0, growthEnd - 420);
-
-      edges.push({
-        id: `f-link-${lIdx}`,
-        source: link.source,
-        target: link.target,
-        type: 'folder-backbone',
-        color: 'rgba(250, 204, 21, 0.22)',
-        isDashed: true,
-        growthStart,
-        growthEnd,
-        growthSource: parentNode,
-        growthTarget: childNode
-      });
-    });
-
-    let nodeCounter = 0;
-
-    // Key folders that display tight, beautiful pomegranate seed clusters (matching user reference screenshot)
-    const POMEGRANATE_FOLDERS = new Set([
-      'dir_parser',
-      'dir_ast',
-      'dir_tokens',
-      'dir_orchestrator',
-      'dir_tools',
-      'dir_runtime',
-      'dir_sqlite',
-      'dir_simulation',
-      'dir_renderer'
-    ]);
-
-    // 3. Populate Asymmetric Nodes across the 40 Folders (Pomegranate clusters & Scattered satellites)
-    FOLDERS_DATA.forEach((folder) => {
-      const isPomegranateFolder = POMEGRANATE_FOLDERS.has(folder.id);
-      const folderFiles = FOLDER_FILE_TEMPLATES[folder.id] || [];
-      const leaves = [];
-
-      if (isPomegranateFolder) {
-        // Tight cluster of 15-18 balls packed like pomegranate seeds! (Matching user screenshot)
-        const count = 16 + (folder.id.length % 3);
-        const stemAngle = ((folder.x * 0.015 + folder.y * 0.02) % (Math.PI * 2));
-        const stemDist = folder.radius + 44;
-        const stemX = Math.cos(stemAngle) * stemDist;
-        const stemY = Math.sin(stemAngle) * stemDist;
-
-        for (let s = 0; s < count; s++) {
-          let relX, relY;
-          if (s === 0) {
-            relX = stemX;
-            relY = stemY;
-          } else {
-            const theta = s * 2.399963; // Golden angle phyllotaxis
-            const r = Math.sqrt(s) * 12.0; // Tight seed packing (~12px spacing)
-            relX = stemX + Math.cos(theta) * r;
-            relY = stemY + Math.sin(theta) * r;
-          }
-
-          const fileName = folderFiles[s] || `${folder.label}_seed_${s}.ts`;
-          
-          // Thematic color matching cluster (All red in parser/ast, all purple in agent, etc.)
-          let seedColor;
-          if (folder.theme === 'coral') {
-            seedColor = CLUSTER_PALETTES.coral[s % CLUSTER_PALETTES.coral.length];
-          } else if (folder.theme === 'purple') {
-            seedColor = CLUSTER_PALETTES.purple[s % CLUSTER_PALETTES.purple.length];
-          } else if (folder.theme === 'amber') {
-            seedColor = CLUSTER_PALETTES.amber[s % CLUSTER_PALETTES.amber.length];
-          } else if (folder.theme === 'cyan') {
-            seedColor = CLUSTER_PALETTES.cyan[s % CLUSTER_PALETTES.cyan.length];
-          } else {
-            seedColor = CLUSTER_PALETTES.indigo[s % CLUSTER_PALETTES.indigo.length];
-          }
-
-          // 1 cross-cluster bridge seed
-          if (s === count - 1) {
-            const cross = CROSS_CLUSTER_PALETTES[folder.theme] || ['#38bdf8'];
-            seedColor = cross[0];
-          }
-
-          leaves.push({
-            relX,
-            relY,
-            dist: Math.hypot(relX, relY),
-            radius: 3.2,
-            color: seedColor,
-            isPomegranate: true,
-            isCritical: folder.theme === 'coral',
-            isKey: s === 0,
-            label: fileName
-          });
-        }
-      } else {
-        // Loose organic scattered satellite balls (5 to 8 balls)
-        const count = 5 + (folder.id.length % 4);
-        for (let s = 0; s < count; s++) {
-          const angle = (s / count) * Math.PI * 2 + ((s * 11) % 7) * 0.14 + (folder.x * 0.005);
-          // Varied scattered distances: 42px to 85px
-          const dist = folder.radius + 36 + (s % 3) * 15 + ((s * 5) % 9) * 3;
-          const relX = Math.cos(angle) * dist;
-          const relY = Math.sin(angle) * dist;
-          const fileName = folderFiles[s] || `${folder.label}_${s}.ts`;
-
-          let nodeColor;
-          if (folder.theme === 'coral') {
-            nodeColor = CLUSTER_PALETTES.coral[s % CLUSTER_PALETTES.coral.length];
-          } else if (folder.theme === 'purple') {
-            nodeColor = CLUSTER_PALETTES.purple[s % CLUSTER_PALETTES.purple.length];
-          } else if (folder.theme === 'amber') {
-            nodeColor = CLUSTER_PALETTES.amber[s % CLUSTER_PALETTES.amber.length];
-          } else if (folder.theme === 'cyan') {
-            nodeColor = CLUSTER_PALETTES.cyan[s % CLUSTER_PALETTES.cyan.length];
-          } else {
-            nodeColor = CLUSTER_PALETTES.indigo[s % CLUSTER_PALETTES.indigo.length];
-          }
-
-          // 1 cross-cluster bridge color
-          if (s === count - 1) {
-            const cross = CROSS_CLUSTER_PALETTES[folder.theme] || ['#38bdf8'];
-            nodeColor = cross[0];
-          }
-
-          leaves.push({
-            relX,
-            relY,
-            dist,
-            radius: 3.2 + (s % 2) * 0.4,
-            color: nodeColor,
-            isPomegranate: false,
-            isCritical: folder.theme === 'coral' && s === 0,
-            isKey: s === 0,
-            label: fileName
-          });
-        }
-      }
-
-      leaves.forEach((lf, lIdx) => {
-        nodeCounter++;
-        const targetX = folder.x + lf.relX;
-        const targetY = folder.y + lf.relY;
-        const leafEmergingDuration = 700;
-        // Stagger leaf emerging start so nodes visibly shoot out from yellow balls one by one!
-        const leafGrowthStart = folder.birthStart + 180 + (lf.isPomegranate ? lIdx * 45 : lIdx * 65);
-        const leafBirthStart = leafGrowthStart + leafEmergingDuration;
-
-        const childNode = {
-          id: `${folder.id}_node_${lIdx}`,
-          label: lf.label,
-          type: lf.isCritical ? 'critical' : 'node',
-          parentId: folder.id,
-          clusterTheme: folder.theme,
-          x: folder.x, // Starts directly at center of yellow folder ball!
-          y: folder.y, // Starts directly at center of yellow folder ball!
-          baseX: targetX,
-          baseY: targetY,
-          targetX: targetX,
-          targetY: targetY,
-          cleanX: targetX,
-          cleanY: targetY,
-          radius: 0,
-          baseRadius: lf.radius,
-          color: lf.color,
-          isPomegranate: lf.isPomegranate || false,
-          isCritical: lf.isCritical || false,
-          isKey: lf.isKey || false,
-          isFixed: false,
-          vx: 0,
-          vy: 0,
-          alpha: 0,
-          targetAlpha: 1.0,
-          birthStart: leafBirthStart,
-          growthStart: leafGrowthStart,
-          emergeDuration: leafEmergingDuration,
-          seedX: nodeCounter * 17,
-          seedY: nodeCounter * 23
-        };
-        nodes.push(childNode);
-
-        let lineColor = 'rgba(255, 255, 255, 0.12)';
-        if (folder.theme === 'coral') lineColor = 'rgba(239, 68, 68, 0.35)';
-        else if (folder.theme === 'purple') lineColor = 'rgba(168, 85, 247, 0.30)';
-        else if (folder.theme === 'cyan') lineColor = 'rgba(6, 182, 212, 0.30)';
-        else if (folder.theme === 'indigo') lineColor = 'rgba(99, 102, 241, 0.30)';
-        else if (folder.theme === 'amber') lineColor = 'rgba(245, 158, 11, 0.30)';
-
-        edges.push({
-          id: `e-${folder.id}-${childNode.id}`,
-          source: folder.id,
-          target: childNode.id,
-          type: 'folder-child',
-          restLength: lf.dist,
-          color: lf.isCritical ? 'rgba(239, 68, 68, 0.40)' : lineColor,
-          growthStart: leafGrowthStart,
-          growthEnd: leafBirthStart,
-          growthSource: folder.id,
-          growthTarget: childNode.id
-        });
-      });
-    });
-
-    // 4. Force Relaxation (100 iterations, preserving tight pomegranate clusters)
-    for (let iter = 0; iter < 100; iter++) {
-      for (let i = 0; i < nodes.length; i++) {
-        const a = nodes[i];
-        for (let j = i + 1; j < nodes.length; j++) {
-          const b = nodes[j];
-          const dx = b.x - a.x;
-          const dy = b.y - a.y;
-          if (Math.abs(dx) > 120 || Math.abs(dy) > 120) continue;
-
-          const distSq = dx * dx + dy * dy || 1;
-          const isFolder = a.type === 'folder' || b.type === 'folder';
-
-          let minDist;
-          if (a.isPomegranate && b.isPomegranate && a.parentId === b.parentId) {
-            minDist = a.baseRadius + b.baseRadius + 5; // Tightly packed pomegranate seeds
-          } else if (isFolder) {
-            minDist = a.baseRadius + b.baseRadius + 28;
-          } else {
-            minDist = a.baseRadius + b.baseRadius + 18;
-          }
-
-          if (distSq < minDist * minDist) {
-            const dist = Math.sqrt(distSq);
-            const push = (minDist - dist) * 0.35;
-            const fx = (dx / dist) * push;
-            const fy = (dy / dist) * push;
-            if (a.type !== 'folder') { 
-              a.x -= fx; a.y -= fy; 
-              a.baseX -= fx; a.baseY -= fy; 
-              a.targetX -= fx; a.targetY -= fy; 
-              a.cleanX -= fx; a.cleanY -= fy; 
-            }
-            if (b.type !== 'folder') { 
-              b.x += fx; b.y += fy; 
-              b.baseX += fx; b.baseY += fy; 
-              b.targetX += fx; b.targetY += fy; 
-              b.cleanX += fx; b.cleanY += fy; 
-            }
-          }
-        }
-      }
+  // Initialize and Reset the D3 Force Simulation Universe
+  const startSimulationAndSpawning = useCallback(() => {
+    if (spawnTimerRef.current) {
+      clearTimeout(spawnTimerRef.current);
+      spawnTimerRef.current = null;
+    }
+    if (simulationRef.current) {
+      simulationRef.current.stop();
+      simulationRef.current = null;
     }
 
-    // Update edge rest lengths to match clean relaxed distances
-    edges.forEach(e => {
-      const s = folderMap.get(e.source) || nodes.find(n => n.id === e.source);
-      const t = folderMap.get(e.target) || nodes.find(n => n.id === e.target);
-      if (s && t) {
-        e.restLength = Math.hypot(t.cleanX - s.cleanX, t.cleanY - s.cleanY);
+    // 1. Prepare raw nodes
+    const rawNodes = NEURON_GRAPH_DATA.nodes.map((n, idx) => {
+      const isFolder = n.nodeType === 'folder';
+      const isFile = n.nodeType === 'file';
+      const baseRadius = isFolder 
+        ? ENGINE_LAWS.THEME.sizes.folder / 2 
+        : (isFile ? ENGINE_LAWS.THEME.sizes.file / 2 : ENGINE_LAWS.THEME.sizes.function / 2);
+
+      let color = ENGINE_LAWS.THEME.nodes.function;
+      if (isFolder) color = ENGINE_LAWS.THEME.nodes.folder;
+      else if (isFile) {
+        if (n.risk === 'high') color = ENGINE_LAWS.THEME.nodes.riskHigh;
+        else if (n.risk === 'medium') color = ENGINE_LAWS.THEME.nodes.riskMedium;
+        else color = ENGINE_LAWS.THEME.nodes.file;
+      }
+
+      return {
+        ...n,
+        id: String(n.id),
+        baseRadius,
+        radius: 0,
+        color,
+        x: (Math.cos(idx) * (20 + idx * 4)),
+        y: (Math.sin(idx) * (20 + idx * 4)),
+        vx: 0,
+        vy: 0,
+        fx: null,
+        fy: null,
+        spawnProgress: 0,
+        isSpawned: false
+      };
+    });
+
+    const nodeLookup = new Map(rawNodes.map(n => [n.id, n]));
+    const parentMap = new Map();
+    const childrenMap = new Map();
+
+    NEURON_GRAPH_DATA.edges.forEach(e => {
+      if (e.type === 'hierarchy') {
+        parentMap.set(e.target, e.source);
+        if (!childrenMap.has(e.source)) childrenMap.set(e.source, []);
+        childrenMap.get(e.source).push(e.target);
       }
     });
 
-    nodesRef.current = nodes;
-    edgesRef.current = edges;
+    const rawEdges = NEURON_GRAPH_DATA.edges.map(e => ({
+      id: e.id,
+      source: e.source,
+      target: e.target,
+      type: e.type
+    }));
+
+    allNodesRef.current = rawNodes;
+    allEdgesRef.current = rawEdges;
+
+    // Active pool starts with Root Folders ('backend' and 'frontend')
+    const rootNodes = rawNodes.filter(n => !parentMap.has(n.id) || n.tier === 0);
+    const activePool = [];
+    const activeNodeIds = new Set();
+
+    rootNodes.forEach((root, idx) => {
+      root.isSpawned = true;
+      root.spawnProgress = 0;
+      root.x = (idx === 0 ? -120 : 120);
+      root.y = 0;
+      activePool.push(root);
+      activeNodeIds.add(root.id);
+    });
+
+    const getActiveEdges = () => {
+      return rawEdges.filter(e => {
+        const s = typeof e.source === 'object' ? e.source.id : e.source;
+        const t = typeof e.target === 'object' ? e.target.id : e.target;
+        return activeNodeIds.has(s) && activeNodeIds.has(t);
+      });
+    };
+
+    activeNodesRef.current = activePool;
+    activeEdgesRef.current = getActiveEdges();
+
+    // Setup D3 Force Simulation with exact laws from engineConfig.js
+    const linkForce = d3.forceLink(activeEdgesRef.current).id(d => d.id)
+      .distance(link => {
+        const tgt = typeof link.target === 'object' ? link.target : nodeLookup.get(link.target);
+        if (link.type === 'hierarchy') {
+          return tgt?.nodeType === 'function' 
+            ? ENGINE_LAWS.PHYSICS.SPRING_DISTANCE.moonOrbit 
+            : ENGINE_LAWS.PHYSICS.SPRING_DISTANCE.planetOrbit;
+        }
+        if (link.type === 'network_bridge') {
+          return ENGINE_LAWS.PHYSICS.SPRING_DISTANCE.neuralCall * 1.2;
+        }
+        return ENGINE_LAWS.PHYSICS.SPRING_DISTANCE.neuralCall;
+      })
+      .strength(link => {
+        if (link.type === 'hierarchy') return ENGINE_LAWS.PHYSICS.SPRING_STRENGTH.structural;
+        if (link.type === 'network_bridge') return ENGINE_LAWS.PHYSICS.SPRING_STRENGTH.bridge;
+        return ENGINE_LAWS.PHYSICS.SPRING_STRENGTH.neural;
+      });
+
+    const simulation = d3.forceSimulation(activePool)
+      .force("link", linkForce)
+      .force("charge", d3.forceManyBody()
+        .strength(d => {
+          return d.nodeType === 'folder' 
+            ? ENGINE_LAWS.PHYSICS.REPULSION.folder 
+            : d.nodeType === 'file' 
+              ? ENGINE_LAWS.PHYSICS.REPULSION.file 
+              : ENGINE_LAWS.PHYSICS.REPULSION.function;
+        })
+        .distanceMax(2200)
+      )
+      .force("x", d3.forceX(0).strength(ENGINE_LAWS.PHYSICS.GRAVITY_PULL))
+      .force("y", d3.forceY(0).strength(ENGINE_LAWS.PHYSICS.GRAVITY_PULL))
+      .force("collide", d3.forceCollide()
+        .radius(d => {
+          const base = d.nodeType === 'folder' 
+            ? ENGINE_LAWS.PHYSICS.COLLISION_RADIUS.folder 
+            : d.nodeType === 'file' 
+              ? ENGINE_LAWS.PHYSICS.COLLISION_RADIUS.file 
+              : ENGINE_LAWS.PHYSICS.COLLISION_RADIUS.function;
+          return base;
+        })
+        .iterations(2)
+      )
+      .alphaDecay(ENGINE_LAWS.PHYSICS.ALPHA_DECAY)
+      .velocityDecay(ENGINE_LAWS.PHYSICS.VELOCITY_DECAY);
+
+    simulation.alphaTarget(ENGINE_LAWS.PHYSICS.RESTING_ALPHA).restart();
+    simulationRef.current = simulation;
+
+    // Build Ordered BFS Spawning Queue
+    const spawnQueue = [];
+    const queuedSet = new Set(activeNodeIds);
+    const bfsQueue = [...rootNodes];
+
+    while (bfsQueue.length > 0) {
+      const current = bfsQueue.shift();
+      const childIds = childrenMap.get(current.id) || [];
+      childIds.forEach(cId => {
+        if (!queuedSet.has(cId)) {
+          queuedSet.add(cId);
+          const childNode = nodeLookup.get(cId);
+          if (childNode) {
+            bfsQueue.push(childNode);
+            spawnQueue.push(childNode);
+          }
+        }
+      });
+    }
+
+    rawNodes.forEach(n => {
+      if (!queuedSet.has(n.id)) {
+        queuedSet.add(n.id);
+        spawnQueue.push(n);
+      }
+    });
+
+    isSpawningCompleteRef.current = false;
+    const totalToSpawn = spawnQueue.length;
+    const delayPerNodeMs = Math.max(18, Math.min(95, Math.round(5500 / Math.max(1, totalToSpawn))));
+
+    // Procedural Staggered Emitter
+    const emitNextNode = () => {
+      if (spawnQueue.length === 0) {
+        isSpawningCompleteRef.current = true;
+        spawnTimerRef.current = null;
+        return;
+      }
+
+      const node = spawnQueue.shift();
+      const parentId = parentMap.get(node.id);
+      const parentNode = parentId ? nodeLookup.get(parentId) : null;
+
+      const angle = Math.random() * Math.PI * 2;
+      const birthDist = 12;
+
+      if (!parentNode || !parentNode.isSpawned) {
+        node.x = Math.cos(angle) * (40 + Math.random() * 60);
+        node.y = Math.sin(angle) * (40 + Math.random() * 60);
+        node.vx = Math.cos(angle) * 2;
+        node.vy = Math.sin(angle) * 2;
+      } else {
+        node.x = parentNode.x + Math.cos(angle) * birthDist;
+        node.y = parentNode.y + Math.sin(angle) * birthDist;
+        const speed = node.nodeType === 'file' ? 6.5 : (node.nodeType === 'folder' ? 7.5 : 3.5);
+        node.vx = (parentNode.vx || 0) * 0.2 + Math.cos(angle) * speed;
+        node.vy = (parentNode.vy || 0) * 0.2 + Math.sin(angle) * speed;
+      }
+
+      node.isSpawned = true;
+      node.spawnProgress = 0;
+
+      activePool.push(node);
+      activeNodeIds.add(node.id);
+
+      const activeEdges = getActiveEdges();
+      activeEdgesRef.current = activeEdges;
+
+      simulation.nodes(activePool);
+      linkForce.links(activeEdges);
+      simulation.alpha(Math.max(simulation.alpha(), 0.26)).restart();
+
+      spawnTimerRef.current = setTimeout(emitNextNode, delayPerNodeMs);
+    };
+
+    spawnTimerRef.current = setTimeout(emitNextNode, 80);
   }, []);
 
   const handleRefactor = useCallback(() => {
     userInteractedRef.current = false;
-    birthStartRef.current = performance.now();
-    isBirthPlayingRef.current = true;
-    const nodes = nodesRef.current;
-    nodes.forEach(node => {
-      node.vx = 0;
-      node.vy = 0;
-      if (node.type === 'folder') {
-        node.radius = 0;
-        node.alpha = 0;
-      } else {
-        const parent = nodes.find(n => n.id === node.parentId);
-        node.x = parent ? parent.x : node.cleanX;
-        node.y = parent ? parent.y : node.cleanY;
-        node.radius = 0;
-        node.alpha = 0;
-        node.isEmerging = false;
-      }
-    });
-  }, []);
+    startSimulationAndSpawning();
+  }, [startSimulationAndSpawning]);
 
-  // Initial topology creation
-  useEffect(() => {
-    buildGalaxyTopology();
-  }, [buildGalaxyTopology]);
-
-  // Animation triggers reliably when user reaches/scrolls to the graph box
+  // Viewport intersection observer to trigger on scroll
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const startAnimation = () => {
-      if (hasStartedAnimRef.current) return;
-      hasStartedAnimRef.current = true;
-      birthStartRef.current = performance.now();
-      isBirthPlayingRef.current = true;
+    let hasStarted = false;
+    const startOnce = () => {
+      if (hasStarted) return;
+      hasStarted = true;
+      startSimulationAndSpawning();
     };
 
     const observer = new IntersectionObserver(
@@ -893,59 +712,50 @@ export default function NeuronHeroEngine() {
           const isIntersecting = entry.isIntersecting;
           isVisibleRef.current = isIntersecting;
           if (isIntersecting) {
-            if (!hasStartedAnimRef.current) {
-              startAnimation();
-            }
+            startOnce();
             if (renderTriggerRef.current) {
               renderTriggerRef.current();
             }
           }
         });
       },
-      {
-        threshold: [0, 0.05],
-        rootMargin: '120px 0px 120px 0px'
-      }
+      { threshold: [0, 0.05], rootMargin: '120px 0px 120px 0px' }
     );
 
     observer.observe(container);
 
-    // Immediate check if container is already in viewport on load
     const rect = container.getBoundingClientRect();
     if (rect.top < window.innerHeight * 0.95 && rect.bottom > 0) {
       isVisibleRef.current = true;
-      startAnimation();
-      if (renderTriggerRef.current) {
-        renderTriggerRef.current();
-      }
+      startOnce();
     }
 
     return () => observer.disconnect();
-  }, []);
+  }, [startSimulationAndSpawning]);
 
+  // Center viewport on canvas resize
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+
     const updateCenter = () => {
-      if (canvas.clientWidth > 0 && !userInteractedRef.current && !isBirthPlayingRef.current) {
-        const initialZoom = 1.85;
+      if (canvas.clientWidth > 0 && !userInteractedRef.current) {
+        const initialZoom = 0.95;
         zoomRef.current = initialZoom;
-        const initialPan = {
-          x: canvas.clientWidth / 2 - 620 * initialZoom,
-          y: canvas.clientHeight / 2 - 340 * initialZoom
+        panRef.current = {
+          x: canvas.clientWidth / 2,
+          y: canvas.clientHeight / 2
         };
-        panRef.current = initialPan;
         setZoomDisplay(Math.round(initialZoom * 100));
       }
     };
+
     updateCenter();
     window.addEventListener('resize', updateCenter);
     return () => window.removeEventListener('resize', updateCenter);
   }, []);
 
-  // -------------------------------------------------------------------------
-  // CONFLICT-FREE NATIVE WHEEL LISTENER (Prevents Whole-Website Zoom)
-  // -------------------------------------------------------------------------
+  // Conflict-free native wheel listener
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -963,7 +773,7 @@ export default function NeuronHeroEngine() {
 
         const zoomFactor = e.deltaY < 0 ? 1.08 : 0.92;
         const currentZoom = zoomRef.current;
-        const newZoom = Math.min(Math.max(currentZoom * zoomFactor, 0.18), 2.5);
+        const newZoom = Math.min(Math.max(currentZoom * zoomFactor, 0.18), 3.0);
 
         const worldBefore = screenToWorld(mouseX, mouseY);
         userInteractedRef.current = true;
@@ -986,9 +796,7 @@ export default function NeuronHeroEngine() {
     };
   }, [screenToWorld]);
 
-  // -------------------------------------------------------------------------
-  // 60 FPS MAIN RENDER & LIQUID VISCOUS PHYSICS LOOP
-  // -------------------------------------------------------------------------
+  // 60-120 FPS Main Render Loop with Louvain Nebulae & Photon Conduits
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -1001,7 +809,6 @@ export default function NeuronHeroEngine() {
       if (!isVisibleRef.current) {
         return;
       }
-      const dt = Math.min(time - prevTime, 64);
       prevTime = time;
 
       const width = canvas.clientWidth;
@@ -1016,611 +823,263 @@ export default function NeuronHeroEngine() {
       ctx.scale(dpr, dpr);
       ctx.clearRect(0, 0, width, height);
 
-      // Dynamic theme-matching backdrop
-      ctx.fillStyle = activeThemeRef.current ? activeThemeRef.current.background : '#08090c';
+      // Background matching active theme
+      ctx.fillStyle = activeThemeRef.current ? activeThemeRef.current.background : '#121314';
       ctx.fillRect(0, 0, width, height);
 
-      const nodes = nodesRef.current;
-      const edges = edgesRef.current;
-      const nodeMap = new Map();
-      nodes.forEach(n => nodeMap.set(n.id, n));
+      const activeNodes = activeNodesRef.current || [];
+      const activeEdges = activeEdgesRef.current || [];
 
-      // 0. Gated Celestial Birth: Animation waits until the user reaches 70% of the box!
-      if (!hasStartedAnimRef.current) {
-        nodes.forEach(node => {
-          node.radius = 0;
-          node.alpha = 0;
-          node.x = node.cleanX || node.baseX;
-          node.y = node.cleanY || node.baseY;
-        });
-        animFrameRef.current = requestAnimationFrame(render);
-        return;
-      }
-
-      // Smooth Refactor interpolation back to pristine layout
-      if (isRefactoringRef.current) {
-        const elapsedRefactor = time - refactorStartRef.current;
-        const duration = 750;
-        if (elapsedRefactor < duration) {
-          const t = elapsedRefactor / duration;
-          const ease = 1 - Math.pow(1 - t, 3);
-          nodes.forEach(node => {
-            node.x = node.refactorStartX + (node.cleanX - node.refactorStartX) * ease;
-            node.y = node.refactorStartY + (node.cleanY - node.refactorStartY) * ease;
-            node.vx = 0;
-            node.vy = 0;
-          });
-        } else {
-          nodes.forEach(node => {
-            node.x = node.cleanX;
-            node.y = node.cleanY;
-            node.vx = 0;
-            node.vy = 0;
-          });
-          isRefactoringRef.current = false;
+      // Emerge newly spawned nodes with easeOutBack elastic popping
+      activeNodes.forEach(node => {
+        if (node.isSpawned && node.spawnProgress < 1) {
+          node.spawnProgress = Math.min(1, (node.spawnProgress || 0) + 0.038);
         }
-      }
-
-      const elapsedBirth = isBirthPlayingRef.current ? time - birthStartRef.current : 999999;
-      const mouseWorld = mouseRef.current;
-
-      // Multi-Waypoint Camera Tour: glides between yellow nodes displaying each ball coming out, then pulls back to reveal the full galaxy
-      if (isBirthPlayingRef.current && !userInteractedRef.current) {
-        const universeSpanX = 2980;
-        const universeSpanY = 1520;
-        const centerWorldX = 680;
-        const centerWorldY = 680;
-        const fitZoomX = (width - 70) / universeSpanX;
-        const fitZoomY = (height - 60) / universeSpanY;
-        const endZoom = Math.min(fitZoomX, fitZoomY, 0.44);
-
-        const WAYPOINTS = [
-          { t: 0, x: 620, y: 340, zoom: 1.75 },       // dir_engine focus
-          { t: 2200, x: 620, y: 340, zoom: 1.75 },    // hold on dir_engine as child balls shoot out
-          { t: 3400, x: 1560, y: 320, zoom: 1.70 },   // glide to dir_parser
-          { t: 5200, x: 1560, y: 320, zoom: 1.70 },   // hold on dir_parser as pomegranate cluster shoots out
-          { t: 6400, x: 180, y: 1040, zoom: 1.60 },   // glide to dir_physics
-          { t: 7600, x: 180, y: 1040, zoom: 1.60 },   // hold on dir_physics as physics balls shoot out
-          { t: 9400, x: centerWorldX, y: centerWorldY, zoom: endZoom } // smoothly pull back to full galaxy
-        ];
-
-        let targetX = WAYPOINTS[0].x;
-        let targetY = WAYPOINTS[0].y;
-        let targetZoom = WAYPOINTS[0].zoom;
-
-        if (elapsedBirth >= WAYPOINTS[WAYPOINTS.length - 1].t) {
-          targetX = WAYPOINTS[WAYPOINTS.length - 1].x;
-          targetY = WAYPOINTS[WAYPOINTS.length - 1].y;
-          targetZoom = WAYPOINTS[WAYPOINTS.length - 1].zoom;
-        } else {
-          for (let i = 0; i < WAYPOINTS.length - 1; i++) {
-            const w1 = WAYPOINTS[i];
-            const w2 = WAYPOINTS[i + 1];
-            if (elapsedBirth >= w1.t && elapsedBirth < w2.t) {
-              const segProgress = (elapsedBirth - w1.t) / (w2.t - w1.t);
-              const ease = segProgress < 0.5 
-                ? 4 * segProgress * segProgress * segProgress 
-                : 1 - Math.pow(-2 * segProgress + 2, 3) / 2;
-              targetX = w1.x + (w2.x - w1.x) * ease;
-              targetY = w1.y + (w2.y - w1.y) * ease;
-              targetZoom = w1.zoom + (w2.zoom - w1.zoom) * ease;
-              break;
-            }
-          }
-        }
-
-        panRef.current.x = width / 2 - targetX * targetZoom;
-        panRef.current.y = height / 2 - targetY * targetZoom;
-        zoomRef.current = targetZoom;
-      }
-
-      // 1. Sequential Tree Growth Blooming with Small Balls Emerging from Yellow Suns
-      if (isBirthPlayingRef.current && elapsedBirth < 9600) {
-        nodes.forEach(node => {
-          if (node.type === 'folder') {
-            if (elapsedBirth < node.birthStart) {
-              node.radius = 0;
-              node.alpha = 0;
-              return;
-            }
-            const age = elapsedBirth - node.birthStart;
-            if (age < 420) {
-              const u = age / 420;
-              const ease = 1 + 2.2 * Math.pow(u - 1, 3) + 1.2 * Math.pow(u - 1, 2);
-              node.radius = node.baseRadius * Math.min(Math.max(ease, 0), 1.15);
-              node.alpha = Math.min(u * 1.6, 1.0);
-            } else {
-              node.radius = node.baseRadius;
-              node.alpha = 1.0;
-            }
-          } else {
-            // Small ball emerging and shooting outward from parent yellow ball
-            if (elapsedBirth < (node.growthStart || 0)) {
-              const parent = nodeMap.get(node.parentId);
-              node.x = parent ? parent.x : node.cleanX;
-              node.y = parent ? parent.y : node.cleanY;
-              node.radius = 0;
-              node.alpha = 0;
-              node.isEmerging = false;
-              return;
-            }
-
-            const age = elapsedBirth - node.growthStart;
-            const parent = nodeMap.get(node.parentId);
-            const originX = parent ? parent.x : node.cleanX;
-            const originY = parent ? parent.y : node.cleanY;
-
-            if (age < (node.emergeDuration || 700)) {
-              const u = age / (node.emergeDuration || 700);
-              // Viscous elastic shoot-out trajectory from center of yellow ball
-              const travelEase = 1 - Math.pow(1 - u, 2.6);
-              node.x = originX + (node.cleanX - originX) * travelEase;
-              node.y = originY + (node.cleanY - originY) * travelEase;
-
-              // Smoothly expand and pop as it protrudes outward
-              const popEase = Math.sin(u * Math.PI * 0.5) * (1 + 0.25 * Math.sin(u * Math.PI));
-              node.radius = node.baseRadius * Math.max(0, Math.min(popEase, 1.25));
-              node.alpha = Math.min(u * 2.0, 1.0);
-              node.isEmerging = true;
-              node.emergeProgress = u;
-            } else {
-              node.x = node.cleanX;
-              node.y = node.cleanY;
-              node.radius = node.baseRadius;
-              node.alpha = 1.0;
-              node.isEmerging = false;
-            }
-          }
-        });
-      } else if (isBirthPlayingRef.current && elapsedBirth >= 9600) {
-        isBirthPlayingRef.current = false;
-        nodes.forEach(node => {
-          node.x = node.cleanX;
-          node.y = node.cleanY;
-          node.radius = node.baseRadius;
-          node.alpha = 1.0;
-          node.isEmerging = false;
-        });
-        setZoomDisplay(Math.round(zoomRef.current * 100));
-      }
-
-      // 2. LIQUID VISCOUS PHYSICS ("Stone Moving Through Water" - Nothing is fixed!)
-      const hasCursor = mouseWorld.screenX > 0 && mouseWorld.screenY > 0;
-
-      nodes.forEach(node => {
-        if (node.isFixed) return;
-        if (isBirthPlayingRef.current && elapsedBirth < (node.birthStart || 0) + 200) return;
-        if (isRefactoringRef.current) return;
-        if (node.isDragged) return;
-
-        const isFolder = node.type === 'folder';
-
-        // Force 1: Proximity Repulsion Wake (< 110px, or 130px for folders)
-        if (hasCursor) {
-          const mdx = node.x - mouseWorld.worldX;
-          const mdy = node.y - mouseWorld.worldY;
-          const mDist = Math.hypot(mdx, mdy) || 1;
-
-          const wakeRadius = isFolder ? 130 : 110;
-          if (mDist < wakeRadius) {
-            const proximity = (wakeRadius - mDist) / wakeRadius;
-            const pushForce = Math.pow(proximity, 1.3) * (isFolder ? 2.4 : 3.4);
-            node.vx += (mdx / mDist) * pushForce;
-            node.vy += (mdy / mDist) * pushForce;
-          }
-        }
-
-        // Force 2: Gentle Natural Micro-Drift (Floating in fluid, NO leash snapping back!)
-        node.vx += Math.sin(time * 0.0011 + node.seedX) * 0.025;
-        node.vy += Math.cos(time * 0.0009 + node.seedY) * 0.025;
-
-        // Force 3: Liquid Viscosity Damping (0.88 = smooth deceleration, stops where pushed/dragged)
-        node.vx *= 0.88;
-        node.vy *= 0.88;
-
-        node.x += node.vx;
-        node.y += node.vy;
+        const p = Math.max(0, Math.min(1, node.spawnProgress || 0));
+        const scaleMultiplier = p > 0 ? easeOutBack(p) : 0;
+        node.radius = node.baseRadius * Math.max(0, scaleMultiplier);
       });
 
-      // Force 4: Chain-Reaction Waves along Edges
-      edges.forEach(edge => {
-        // Folder backbone edges do NOT pull folders together! Yellow dots are 100% free to move!
-        if (edge.type === 'folder-backbone') return;
+      // Interactive Hover Ray Tracing Focus
+      const activeNode = selectedNodeRef.current || hoveredNodeRef.current;
+      const activeId = activeNode?.id;
+      const focusedNodeIds = new Set();
+      const focusedEdgeIds = new Set();
 
-        const source = nodeMap.get(edge.source);
-        const target = nodeMap.get(edge.target);
-        if (!source || !target || source.radius <= 0 || target.radius <= 0) return;
-
-        const dx = target.x - source.x;
-        const dy = target.y - source.y;
-        const dist = Math.hypot(dx, dy) || 1;
-        const restLength = edge.restLength || Math.hypot(target.cleanX - source.cleanX, target.cleanY - source.cleanY);
-        const delta = dist - restLength;
-
-        // Child file tethered to parent folder: only pull child toward folder
-        const springTension = 0.016;
-        const fx = (dx / dist) * delta * springTension;
-        const fy = (dy / dist) * delta * springTension;
-
-        if (!target.isFixed && !target.isDragged && !isRefactoringRef.current) {
-          target.vx -= fx;
-          target.vy -= fy;
-        }
-      });
-
-      // Force 5: Soft Anti-Overlap Magnetic Repulsion
-      for (let i = 0; i < nodes.length; i++) {
-        const a = nodes[i];
-        if (a.radius <= 0.5) continue;
-        for (let j = i + 1; j < nodes.length; j++) {
-          const b = nodes[j];
-          if (b.radius <= 0.5) continue;
-
-          const dx = b.x - a.x;
-          const dy = b.y - a.y;
-          if (Math.abs(dx) > 36 || Math.abs(dy) > 36) continue;
-
-          const distSq = dx * dx + dy * dy || 1;
-          const minDist = a.radius + b.radius + 12;
-          if (distSq < minDist * minDist) {
-            const dist = Math.sqrt(distSq);
-            const rep = ((minDist - dist) / minDist) * 0.55;
-            const rx = (dx / dist) * rep;
-            const ry = (dy / dist) * rep;
-
-            if (!a.isFixed && !a.isDragged && !isRefactoringRef.current) { a.vx -= rx; a.vy -= ry; }
-            if (!b.isFixed && !b.isDragged && !isRefactoringRef.current) { b.vx += rx; b.vy += ry; }
-          }
-        }
-      }
-
-      // 3. Cinematic Depth-of-Field
-      const activeId = selectedNodeRef.current?.id || hoveredNodeRef.current?.id;
-      const focusedIds = new Set();
       if (activeId) {
-        focusedIds.add(activeId);
-        edges.forEach(e => {
-          if (e.source === activeId) focusedIds.add(e.target);
-          if (e.target === activeId) focusedIds.add(e.source);
+        focusedNodeIds.add(activeId);
+        activeEdges.forEach(e => {
+          const sId = typeof e.source === 'object' ? e.source.id : e.source;
+          const tId = typeof e.target === 'object' ? e.target.id : e.target;
+          if (sId === activeId) {
+            focusedNodeIds.add(tId);
+            focusedEdgeIds.add(e.id);
+          } else if (tId === activeId) {
+            focusedNodeIds.add(sId);
+            focusedEdgeIds.add(e.id);
+          }
         });
       }
 
-      nodes.forEach(node => {
-        const targetAlpha = activeId ? (focusedIds.has(node.id) ? 1.0 : 0.08) : 1.0;
-        node.alpha += (targetAlpha - node.alpha) * 0.14;
-      });
-
-      // 4. RENDERING PASS
       ctx.save();
       ctx.translate(panRef.current.x, panRef.current.y);
       ctx.scale(zoomRef.current, zoomRef.current);
 
-      // Massive Unified Cluster Nebulae (NOT section-wise disjoint circles; each cluster is wrapped in one HUGE atmospheric gradient)
-      const CLUSTER_DOMAINS = ['coral', 'purple', 'cyan', 'indigo', 'amber'];
-      CLUSTER_DOMAINS.forEach(domainTheme => {
-        const clusterFolders = nodes.filter(n => n.type === 'folder' && n.theme === domainTheme && n.radius > 0.5);
-        if (clusterFolders.length === 0) return;
-
-        const cfg = CLUSTER_NEBULA_THEMES[domainTheme];
-        if (!cfg) return;
-
-        // Dynamic weighted centroid of the entire cluster (follows live node positions as they move/drift/drag)
-        let sumX = 0;
-        let sumY = 0;
-        let totalW = 0;
-        let maxNodeDist = 0;
-
-        clusterFolders.forEach(f => {
-          const w = f.isHub ? 2.5 : 1.0;
-          sumX += f.x * w;
-          sumY += f.y * w;
-          totalW += w;
-        });
-
-        if (totalW === 0) return;
-        const cx = sumX / totalW;
-        const cy = sumY / totalW;
-
-        clusterFolders.forEach(f => {
-          const d = Math.hypot(f.x - cx, f.y - cy) + f.baseRadius + 200;
-          if (d > maxNodeDist) maxNodeDist = d;
-        });
-
-        // The huge gradient encompasses the entire cluster with generous padding
-        const hugeRadius = Math.max(maxNodeDist, 560);
-
-        ctx.save();
-        let clusterAlpha = isBirthPlayingRef.current ? Math.min(elapsedBirth / 1000, 1.0) : 1.0;
-        if (activeId) {
-          const hasFocused = clusterFolders.some(f => focusedIds.has(f.id));
-          clusterAlpha *= (hasFocused ? 1.0 : 0.12);
+      // 1. RENDER LOUVAIN COMMUNITY NEBULAE (Convex Hulls with padding: 85, strokeWidth: 80, join: round)
+      const communityGroups = {};
+      activeNodes.forEach(node => {
+        if (node.community !== undefined && (node.spawnProgress || 0) > 0.3) {
+          if (!communityGroups[node.community]) communityGroups[node.community] = [];
+          communityGroups[node.community].push(node);
         }
-        ctx.globalAlpha = clusterAlpha;
-
-        // 1. Broad seamless outer cosmic nebula (one huge gradient for the whole cluster: "all of it is red" / cyan / purple / etc.)
-        const hugeGrad = ctx.createRadialGradient(cx, cy, 30, cx, cy, hugeRadius);
-        hugeGrad.addColorStop(0, cfg.inner);
-        hugeGrad.addColorStop(0.35, cfg.mid);
-        hugeGrad.addColorStop(0.70, cfg.outer);
-        hugeGrad.addColorStop(1.0, cfg.edge);
-
-        ctx.fillStyle = hugeGrad;
-        ctx.beginPath();
-        ctx.arc(cx, cy, hugeRadius, 0, Math.PI * 2);
-        ctx.fill();
-
-        // 2. Continuous bridge glow across the cluster's major hubs (seamless blending)
-        clusterFolders.forEach(f => {
-          if (f.isHub && f.radius > 2) {
-            const hubGrad = ctx.createRadialGradient(f.x, f.y, f.radius * 0.4, f.x, f.y, 320);
-            hubGrad.addColorStop(0, cfg.inner);
-            hubGrad.addColorStop(0.40, cfg.mid);
-            hubGrad.addColorStop(1.0, cfg.edge);
-            ctx.fillStyle = hubGrad;
-            ctx.beginPath();
-            ctx.arc(f.x, f.y, 320, 0, Math.PI * 2);
-            ctx.fill();
-          }
-        });
-
-        ctx.restore();
       });
 
-      // Silk Thread Conduits & Dashed Folder Backbones (with growing branch animation!)
-      edges.forEach((edge) => {
-        const source = nodeMap.get(edge.source);
-        const target = nodeMap.get(edge.target);
-        if (!source || !target) return;
+      const nebulaColors = ENGINE_LAWS.THEME.nebula.colors;
+      const pad = ENGINE_LAWS.THEME.nebula.padding;
 
-        // In birth animation: branch doesn't exist yet before growthStart
-        if (isBirthPlayingRef.current && elapsedBirth < (edge.growthStart || 0)) return;
+      Object.entries(communityGroups).forEach(([commId, commNodes]) => {
+        if (commNodes.length < 3) return;
 
-        let alpha = Math.min(source.alpha, target.alpha);
-        if (alpha < 0.02 && !isBirthPlayingRef.current) return;
+        const pts = [];
+        commNodes.forEach(n => {
+          pts.push([n.x - pad, n.y - pad]);
+          pts.push([n.x + pad, n.y - pad]);
+          pts.push([n.x - pad, n.y + pad]);
+          pts.push([n.x + pad, n.y + pad]);
+        });
 
-        let startX = source.x;
-        let startY = source.y;
-        let endX = target.x;
-        let endY = target.y;
-
-        // If currently in growing phase, branch extends progressively from growthSource to growthTarget!
-        if (isBirthPlayingRef.current && elapsedBirth < (edge.growthEnd || 999999)) {
-          if (edge.type === 'folder-backbone') {
-            const gSource = nodeMap.get(edge.growthSource || edge.source) || source;
-            const gTarget = nodeMap.get(edge.growthTarget || edge.target) || target;
-            startX = gSource.x;
-            startY = gSource.y;
-
-            const gStart = edge.growthStart || 0;
-            const gEnd = edge.growthEnd || (gStart + 80);
-            const duration = Math.max(gEnd - gStart, 30);
-            const p = Math.min(Math.max((elapsedBirth - gStart) / duration, 0), 1.0);
-            endX = gSource.x + (gTarget.x - gSource.x) * p;
-            endY = gSource.y + (gTarget.y - gSource.y) * p;
-
-            // Glowing energy spark at the tip of the growing branch!
-            ctx.save();
-            ctx.beginPath();
-            ctx.arc(endX, endY, 3.5, 0, Math.PI * 2);
-            ctx.fillStyle = '#fde047';
-            ctx.shadowColor = '#facc15';
-            ctx.shadowBlur = 10;
-            ctx.fill();
-            ctx.restore();
-          } else {
-            // folder-child edge: target is already animated from source center to target clean pos!
-            startX = source.x;
-            startY = source.y;
-            endX = target.x;
-            endY = target.y;
-          }
-        }
-
-        let lineWidth = edge.type === 'folder-backbone' ? 1.0 : 0.65;
-        let strokeStyle = edge.color;
-
-        if (activeId) {
-          const isConnected = focusedIds.has(source.id) && focusedIds.has(target.id);
-          alpha = isConnected ? 0.95 : 0.03;
-          if (isConnected) lineWidth = 1.8;
-        }
-
-        ctx.save();
-        ctx.globalAlpha = Math.max(alpha, isBirthPlayingRef.current ? 0.45 : 0.02);
-        ctx.strokeStyle = strokeStyle;
-        ctx.lineWidth = lineWidth;
-
-        if (edge.isDashed) {
-          ctx.setLineDash([4, 4]);
-        }
-
-        ctx.beginPath();
-        ctx.moveTo(startX, startY);
-        ctx.lineTo(endX, endY);
-        ctx.stroke();
-        ctx.restore();
-      });
-
-      // Luminous Glow on Data Transfer Conduits (Highways)
-      if (!isBirthPlayingRef.current || elapsedBirth >= 7600) {
-        FILE_HIGHWAYS.forEach(hw => {
-          const source = nodeMap.get(hw.source);
-          const target = nodeMap.get(hw.target);
-          if (!source || !target || source.radius <= 0 || target.radius <= 0) return;
-          // STRICT RULE: No data transfer conduits connected to yellow folder balls!
-          if (source.type === 'folder' || target.type === 'folder') return;
-
-          let highwayAlpha = Math.min(source.alpha, target.alpha);
-          if (highwayAlpha < 0.02) return;
-
-          if (activeId) {
-            const isConnected = focusedIds.has(source.id) && focusedIds.has(target.id);
-            highwayAlpha = isConnected ? 0.95 : 0.05;
-          }
+        const hull = polygonHull(pts);
+        if (hull && hull.length > 2) {
+          const colorObj = nebulaColors[parseInt(commId, 10) % nebulaColors.length];
+          const isCommFocused = !activeId || commNodes.some(n => focusedNodeIds.has(n.id));
+          const hullAlphaMultiplier = isCommFocused ? 1.0 : 0.12;
 
           ctx.save();
-          ctx.globalAlpha = highwayAlpha * 0.85;
-
-          // Outer neon glow stroke
           ctx.beginPath();
-          ctx.moveTo(source.x, source.y);
-          ctx.lineTo(target.x, target.y);
-          ctx.strokeStyle = 'rgba(6, 182, 212, 0.42)';
-          ctx.lineWidth = 3.8;
-          ctx.stroke();
+          ctx.moveTo(hull[0][0], hull[0][1]);
+          for (let i = 1; i < hull.length; i++) {
+            ctx.lineTo(hull[i][0], hull[i][1]);
+          }
+          ctx.closePath();
 
-          // Inner electric laser beam
-          ctx.beginPath();
-          ctx.moveTo(source.x, source.y);
-          ctx.lineTo(target.x, target.y);
-          ctx.strokeStyle = 'rgba(165, 243, 252, 0.90)';
-          ctx.lineWidth = 1.4;
+          // Fill hull
+          ctx.fillStyle = colorObj.fill;
+          ctx.globalAlpha = ENGINE_LAWS.THEME.nebula.fillOpacity * hullAlphaMultiplier;
+          ctx.fill();
+
+          // Stroke hull with rounded join and wide radius
+          ctx.strokeStyle = colorObj.stroke;
+          ctx.globalAlpha = ENGINE_LAWS.THEME.nebula.strokeOpacity * hullAlphaMultiplier;
+          ctx.lineWidth = ENGINE_LAWS.THEME.nebula.strokeWidth;
+          ctx.lineJoin = 'round';
+          ctx.lineCap = 'round';
           ctx.stroke();
 
           ctx.restore();
-        });
-      }
+        }
+      });
 
-      // Fast, All-Blue, Glowing Data Balls Traveling Between Nodes (with Comet Tails)
-      if (!isBirthPlayingRef.current || elapsedBirth >= 8200) {
-        DATA_PULSES.forEach(pkt => {
-          const source = nodeMap.get(pkt.source);
-          const target = nodeMap.get(pkt.target);
-          if (!source || !target || source.radius <= 0 || target.radius <= 0) return;
-          // STRICT RULE: Zero data pulses to or from yellow folder balls!
-          if (source.type === 'folder' || target.type === 'folder') return;
+      // 2. RENDER EDGES & CROSS-STACK LASER BRIDGES
+      activeEdges.forEach(edge => {
+        const source = typeof edge.source === 'object' ? edge.source : activeNodes.find(n => n.id === edge.source);
+        const target = typeof edge.target === 'object' ? edge.target : activeNodes.find(n => n.id === edge.target);
+        if (!source || !target || source.radius <= 0 || target.radius <= 0) return;
 
-          let pktAlpha = 1.0;
-          if (activeId && !focusedIds.has(pkt.source) && !focusedIds.has(pkt.target)) {
-            pktAlpha = 0.08;
-          }
+        const edgeSpawnAlpha = Math.min(source.spawnProgress || 1, target.spawnProgress || 1);
+        if (edgeSpawnAlpha < 0.05) return;
 
-        const progress = (time * pkt.speed + pkt.offset) % 1.0;
-        const px = source.x + (target.x - source.x) * progress;
-        const py = source.y + (target.y - source.y) * progress;
+        const isBridge = edge.type === 'network_bridge';
+        const isCall = edge.type === 'call';
+        const isFocusedEdge = focusedEdgeIds.has(edge.id);
+        const isDimmed = activeId && !isFocusedEdge;
 
         ctx.save();
-        ctx.globalAlpha = pktAlpha;
 
-        // Luminous Comet Tail (trailing behind fast moving ball)
-        const tailLength = 0.14;
-        const tailProgress = Math.max(0, progress - tailLength);
-        const tx = source.x + (target.x - source.x) * tailProgress;
-        const ty = source.y + (target.y - source.y) * tailProgress;
+        if (isBridge) {
+          // --- Cross-Stack Cyan Laser Conduit ---
+          const bridgeAlpha = isDimmed ? 0.08 : (edgeSpawnAlpha * (isFocusedEdge ? 1.0 : 0.95));
 
-        const tailGrad = ctx.createLinearGradient(tx, ty, px, py);
-        tailGrad.addColorStop(0, 'rgba(6, 182, 212, 0)');
-        tailGrad.addColorStop(0.4, 'rgba(34, 211, 238, 0.45)');
-        tailGrad.addColorStop(1, 'rgba(165, 243, 252, 0.95)');
+          // Outer Neon Glow Aura
+          ctx.beginPath();
+          ctx.moveTo(source.x, source.y);
+          ctx.lineTo(target.x, target.y);
+          ctx.strokeStyle = '#00f0ff';
+          ctx.lineWidth = 8.0;
+          ctx.globalAlpha = 0.18 * bridgeAlpha;
+          ctx.stroke();
 
-        ctx.beginPath();
-        ctx.moveTo(tx, ty);
-        ctx.lineTo(px, py);
-        ctx.strokeStyle = tailGrad;
-        ctx.lineWidth = 3.2;
-        ctx.stroke();
+          // Core Electric Laser Beam
+          ctx.beginPath();
+          ctx.moveTo(source.x, source.y);
+          ctx.lineTo(target.x, target.y);
+          ctx.strokeStyle = '#00f0ff';
+          ctx.lineWidth = ENGINE_LAWS.THEME.edges.widthBridge;
+          ctx.globalAlpha = bridgeAlpha;
+          ctx.stroke();
 
-        // Outer Radiant Glow Aura
-        ctx.beginPath();
-        ctx.arc(px, py, pkt.glowSize, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(34, 211, 238, 0.40)';
-        ctx.fill();
+          // Dual Traveling High-Speed Photons
+          for (let pIdx = 0; pIdx < 2; pIdx++) {
+            const photonT = ((time * 0.001) + (pIdx * 0.5)) % 1.0;
+            const px = source.x + (target.x - source.x) * photonT;
+            const py = source.y + (target.y - source.y) * photonT;
 
-        // Mid Vivid Electric Blue Halo
-        ctx.beginPath();
-        ctx.arc(px, py, pkt.glowSize * 0.55, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(103, 232, 249, 0.80)';
-        ctx.fill();
+            // Outer cyan halo
+            ctx.beginPath();
+            ctx.arc(px, py, 7.0, 0, Math.PI * 2);
+            ctx.fillStyle = '#00f0ff';
+            ctx.globalAlpha = 0.35 * bridgeAlpha;
+            ctx.fill();
 
-        // Intense White-Cyan Core Star (Shooting aggressively)
-        ctx.beginPath();
-        ctx.arc(px, py, pkt.size, 0, Math.PI * 2);
-        ctx.fillStyle = '#ffffff';
-        ctx.shadowColor = '#22d3ee';
-        ctx.shadowBlur = 12;
-        ctx.fill();
+            // Inner intense white star
+            ctx.beginPath();
+            ctx.arc(px, py, 3.5, 0, Math.PI * 2);
+            ctx.fillStyle = '#ffffff';
+            ctx.globalAlpha = 0.95 * bridgeAlpha;
+            ctx.fill();
+          }
+        } else {
+          // --- Structural Hierarchy / Neural Call Edge ---
+          let strokeColor = isCall ? ENGINE_LAWS.THEME.edges.call : ENGINE_LAWS.THEME.edges.hierarchy;
+          let lineWidth = isCall ? ENGINE_LAWS.THEME.edges.widthCall : ENGINE_LAWS.THEME.edges.widthHierarchy;
+          let alpha = isCall ? 0.55 : ENGINE_LAWS.THEME.edges.opacityNormal;
+
+          if (isFocusedEdge) {
+            strokeColor = isCall ? ENGINE_LAWS.THEME.edges.callGlow : ENGINE_LAWS.THEME.edges.hierarchyGlow;
+            lineWidth = ENGINE_LAWS.THEME.edges.widthHoverGlow;
+            alpha = 1.0;
+          } else if (isDimmed) {
+            alpha = ENGINE_LAWS.THEME.edges.opacityDimmed;
+          }
+
+          ctx.beginPath();
+          ctx.moveTo(source.x, source.y);
+          ctx.lineTo(target.x, target.y);
+          ctx.strokeStyle = strokeColor;
+          ctx.lineWidth = lineWidth;
+          ctx.globalAlpha = alpha * edgeSpawnAlpha;
+          ctx.stroke();
+        }
 
         ctx.restore();
       });
-    }
 
-      // Draw Nodes
-      nodes.forEach(node => {
+      // 3. RENDER CELESTIAL NODES
+      activeNodes.forEach(node => {
         if (node.radius <= 0.2) return;
 
-        ctx.save();
-        ctx.globalAlpha = node.alpha;
-
-        // Golden shockwave ring when folder blooms in tree growth
-        if (node.type === 'folder' && isBirthPlayingRef.current && elapsedBirth >= node.birthStart) {
-          const age = elapsedBirth - node.birthStart;
-          if (age < 420) {
-            const shockwave = age / 420;
-            ctx.save();
-            ctx.beginPath();
-            ctx.arc(node.x, node.y, node.baseRadius * (1 + shockwave * 2.2), 0, Math.PI * 2);
-            ctx.strokeStyle = `rgba(250, 204, 21, ${(1 - shockwave) * 0.75})`;
-            ctx.lineWidth = 2.0;
-            ctx.stroke();
-            ctx.restore();
-          }
-        }
-
-        // Sparkling emerging burst when small file shoots out from yellow sun
-        if (node.type !== 'folder' && isBirthPlayingRef.current && node.isEmerging && node.emergeProgress < 0.65) {
-          ctx.save();
-          const sparkSize = node.radius + 3.2 * (1 - node.emergeProgress);
-          ctx.beginPath();
-          ctx.arc(node.x, node.y, sparkSize, 0, Math.PI * 2);
-          ctx.fillStyle = '#ffffff';
-          ctx.shadowColor = node.color;
-          ctx.shadowBlur = 10;
-          ctx.fill();
-          ctx.restore();
-        }
-
-        // Solid Vector Disc
-        ctx.beginPath();
-        ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
-        ctx.fillStyle = node.color;
-        ctx.fill();
-
-        // Labels
-        const isFocused = activeId && focusedIds.has(node.id);
         const isHovered = hoveredNodeRef.current?.id === node.id;
         const isSelected = selectedNodeRef.current?.id === node.id;
-        const shouldShowLabel = showLabels && (node.type === 'folder' || node.isSuper || node.isCritical || node.isKey || isFocused || isHovered || isSelected);
+        const isFocused = focusedNodeIds.has(node.id);
+        const isDimmed = activeId && !isFocused;
 
-        if (shouldShowLabel && node.label && node.radius > 3.2) {
-          ctx.save();
-          ctx.font = node.type === 'folder' 
-            ? '600 11px ui-monospace, SFMono-Regular, Menlo, monospace' 
-            : ((node.isSuper || node.isCritical || isHovered) ? '600 9.5px ui-monospace, SFMono-Regular, Menlo, monospace' : '400 9px ui-monospace, SFMono-Regular, Menlo, monospace');
-          
+        const nodeAlpha = isDimmed ? 0.04 : 1.0;
+
+        ctx.save();
+        ctx.globalAlpha = nodeAlpha;
+
+        // Hovered/Selected Outer Aura
+        if (isHovered || isSelected) {
+          ctx.beginPath();
+          ctx.arc(node.x, node.y, node.radius + 6, 0, Math.PI * 2);
+          ctx.strokeStyle = '#60a5fa';
+          ctx.lineWidth = 2.0;
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.arc(node.x, node.y, node.radius + 12, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(96, 165, 250, 0.15)';
+          ctx.fill();
+        }
+
+        // Main Node Disc
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+        ctx.fillStyle = (isHovered || isSelected) ? '#60a5fa' : node.color;
+        ctx.fill();
+
+        // High-Risk Pulsing Ring
+        if (node.risk === 'high') {
+          const pulse = (Math.sin(time * 0.005) + 1) * 0.5;
+          ctx.beginPath();
+          ctx.arc(node.x, node.y, node.radius + 3 + pulse * 4, 0, Math.PI * 2);
+          ctx.strokeStyle = 'rgba(239, 68, 68, 0.7)';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+        }
+
+        // Node Labels (Monospace font with LOD breakpoints)
+        const isFolder = node.nodeType === 'folder';
+        const isFile = node.nodeType === 'file';
+        const shouldShow = showLabels && (isFolder || isHovered || isSelected || isFocused || (isFile && zoomRef.current > 0.6) || (!isFolder && !isFile && zoomRef.current > 1.1));
+
+        if (shouldShow && (node.spawnProgress || 0) > 0.75) {
+          ctx.font = isFolder 
+            ? '600 13px ui-monospace, SFMono-Regular, Menlo, monospace' 
+            : (isFile ? '500 11px ui-monospace, SFMono-Regular, Menlo, monospace' : '400 9.5px ui-monospace, SFMono-Regular, Menlo, monospace');
           ctx.textAlign = 'center';
           ctx.textBaseline = 'top';
 
-          // On hover/focus, render a crisp dark backdrop pill for maximum readability
+          const labelY = node.y + node.radius + 4;
+          const labelText = node.label || node.id;
+
           if (isHovered || isSelected || isFocused) {
-            const metrics = ctx.measureText(node.label);
+            const metrics = ctx.measureText(labelText);
             const padX = 5;
             const padY = 2;
-            const textY = node.y + node.radius + 4;
-            ctx.fillStyle = 'rgba(8, 10, 16, 0.88)';
-            ctx.strokeStyle = isHovered ? '#38bdf8' : 'rgba(255, 255, 255, 0.2)';
+            ctx.fillStyle = 'rgba(10, 12, 16, 0.90)';
+            ctx.strokeStyle = isHovered ? '#60a5fa' : 'rgba(255, 255, 255, 0.2)';
             ctx.lineWidth = 1.0;
             ctx.beginPath();
-            ctx.roundRect(node.x - metrics.width / 2 - padX, textY - padY, metrics.width + padX * 2, 14 + padY * 2, 3);
+            ctx.roundRect(node.x - metrics.width / 2 - padX, labelY - padY, metrics.width + padX * 2, 14 + padY * 2, 3);
             ctx.fill();
             ctx.stroke();
           }
 
-          ctx.fillStyle = (isHovered || isSelected || isFocused) 
-            ? '#ffffff' 
-            : (node.type === 'folder' ? '#fde047' : (node.isCritical ? '#fca5a5' : (node.isSuper ? '#7dd3fc' : '#cbd5e1')));
-          
-          ctx.fillText(node.label, node.x, node.y + node.radius + 4);
-          ctx.restore();
+          ctx.fillStyle = (isHovered || isSelected || isFocused)
+            ? '#ffffff'
+            : (isFolder ? '#fde047' : (isFile ? '#cbd5e1' : '#a78bfa'));
+
+          ctx.fillText(labelText, node.x, labelY);
         }
 
         ctx.restore();
@@ -1648,33 +1107,20 @@ export default function NeuronHeroEngine() {
     };
   }, [showLabels]);
 
-  // Pointer Interactions: screen-space precision hit testing (generous 38px folder target zone!)
+  // Precise Hit Testing for Pointer Drag and Click
   const findNodeAt = useCallback((screenX, screenY) => {
-    const nodes = nodesRef.current;
+    const nodes = activeNodesRef.current || [];
     const zoom = zoomRef.current;
     const pan = panRef.current;
 
-    // 1. Folders first: screen-space distance gives generous 38px radius target zone
-    for (let i = 0; i < nodes.length; i++) {
-      const n = nodes[i];
-      if (n.type === 'folder' && n.radius > 0) {
-        const screenNodeX = n.x * zoom + pan.x;
-        const screenNodeY = n.y * zoom + pan.y;
-        const screenDist = Math.hypot(screenX - screenNodeX, screenY - screenNodeY);
-        const hitRadius = Math.max(n.radius * zoom + 22, 38);
-        if (screenDist <= hitRadius) return n;
-      }
-    }
-    // 2. Child nodes: also screen-space
     for (let i = nodes.length - 1; i >= 0; i--) {
       const n = nodes[i];
-      if (n.type !== 'folder' && n.radius > 0) {
-        const screenNodeX = n.x * zoom + pan.x;
-        const screenNodeY = n.y * zoom + pan.y;
-        const screenDist = Math.hypot(screenX - screenNodeX, screenY - screenNodeY);
-        const hitRadius = Math.max(n.radius * zoom + 12, 20);
-        if (screenDist <= hitRadius) return n;
-      }
+      if (n.radius <= 0) continue;
+      const screenNodeX = n.x * zoom + pan.x;
+      const screenNodeY = n.y * zoom + pan.y;
+      const screenDist = Math.hypot(screenX - screenNodeX, screenY - screenNodeY);
+      const hitRadius = Math.max(n.radius * zoom + 12, n.nodeType === 'folder' ? 32 : 18);
+      if (screenDist <= hitRadius) return n;
     }
     return null;
   }, []);
@@ -1687,17 +1133,6 @@ export default function NeuronHeroEngine() {
     try {
       e.target.setPointerCapture(e.pointerId);
     } catch (_) {}
-
-    // Immediate gate bypass if user interacts
-    if (!hasStartedAnimRef.current) {
-      hasStartedAnimRef.current = true;
-      birthStartRef.current = performance.now();
-      isBirthPlayingRef.current = false;
-      nodesRef.current.forEach(n => {
-        n.radius = n.baseRadius;
-        n.alpha = 1.0;
-      });
-    }
 
     const rect = canvas.getBoundingClientRect();
     const screenX = e.clientX - rect.left;
@@ -1713,23 +1148,18 @@ export default function NeuronHeroEngine() {
 
     const hit = findNodeAt(screenX, screenY);
     if (hit) {
-      // If tree growth was still playing, immediately finalize all nodes to full radius
-      if (isBirthPlayingRef.current) {
-        isBirthPlayingRef.current = false;
-        nodesRef.current.forEach(n => {
-          n.radius = n.baseRadius;
-          n.alpha = 1.0;
-        });
-      }
       setSelectedNode(hit);
-      hit.isDragged = true;
+      hit.fx = world.x;
+      hit.fy = world.y;
       mouseRef.current.draggedNode = hit;
       mouseRef.current.dragOffset = {
         x: hit.x - world.x,
         y: hit.y - world.y
       };
-      mouseRef.current.lastDragPos = { x: world.x, y: world.y };
       setIsDragging(true);
+
+      // Awaken D3 simulation with responsive dragging alpha
+      simulationRef.current?.alphaTarget(ENGINE_LAWS.PHYSICS.DRAGGING_ALPHA).restart();
     } else {
       setSelectedNode(null);
       mouseRef.current.isPanning = true;
@@ -1756,42 +1186,8 @@ export default function NeuronHeroEngine() {
     if (mouseRef.current.draggedNode) {
       const node = mouseRef.current.draggedNode;
       const offset = mouseRef.current.dragOffset || { x: 0, y: 0 };
-      const newX = world.x + offset.x;
-      const newY = world.y + offset.y;
-      const dx = newX - node.x;
-      const dy = newY - node.y;
-
-      node.x = newX;
-      node.y = newY;
-      node.cleanX = newX;
-      node.cleanY = newY;
-      node.vx = 0;
-      node.vy = 0;
-
-      // When dragging a yellow folder ball, all its child files translate along with it!
-      if (node.type === 'folder') {
-        nodesRef.current.forEach(child => {
-          if (child.parentId === node.id) {
-            child.x += dx;
-            child.y += dy;
-            child.cleanX = child.x;
-            child.cleanY = child.y;
-            child.vx = 0;
-            child.vy = 0;
-          }
-        });
-      }
-
-      // Update connected edges rest length so it NEVER snaps back!
-      edgesRef.current.forEach(edge => {
-        if (edge.source === node.id || edge.target === node.id) {
-          const s = nodesRef.current.find(n => n.id === edge.source);
-          const t = nodesRef.current.find(n => n.id === edge.target);
-          if (s && t) {
-            edge.restLength = Math.hypot(t.x - s.x, t.y - s.y);
-          }
-        }
-      });
+      node.fx = world.x + offset.x;
+      node.fy = world.y + offset.y;
       return;
     }
 
@@ -1817,26 +1213,16 @@ export default function NeuronHeroEngine() {
 
     if (mouseRef.current.draggedNode) {
       const node = mouseRef.current.draggedNode;
-      node.isDragged = false;
-      node.vx = 0;
-      node.vy = 0;
-      node.cleanX = node.x;
-      node.cleanY = node.y;
-      edgesRef.current.forEach(edge => {
-        if (edge.source === node.id || edge.target === node.id) {
-          const s = nodesRef.current.find(n => n.id === edge.source);
-          const t = nodesRef.current.find(n => n.id === edge.target);
-          if (s && t) {
-            edge.restLength = Math.hypot(t.x - s.x, t.y - s.y);
-          }
-        }
-      });
+      node.fx = null;
+      node.fy = null;
       mouseRef.current.draggedNode = null;
       setIsDragging(false);
+
+      // Return simulation to gentle resting alpha
+      simulationRef.current?.alphaTarget(ENGINE_LAWS.PHYSICS.RESTING_ALPHA);
     }
     mouseRef.current.isDown = false;
     mouseRef.current.isPanning = false;
-    setHoveredNode(null);
   };
 
   const handlePointerLeave = (e) => {
@@ -1853,11 +1239,11 @@ export default function NeuronHeroEngine() {
     mouseRef.current.isPanning = false;
     if (mouseRef.current.draggedNode) {
       const node = mouseRef.current.draggedNode;
-      node.isDragged = false;
-      node.vx = 0;
-      node.vy = 0;
+      node.fx = null;
+      node.fy = null;
       mouseRef.current.draggedNode = null;
       setIsDragging(false);
+      simulationRef.current?.alphaTarget(ENGINE_LAWS.PHYSICS.RESTING_ALPHA);
     }
     setHoveredNode(null);
   };
@@ -1866,7 +1252,7 @@ export default function NeuronHeroEngine() {
     userInteractedRef.current = true;
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const newZoom = Math.min(zoomRef.current * 1.2, 2.5);
+    const newZoom = Math.min(zoomRef.current * 1.25, 3.0);
     const centerScreenX = canvas.clientWidth / 2;
     const centerScreenY = canvas.clientHeight / 2;
     const worldCenter = screenToWorld(centerScreenX, centerScreenY);
@@ -1878,6 +1264,7 @@ export default function NeuronHeroEngine() {
     };
     setZoomDisplay(Math.round(newZoom * 100));
   };
+
   const handleZoomOut = () => {
     userInteractedRef.current = true;
     const canvas = canvasRef.current;
@@ -1894,62 +1281,45 @@ export default function NeuronHeroEngine() {
     };
     setZoomDisplay(Math.round(newZoom * 100));
   };
+
   const handleResetZoom = () => {
     userInteractedRef.current = true;
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const universeSpanX = 2980;
-    const universeSpanY = 1520;
-    const centerWorldX = 680;
-    const centerWorldY = 680;
-    const fitZoomX = (canvas.clientWidth - 70) / universeSpanX;
-    const fitZoomY = (canvas.clientHeight - 60) / universeSpanY;
-    const newZoom = Math.min(fitZoomX, fitZoomY, 0.42);
-    zoomRef.current = newZoom;
+    const defaultZoom = 0.95;
+    zoomRef.current = defaultZoom;
     panRef.current = {
-      x: canvas.clientWidth / 2 - centerWorldX * newZoom,
-      y: canvas.clientHeight / 2 - centerWorldY * newZoom
+      x: canvas.clientWidth / 2,
+      y: canvas.clientHeight / 2
     };
-    setZoomDisplay(Math.round(newZoom * 100));
+    setZoomDisplay(Math.round(defaultZoom * 100));
+    simulationRef.current?.alpha(0.2).restart();
   };
 
-  // Trigger immediate canvas repaint when theme changes
-  useEffect(() => {
-    activeThemeRef.current = activeTheme;
-    if (renderTriggerRef.current) {
-      renderTriggerRef.current();
-    }
-  }, [activeTheme]);
-
-  // Scaled radar minimap nodes (matching SpatialMinimap.jsx in Neuron desktop app)
+  // Scaled radar minimap nodes matching SpatialMinimap.jsx
   const minimapNodes = useMemo(() => {
-    const rawNodes = nodesRef.current.length > 0 ? nodesRef.current : [];
+    const rawNodes = activeNodesRef.current || [];
     if (rawNodes.length === 0) return [];
     
-    const minX = 0, maxX = 2980, minY = 0, maxY = 1520;
-    const spanX = Math.max(maxX - minX, 1);
-    const spanY = Math.max(maxY - minY, 1);
     const svgWidth = 104;
     const svgHeight = 60;
+    const span = 600;
 
-    return rawNodes.slice(0, 140).map(n => {
-      const isFolder = n.type === 'folder';
-      const isFile = !isFolder;
-      let color = n.color || '#38bdf8';
-      if (isFolder) color = '#facc15';
-
-      const normX = Math.max(0, Math.min(1, ((n.cleanX ?? n.x ?? 0) - minX) / spanX));
-      const normY = Math.max(0, Math.min(1, ((n.cleanY ?? n.y ?? 0) - minY) / spanY));
+    return rawNodes.map(n => {
+      const isFolder = n.nodeType === 'folder';
+      const isFile = n.nodeType === 'file';
+      const normX = Math.max(0, Math.min(1, ((n.x || 0) + span / 2) / span));
+      const normY = Math.max(0, Math.min(1, ((n.y || 0) + span / 2) / span));
 
       return {
         id: n.id,
         cx: 6 + normX * svgWidth,
         cy: 6 + normY * svgHeight,
-        r: isFolder ? 2.2 : isFile ? 1.4 : 1.0,
-        color
+        r: isFolder ? 2.6 : (isFile ? 1.6 : 1.0),
+        color: n.color
       };
     });
-  }, [hasStartedAnimRef.current, nodesRef.current.length]);
+  }, [activeNodesRef.current?.length]);
 
   const handleTerminalSubmit = (e) => {
     if (e.key === 'Enter') {
@@ -1963,17 +1333,17 @@ export default function NeuronHeroEngine() {
       }
       let output = '';
       if (cmd === 'git status') {
-        output = 'On branch main\nYour branch is up to date with \'origin/main\'.\nChanges not staged for commit:\n  modified:   src/App.jsx\n  modified:   src/components/canvas/PixiSpatialEngine.jsx\n\nUntracked files:\n  src/services/astBridge.ts';
-      } else if (cmd === 'cargo check' || cmd === 'cargo test') {
-        output = '    Finished dev [unoptimized + debuginfo] target(s) in 0.42s\n    Running unittests src/lib.rs (12 passed, 0 failed)';
+        output = 'On branch main\nYour branch is up to date with \'origin/main\'.\nChanges not staged for commit:\n  modified:   backend/ml/analyzer.py\n  modified:   frontend/canvas/PixiSpatialEngine.jsx';
+      } else if (cmd === 'python -m backend.ml.analyzer') {
+        output = '[Neuron ML] Louvain modularity detected 6 communities (Q=0.742).\n[Neuron Engine] Spatial Graph synchronized with 58 nodes and 56 links.';
       } else if (cmd.startsWith('help') || cmd === '?') {
-        output = 'Available commands: git status, cargo check, clear, ls, echo <text>';
+        output = 'Available commands: git status, python -m backend.ml.analyzer, clear, ls, echo <text>';
       } else if (cmd.startsWith('echo ')) {
         output = cmd.slice(5);
       } else if (cmd === 'ls' || cmd === 'dir') {
-        output = 'backend/   frontend/   Cargo.toml   README.md';
+        output = 'backend/   frontend/   server.py   README.md';
       } else {
-        output = `'${cmd}' executed via spatial bridge (exit code 0)`;
+        output = `'${cmd}' executed via spatial websocket bridge (exit code 0)`;
       }
       setTerminalHistory(prev => [...prev, { cmd, stdout: output }]);
       setTerminalInput('');
@@ -1991,7 +1361,7 @@ export default function NeuronHeroEngine() {
         color: activeTheme.textPrimary
       }}
     >
-      {/* 1. TOP TITLEBAR (Parity with TopBar.jsx) */}
+      {/* 1. TOP TITLEBAR */}
       <div 
         className="h-[42px] shrink-0 border-b flex items-center justify-between pl-3 pr-0 text-[12px] font-sans select-none z-[150] relative transition-colors duration-150"
         style={{
@@ -2000,7 +1370,7 @@ export default function NeuronHeroEngine() {
           color: activeTheme.textPrimary
         }}
       >
-        {/* Left: Flat Matte Logo + Dropdown Menus */}
+        {/* Left: Logo + Dropdown Menus */}
         <div className="flex items-center gap-3">
           <div className="flex items-center pr-1 cursor-pointer" title="Neuron IDE">
             <img 
@@ -2037,21 +1407,12 @@ export default function NeuronHeroEngine() {
                     {item === 'File' && (
                       <>
                         <button onClick={() => setActiveMenu(null)} className="w-full px-3 py-1.5 flex items-center justify-between hover:bg-white/[0.06] transition-colors cursor-pointer text-left">
-                          <span>Open Folder...</span>
-                          <span className="text-[10px] text-slate-400 font-mono">Ctrl+K Ctrl+O</span>
+                          <span>Open Workspace...</span>
+                          <span className="text-[10px] text-slate-400 font-mono">Ctrl+O</span>
                         </button>
                         <button onClick={() => setActiveMenu(null)} className="w-full px-3 py-1.5 flex items-center justify-between hover:bg-white/[0.06] transition-colors cursor-pointer text-left">
-                          <span>Save</span>
+                          <span>Save All</span>
                           <span className="text-[10px] text-slate-400 font-mono">Ctrl+S</span>
-                        </button>
-                        <button onClick={() => setActiveMenu(null)} className="w-full px-3 py-1.5 flex items-center justify-between hover:bg-white/[0.06] transition-colors cursor-pointer text-left">
-                          <span>Auto Save</span>
-                          <Check size={12} className="text-blue-400" />
-                        </button>
-                        <div className="my-1 border-t" style={{ borderColor: activeTheme.border }} />
-                        <button onClick={() => setActiveMenu(null)} className="w-full px-3 py-1.5 flex items-center justify-between hover:bg-white/[0.06] transition-colors cursor-pointer text-left">
-                          <span>Close Window</span>
-                          <span className="text-[10px] text-slate-400 font-mono">Ctrl+W</span>
                         </button>
                       </>
                     )}
@@ -2065,19 +1426,6 @@ export default function NeuronHeroEngine() {
                           <span>Redo</span>
                           <span className="text-[10px] text-slate-400 font-mono">Ctrl+Y</span>
                         </button>
-                        <div className="my-1 border-t" style={{ borderColor: activeTheme.border }} />
-                        <button onClick={() => setActiveMenu(null)} className="w-full px-3 py-1.5 flex items-center justify-between hover:bg-white/[0.06] transition-colors cursor-pointer text-left">
-                          <span>Cut</span>
-                          <span className="text-[10px] text-slate-400 font-mono">Ctrl+X</span>
-                        </button>
-                        <button onClick={() => setActiveMenu(null)} className="w-full px-3 py-1.5 flex items-center justify-between hover:bg-white/[0.06] transition-colors cursor-pointer text-left">
-                          <span>Copy</span>
-                          <span className="text-[10px] text-slate-400 font-mono">Ctrl+C</span>
-                        </button>
-                        <button onClick={() => setActiveMenu(null)} className="w-full px-3 py-1.5 flex items-center justify-between hover:bg-white/[0.06] transition-colors cursor-pointer text-left">
-                          <span>Paste</span>
-                          <span className="text-[10px] text-slate-400 font-mono">Ctrl+V</span>
-                        </button>
                       </>
                     )}
                     {item === 'Layout' && (
@@ -2087,34 +1435,24 @@ export default function NeuronHeroEngine() {
                           className="w-full px-3 py-1.5 flex items-center justify-between hover:bg-white/[0.06] transition-colors cursor-pointer text-left"
                         >
                           <span>Explorer Sidebar</span>
-                          <div className="flex items-center gap-2">
-                            <span className="text-[10px] text-slate-400 font-mono">Ctrl+B</span>
-                            <Check size={12} className={isSidebarOpen ? "text-blue-400" : "opacity-0"} />
-                          </div>
+                          <span className="text-[10px] text-slate-400 font-mono">Ctrl+B</span>
                         </button>
                         <button 
                           onClick={() => { setIsTerminalOpen(!isTerminalOpen); setActiveMenu(null); }} 
                           className="w-full px-3 py-1.5 flex items-center justify-between hover:bg-white/[0.06] transition-colors cursor-pointer text-left"
                         >
-                          <span>Interactive Terminal</span>
-                          <div className="flex items-center gap-2">
-                            <span className="text-[10px] text-slate-400 font-mono">Ctrl+`</span>
-                            <Check size={12} className={isTerminalOpen ? "text-blue-400" : "opacity-0"} />
-                          </div>
+                          <span>Integrated Terminal</span>
+                          <span className="text-[10px] text-slate-400 font-mono">Ctrl+`</span>
                         </button>
                       </>
                     )}
                     {item === 'Help' && (
                       <>
                         <button onClick={() => setActiveMenu(null)} className="w-full px-3 py-1.5 flex items-center justify-between hover:bg-white/[0.06] transition-colors cursor-pointer text-left">
-                          <span>Documentation</span>
+                          <span>Spatial IDE Architecture</span>
                         </button>
                         <button onClick={() => setActiveMenu(null)} className="w-full px-3 py-1.5 flex items-center justify-between hover:bg-white/[0.06] transition-colors cursor-pointer text-left">
-                          <span>Keyboard Shortcuts</span>
-                        </button>
-                        <div className="my-1 border-t" style={{ borderColor: activeTheme.border }} />
-                        <button onClick={() => setActiveMenu(null)} className="w-full px-3 py-1.5 flex items-center justify-between hover:bg-white/[0.06] transition-colors cursor-pointer text-left">
-                          <span>About Neuron</span>
+                          <span>WebGPU Physics Docs</span>
                         </button>
                       </>
                     )}
@@ -2126,8 +1464,10 @@ export default function NeuronHeroEngine() {
         </div>
 
         {/* Center: Title */}
-        <div className="hidden sm:flex items-center gap-1 text-[11px] font-mono opacity-70">
-          <span>Neuron - workspace</span>
+        <div className="hidden sm:flex items-center gap-1.5 text-[11px] font-mono opacity-70">
+          <span>Neuron - Spatial IDE</span>
+          <span className="opacity-40">·</span>
+          <span className="text-blue-400">Louvain Nebula Engine</span>
         </div>
 
         {/* Right: Window Controls */}
@@ -2147,7 +1487,7 @@ export default function NeuronHeroEngine() {
       {/* 2. WORKSPACE BODY: ActivityBar + Sidebar + Central Viewport */}
       <div className="flex-1 flex overflow-hidden relative">
 
-        {/* ActivityBar (w-12 / 48px) */}
+        {/* ActivityBar */}
         <div 
           className="w-12 h-full border-r flex flex-col items-center justify-between py-2.5 shrink-0 z-40 select-none transition-colors duration-150"
           style={{
@@ -2207,15 +1547,6 @@ export default function NeuronHeroEngine() {
               }}
               title="Source Control"
             >
-              {isSidebarOpen && activeSidebarView === 'git' && (
-                <div 
-                  className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r"
-                  style={{
-                    backgroundColor: activeTheme.accent,
-                    boxShadow: `0 0 8px ${activeTheme.accent}`
-                  }}
-                />
-              )}
               <GitBranch size={18} strokeWidth={1.6} />
               <span 
                 className="absolute -top-0.5 -right-0.5 px-1 min-w-[14px] h-[14px] rounded-full text-[9px] font-mono font-bold text-white flex items-center justify-center shadow"
@@ -2244,22 +1575,13 @@ export default function NeuronHeroEngine() {
               }}
               title="Antigravity AI (Ctrl+Shift+A)"
             >
-              {isSidebarOpen && activeSidebarView === 'ai' && (
-                <div 
-                  className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r"
-                  style={{
-                    backgroundColor: activeTheme.accent,
-                    boxShadow: `0 0 8px ${activeTheme.accent}`
-                  }}
-                />
-              )}
               <Sparkles size={18} strokeWidth={1.6} />
             </button>
           </div>
 
           {/* Bottom Actions */}
           <div className="flex flex-col gap-2 w-full items-center relative">
-            {/* Theme Selector Popover Button */}
+            {/* Theme Selector Popover */}
             <div className="relative">
               <button 
                 ref={themeButtonRef}
@@ -2274,7 +1596,6 @@ export default function NeuronHeroEngine() {
                 <Palette size={18} strokeWidth={1.6} />
               </button>
 
-              {/* Floating Minimal Horizontal Bar with 5 Color Circles */}
               {isThemePickerOpen && (
                 <div
                   ref={themePopoverRef}
@@ -2307,9 +1628,7 @@ export default function NeuronHeroEngine() {
                         {isSelected && (
                           <span 
                             className="w-1.5 h-1.5 rounded-full"
-                            style={{
-                              backgroundColor: t.isDark ? '#ffffff' : '#000000'
-                            }}
+                            style={{ backgroundColor: t.isDark ? '#ffffff' : '#000000' }}
                           />
                         )}
                       </button>
@@ -2319,7 +1638,6 @@ export default function NeuronHeroEngine() {
               )}
             </div>
 
-            {/* Settings */}
             <button 
               className="p-2 rounded-xl transition-colors cursor-pointer"
               style={{ color: activeTheme.textMuted }}
@@ -2328,17 +1646,16 @@ export default function NeuronHeroEngine() {
               <Settings size={18} strokeWidth={1.6} />
             </button>
 
-            {/* User Avatar */}
             <div 
               className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-600 to-indigo-700 text-white font-mono font-bold text-[10px] flex items-center justify-center uppercase shadow cursor-pointer"
-              title="Signed in as Developer"
+              title="Developer Workspace"
             >
               N
             </div>
           </div>
         </div>
 
-        {/* Sidebar (w-52 / 208px) */}
+        {/* Sidebar */}
         {isSidebarOpen && (
           <div 
             className="w-52 border-r flex flex-col shrink-0 text-left overflow-hidden select-none transition-colors duration-150"
@@ -2348,7 +1665,6 @@ export default function NeuronHeroEngine() {
               color: activeTheme.textPrimary
             }}
           >
-            {/* Header with action icons */}
             <div 
               className="h-8 px-3 text-[11px] font-mono font-medium tracking-wide flex items-center justify-between shrink-0 border-b"
               style={{ borderColor: activeTheme.border }}
@@ -2361,11 +1677,16 @@ export default function NeuronHeroEngine() {
                 <button className="p-1 rounded hover:bg-white/[0.06] transition-colors cursor-pointer" style={{ color: activeTheme.textMuted }} title="New Folder">
                   <FolderPlus size={13} />
                 </button>
-                <button className="p-1 rounded hover:bg-white/[0.06] transition-colors cursor-pointer" style={{ color: activeTheme.textMuted }} title="Refresh Explorer">
+                <button 
+                  onClick={handleRefactor}
+                  className="p-1 rounded hover:bg-white/[0.06] transition-colors cursor-pointer" 
+                  style={{ color: activeTheme.textMuted }} 
+                  title="Resync Universe"
+                >
                   <RefreshCw size={12} />
                 </button>
                 <button 
-                  onClick={() => setOpenFolders({ neuron: true, backend: false, frontend: false, src: false, components: false, config: false })}
+                  onClick={() => setOpenFolders({ neuron: true, backend: false, frontend: false })}
                   className="p-1 rounded hover:bg-white/[0.06] transition-colors cursor-pointer" 
                   style={{ color: activeTheme.textMuted }} 
                   title="Collapse All Folders"
@@ -2385,7 +1706,6 @@ export default function NeuronHeroEngine() {
               <span className="truncate font-bold">NEURON</span>
             </div>
 
-            {/* File Tree */}
             {openFolders.neuron && (
               <div className="flex-1 overflow-y-auto pb-4 font-mono text-[11px]">
                 {/* backend folder */}
@@ -2398,17 +1718,52 @@ export default function NeuronHeroEngine() {
                   <span className="truncate">backend</span>
                 </div>
                 {openFolders.backend && (
-                  <div className="pl-7 space-y-0.5">
+                  <div className="pl-6 space-y-0.5">
+                    {/* core */}
                     <div 
-                      onClick={() => setActiveDocTab('spatial')}
-                      className="px-1 py-0.5 flex items-center justify-between hover:bg-white/[0.04] cursor-pointer rounded"
+                      onClick={() => setOpenFolders(p => ({ ...p, backendCore: !p.backendCore }))}
+                      className="px-2 py-0.5 flex items-center gap-1.5 hover:bg-white/[0.04] cursor-pointer"
                     >
-                      <div className="flex items-center gap-1.5 truncate">
-                        <FileCode2 size={12} className="text-slate-400 shrink-0" />
-                        <span className="truncate text-slate-300">main.py</span>
-                      </div>
-                      <span className="text-[10px] text-amber-500 font-bold pr-1">M</span>
+                      {openFolders.backendCore ? <ChevronDown size={11} className="text-slate-500 shrink-0" /> : <ChevronRight size={11} className="text-slate-500 shrink-0" />}
+                      <Folder size={12} style={{ color: activeTheme.folderIcon }} className="shrink-0" />
+                      <span className="truncate">core</span>
                     </div>
+                    {openFolders.backendCore && (
+                      <div className="pl-4 space-y-0.5">
+                        <div onClick={() => setActiveDocTab('parser')} className="px-2 py-0.5 flex items-center justify-between hover:bg-white/[0.04] cursor-pointer rounded">
+                          <div className="flex items-center gap-1.5 truncate">
+                            <FileCode2 size={12} className="text-rose-400" />
+                            <span className="truncate text-slate-300">parser.py</span>
+                          </div>
+                          <span className="text-[10px] text-rose-500 font-bold pr-1">!</span>
+                        </div>
+                        <div className="px-2 py-0.5 flex items-center gap-1.5 text-slate-400 hover:bg-white/[0.04] cursor-pointer rounded">
+                          <FileCode2 size={12} className="text-slate-500" />
+                          <span className="truncate">mutator.py</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* ml */}
+                    <div 
+                      onClick={() => setOpenFolders(p => ({ ...p, backendMl: !p.backendMl }))}
+                      className="px-2 py-0.5 flex items-center gap-1.5 hover:bg-white/[0.04] cursor-pointer"
+                    >
+                      {openFolders.backendMl ? <ChevronDown size={11} className="text-slate-500 shrink-0" /> : <ChevronRight size={11} className="text-slate-500 shrink-0" />}
+                      <Folder size={12} style={{ color: activeTheme.folderIcon }} className="shrink-0" />
+                      <span className="truncate">ml</span>
+                    </div>
+                    {openFolders.backendMl && (
+                      <div className="pl-4 space-y-0.5">
+                        <div className="px-2 py-0.5 flex items-center justify-between hover:bg-white/[0.04] cursor-pointer rounded">
+                          <div className="flex items-center gap-1.5 truncate">
+                            <FileCode2 size={12} className="text-purple-400" />
+                            <span className="truncate text-slate-300">analyzer.py</span>
+                          </div>
+                          <span className="text-[10px] text-amber-500 font-bold pr-1">M</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -2423,70 +1778,49 @@ export default function NeuronHeroEngine() {
                 </div>
                 {openFolders.frontend && (
                   <div className="pl-6 space-y-0.5">
-                    {/* src */}
+                    {/* canvas */}
                     <div 
-                      onClick={() => setOpenFolders(p => ({ ...p, src: !p.src }))}
+                      onClick={() => setOpenFolders(p => ({ ...p, frontendCanvas: !p.frontendCanvas }))}
                       className="px-2 py-0.5 flex items-center gap-1.5 hover:bg-white/[0.04] cursor-pointer"
                     >
-                      {openFolders.src ? <ChevronDown size={11} className="text-slate-500 shrink-0" /> : <ChevronRight size={11} className="text-slate-500 shrink-0" />}
+                      {openFolders.frontendCanvas ? <ChevronDown size={11} className="text-slate-500 shrink-0" /> : <ChevronRight size={11} className="text-slate-500 shrink-0" />}
                       <Folder size={12} style={{ color: activeTheme.folderIcon }} className="shrink-0" />
-                      <span className="truncate">src</span>
+                      <span className="truncate">canvas</span>
                     </div>
-                    {openFolders.src && (
+                    {openFolders.frontendCanvas && (
                       <div className="pl-4 space-y-0.5">
-                        {/* App.jsx */}
-                        <div 
-                          onClick={() => setActiveDocTab('app')}
-                          className={`px-2 py-0.5 flex items-center justify-between cursor-pointer rounded ${activeDocTab === 'app' ? 'bg-blue-600/20 text-blue-400 font-medium' : 'hover:bg-white/[0.04] text-slate-300'}`}
-                        >
-                          <div className="flex items-center gap-1.5 truncate">
-                            <FileCode2 size={12} className={activeDocTab === 'app' ? 'text-blue-400' : 'text-slate-400'} />
-                            <span className="truncate">App.jsx</span>
-                          </div>
-                          <span className="text-[10px] text-amber-500 font-bold pr-1">M</span>
-                        </div>
-
-                        {/* PixiSpatialEngine.jsx */}
                         <div 
                           onClick={() => setActiveDocTab('spatial')}
                           className={`px-2 py-0.5 flex items-center justify-between cursor-pointer rounded ${activeDocTab === 'spatial' ? 'bg-blue-600/20 text-blue-400 font-medium' : 'hover:bg-white/[0.04] text-slate-300'}`}
                         >
                           <div className="flex items-center gap-1.5 truncate">
-                            <FileCode2 size={12} className={activeDocTab === 'spatial' ? 'text-blue-400' : 'text-slate-400'} />
+                            <FileCode2 size={12} className={activeDocTab === 'spatial' ? 'text-blue-400' : 'text-pink-400'} />
                             <span className="truncate">PixiSpatialEngine.jsx</span>
                           </div>
-                          <span className="text-[10px] text-amber-500 font-bold pr-1">M</span>
-                        </div>
-
-                        {/* TopBar.jsx */}
-                        <div className="px-2 py-0.5 flex items-center gap-1.5 text-slate-400 hover:bg-white/[0.04] cursor-pointer rounded">
-                          <FileCode2 size={12} className="text-slate-500" />
-                          <span className="truncate">TopBar.jsx</span>
+                          <span className="text-[10px] text-emerald-500 font-bold pr-1">Live</span>
                         </div>
                       </div>
                     )}
-                    {/* package.json */}
-                    <div className="px-3 py-0.5 flex items-center gap-1.5 text-slate-400 hover:bg-white/[0.04] cursor-pointer rounded">
-                      <FileCode2 size={12} className="text-slate-500" />
-                      <span className="truncate">package.json</span>
+
+                    {/* hooks */}
+                    <div 
+                      onClick={() => setOpenFolders(p => ({ ...p, frontendHooks: !p.frontendHooks }))}
+                      className="px-2 py-0.5 flex items-center gap-1.5 hover:bg-white/[0.04] cursor-pointer"
+                    >
+                      {openFolders.frontendHooks ? <ChevronDown size={11} className="text-slate-500 shrink-0" /> : <ChevronRight size={11} className="text-slate-500 shrink-0" />}
+                      <Folder size={12} style={{ color: activeTheme.folderIcon }} className="shrink-0" />
+                      <span className="truncate">hooks</span>
                     </div>
+                    {openFolders.frontendHooks && (
+                      <div className="pl-4 space-y-0.5">
+                        <div className="px-2 py-0.5 flex items-center gap-1.5 text-slate-400 hover:bg-white/[0.04] cursor-pointer rounded">
+                          <FileCode2 size={12} className="text-orange-400" />
+                          <span className="truncate">usePhysicsEngine.js</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
-
-                {/* Cargo.toml */}
-                <div className="px-6 py-0.5 flex items-center gap-1.5 text-slate-400 hover:bg-white/[0.04] cursor-pointer rounded">
-                  <FileCode2 size={12} className="text-slate-500" />
-                  <span className="truncate">Cargo.toml</span>
-                </div>
-
-                {/* README.md */}
-                <div className="px-6 py-0.5 flex items-center justify-between text-slate-400 hover:bg-white/[0.04] cursor-pointer rounded">
-                  <div className="flex items-center gap-1.5 truncate">
-                    <FileCode2 size={12} className="text-slate-500" />
-                    <span className="truncate">README.md</span>
-                  </div>
-                  <span className="text-[10px] text-emerald-500 font-bold pr-1">U</span>
-                </div>
               </div>
             )}
           </div>
@@ -2497,7 +1831,7 @@ export default function NeuronHeroEngine() {
           className="flex-1 flex flex-col relative overflow-hidden text-left"
           style={{ backgroundColor: activeTheme.background }}
         >
-          {/* Document Tab Strip (h-8) */}
+          {/* Document Tab Strip */}
           <div 
             className="h-8 shrink-0 border-b flex items-center justify-between select-none"
             style={{
@@ -2523,22 +1857,21 @@ export default function NeuronHeroEngine() {
                 <span>Spatial Map</span>
               </button>
 
-              {/* App.jsx Tab */}
+              {/* parser.py Tab */}
               <button
-                onClick={() => setActiveDocTab('app')}
+                onClick={() => setActiveDocTab('parser')}
                 className={`h-full px-3 flex items-center gap-2 text-[11px] font-mono font-medium border-r transition-colors cursor-pointer ${
-                  activeDocTab === 'app' ? 'font-semibold border-t-2' : 'hover:text-white'
+                  activeDocTab === 'parser' ? 'font-semibold border-t-2' : 'hover:text-white'
                 }`}
                 style={{
-                  backgroundColor: activeDocTab === 'app' ? activeTheme.background : activeTheme.secondary,
+                  backgroundColor: activeDocTab === 'parser' ? activeTheme.background : activeTheme.secondary,
                   borderColor: activeTheme.border,
-                  borderTopColor: activeDocTab === 'app' ? activeTheme.accent : 'transparent',
-                  color: activeDocTab === 'app' ? activeTheme.textBright : activeTheme.textSecondary
+                  borderTopColor: activeDocTab === 'parser' ? activeTheme.accent : 'transparent',
+                  color: activeDocTab === 'parser' ? activeTheme.textBright : activeTheme.textSecondary
                 }}
               >
-                <FileCode2 size={13} style={{ color: activeDocTab === 'app' ? activeTheme.accent : undefined }} />
-                <span>App.jsx</span>
-                <span className="text-[10px] text-amber-500 font-bold">M</span>
+                <FileCode2 size={13} style={{ color: activeDocTab === 'parser' ? activeTheme.accent : undefined }} />
+                <span>parser.py</span>
               </button>
             </div>
 
@@ -2547,14 +1880,14 @@ export default function NeuronHeroEngine() {
               <button 
                 onClick={handleRefactor}
                 className="w-7 h-6 flex items-center justify-center rounded hover:bg-white/10 text-slate-300 hover:text-white transition-all cursor-pointer" 
-                title="Run Active File (F5)"
+                title="Trigger Procedural Emergence (F5)"
               >
                 <Play size={13} strokeWidth={1.8} />
               </button>
             </div>
           </div>
 
-          {/* Canvas HUD Header (when Spatial Map is open) */}
+          {/* Canvas HUD Header */}
           {activeDocTab === 'spatial' && (
             <div 
               className="h-8 border-b flex items-center justify-between px-3 text-xs shrink-0"
@@ -2564,7 +1897,11 @@ export default function NeuronHeroEngine() {
               }}
             >
               <div className="flex items-center gap-2">
-                <span className="text-[11px] font-mono" style={{ color: activeTheme.textMuted }}>spatial_universe</span>
+                <span className="text-[11px] font-mono text-emerald-400 font-semibold">WebGPU Active</span>
+                <span className="opacity-40">·</span>
+                <span className="text-[11px] font-mono" style={{ color: activeTheme.textMuted }}>
+                  Louvain Modularity: 6 Nebulae
+                </span>
               </div>
 
               {/* HUD Controls */}
@@ -2618,7 +1955,7 @@ export default function NeuronHeroEngine() {
                     borderColor: activeTheme.border,
                     color: activeTheme.textSecondary
                   }}
-                  title="Refactor graph back to pristine initial layout"
+                  title="Refactor graph with procedural BFS emission"
                 >
                   <RotateCcw size={10} />
                   <span>Refactor</span>
@@ -2637,7 +1974,7 @@ export default function NeuronHeroEngine() {
                   onPointerMove={handlePointerMove}
                   onPointerUp={handlePointerUp}
                   onPointerLeave={handlePointerLeave}
-                  className={`w-full h-full block touch-none ${isDragging ? 'cursor-grabbing' : (hoveredNode ? (hoveredNode.type === 'folder' ? 'cursor-grab' : 'cursor-pointer') : 'cursor-default')}`}
+                  className={`w-full h-full block touch-none ${isDragging ? 'cursor-grabbing' : (hoveredNode ? 'cursor-pointer' : 'cursor-default')}`}
                 />
 
                 {/* Spatial Radar Minimap */}
@@ -2656,7 +1993,7 @@ export default function NeuronHeroEngine() {
                   </svg>
                 </div>
 
-                {/* Conflict-Free Scroll Hint Toast */}
+                {/* Scroll Hint Toast */}
                 {showScrollHint && (
                   <div className="absolute bottom-4 left-1/2 -translate-x-1/2 pointer-events-none z-20 transition-opacity duration-200">
                     <div className="px-3 py-1 bg-black/80 backdrop-blur border border-white/15 rounded-full text-[11px] font-mono text-slate-300 shadow-xl flex items-center gap-1.5">
@@ -2667,7 +2004,7 @@ export default function NeuronHeroEngine() {
                 )}
               </>
             ) : (
-              /* Code Editor View for App.jsx */
+              /* Code Editor View for parser.py */
               <div 
                 className="w-full h-full p-4 overflow-y-auto font-mono text-xs select-text"
                 style={{
@@ -2676,33 +2013,25 @@ export default function NeuronHeroEngine() {
                 }}
               >
                 <div className="space-y-1 leading-relaxed">
-                  <p className="text-slate-500">// src/App.jsx - Hardware-Accelerated Spatial Universe</p>
-                  <p><span className="text-purple-400">import</span> React, &#123; useState, useEffect &#125; <span className="text-purple-400">from</span> <span className="text-emerald-400">'react'</span>;</p>
-                  <p><span className="text-purple-400">import</span> PixiSpatialEngine <span className="text-purple-400">from</span> <span className="text-emerald-400">'./components/canvas/PixiSpatialEngine'</span>;</p>
-                  <p><span className="text-purple-400">import</span> TopBar <span className="text-purple-400">from</span> <span className="text-emerald-400">'./components/layout/TopBar'</span>;</p>
-                  <p><span className="text-purple-400">import</span> ActivityBar <span className="text-purple-400">from</span> <span className="text-emerald-400">'./components/layout/ActivityBar'</span>;</p>
-                  <p><span className="text-purple-400">import</span> &#123; usePhysicsEngine &#125; <span className="text-purple-400">from</span> <span className="text-emerald-400">'./hooks/usePhysicsEngine'</span>;</p>
+                  <p className="text-slate-500"># backend/core/parser.py - AST Extraction & Call Graph</p>
+                  <p><span className="text-purple-400">import</span> ast</p>
+                  <p><span className="text-purple-400">from</span> typing <span className="text-purple-400">import</span> Dict, List, Any</p>
                   <br />
-                  <p><span className="text-blue-400">export default function</span> <span className="text-amber-400">App</span>() &#123;</p>
-                  <p className="pl-4"><span className="text-blue-400">const</span> [activeTheme, setActiveTheme] = <span className="text-amber-400">useState</span>(<span className="text-emerald-400">'black'</span>);</p>
-                  <p className="pl-4"><span className="text-blue-400">const</span> &#123; nodes, edges, simDataRef &#125; = <span className="text-amber-400">usePhysicsEngine</span>();</p>
+                  <p><span className="text-blue-400">class</span> <span className="text-amber-400">CodebaseASTParser</span>:</p>
+                  <p className="pl-4"><span className="text-blue-400">def</span> <span className="text-amber-400">__init__</span>(self, root_path: str):</p>
+                  <p className="pl-8 text-slate-300">self.root_path = root_path</p>
+                  <p className="pl-8 text-slate-300">self.graph = &#123;"nodes": [], "edges": []&#125;</p>
                   <br />
-                  <p className="pl-4"><span className="text-purple-400">return</span> (</p>
-                  <p className="pl-8 text-slate-300">&lt;<span className="text-blue-400">div</span> <span className="text-sky-300">className</span>=<span className="text-emerald-400">"neuron-universe flex flex-col h-screen"</span>&gt;</p>
-                  <p className="pl-12 text-slate-300">&lt;<span className="text-blue-400">TopBar</span> <span className="text-sky-300">title</span>=<span className="text-emerald-400">"Neuron - workspace"</span> /&gt;</p>
-                  <p className="pl-12 text-slate-300">&lt;<span className="text-blue-400">div</span> <span className="text-sky-300">className</span>=<span className="text-emerald-400">"flex-1 flex overflow-hidden"</span>&gt;</p>
-                  <p className="pl-16 text-slate-300">&lt;<span className="text-blue-400">ActivityBar</span> /&gt;</p>
-                  <p className="pl-16 text-slate-300">&lt;<span className="text-blue-400">PixiSpatialEngine</span> <span className="text-sky-300">nodes</span>=&#123;nodes&#125; <span className="text-sky-300">edges</span>=&#123;edges&#125; /&gt;</p>
-                  <p className="pl-12 text-slate-300">&lt;/<span className="text-blue-400">div</span>&gt;</p>
-                  <p className="pl-8 text-slate-300">&lt;/<span className="text-blue-400">div</span>&gt;</p>
-                  <p className="pl-4">);</p>
-                  <p>&#125;</p>
+                  <p className="pl-4"><span className="text-blue-400">def</span> <span className="text-amber-400">parse_ast</span>(self, file_content: str) -&gt; Dict[str, Any]:</p>
+                  <p className="pl-8 text-slate-300">tree = ast.parse(file_content)</p>
+                  <p className="pl-8 text-slate-300">symbols = self.extract_symbols(tree)</p>
+                  <p className="pl-8 text-purple-400">return &#123;"ast": tree, "symbols": symbols&#125;</p>
                 </div>
               </div>
             )}
           </div>
 
-          {/* Bottom Terminal Panel (h-24) */}
+          {/* Bottom Terminal Panel */}
           {isTerminalOpen && (
             <div 
               className="h-24 shrink-0 border-t flex flex-col font-mono text-xs select-none transition-colors duration-150"
@@ -2750,58 +2079,56 @@ export default function NeuronHeroEngine() {
                   </button>
                 </div>
 
-                <div className="flex items-center gap-2 pr-2">
+                <div className="flex items-center pr-2 gap-1">
                   <button 
                     onClick={() => setTerminalHistory([])}
-                    className="p-1 text-slate-400 hover:text-white transition-colors cursor-pointer" 
+                    className="p-1 rounded hover:bg-white/[0.08] transition-colors cursor-pointer text-slate-400 hover:text-white"
                     title="Clear Terminal"
                   >
-                    <Trash2 size={11} />
+                    <RefreshCw size={11} />
                   </button>
                   <button 
                     onClick={() => setIsTerminalOpen(false)}
-                    className="p-1 text-slate-400 hover:text-white transition-colors cursor-pointer" 
-                    title="Close Panel"
+                    className="p-1 rounded hover:bg-white/[0.08] transition-colors cursor-pointer text-slate-400 hover:text-white"
+                    title="Close Terminal"
                   >
                     <X size={12} />
                   </button>
                 </div>
               </div>
 
-              {/* Terminal Content */}
-              <div className="flex-1 p-2 overflow-y-auto font-mono text-[11px] select-text">
+              {/* Terminal Logs & Input */}
+              <div className="flex-1 overflow-y-auto px-3 py-1.5 text-[11px] font-mono space-y-1">
                 {activeTerminalTab === 'powershell' ? (
-                  <div className="space-y-1">
-                    {terminalHistory.map((item, idx) => (
-                      <div key={idx} className="space-y-0.5">
-                        <div className="flex items-center gap-2">
-                          <span style={{ color: activeTheme.accent }}>PS C:\Neuron&gt;</span>
-                          <span className="text-white">{item.cmd}</span>
+                  <>
+                    {terminalHistory.map((item, i) => (
+                      <div key={i} className="space-y-0.5">
+                        <div className="flex items-center gap-1 text-slate-300">
+                          <span className="text-emerald-400">PS C:\Neuron&gt;</span>
+                          <span>{item.cmd}</span>
                         </div>
                         {item.stdout && (
-                          <pre className="text-slate-400 whitespace-pre-wrap pl-2 leading-tight">
+                          <pre className="text-slate-400 whitespace-pre-wrap font-mono pl-3 text-[10.5px]">
                             {item.stdout}
                           </pre>
                         )}
                       </div>
                     ))}
-
-                    {/* Active Prompt Input */}
-                    <div className="flex items-center gap-2 pt-0.5">
-                      <span style={{ color: activeTheme.accent }}>PS C:\Neuron&gt;</span>
+                    <div className="flex items-center gap-1.5 text-slate-300 pt-0.5">
+                      <span className="text-emerald-400 shrink-0">PS C:\Neuron&gt;</span>
                       <input 
                         type="text"
                         value={terminalInput}
                         onChange={(e) => setTerminalInput(e.target.value)}
                         onKeyDown={handleTerminalSubmit}
-                        placeholder="Type 'git status' or 'clear'..."
-                        className="flex-1 bg-transparent border-none outline-none text-white text-[11px] font-mono placeholder:text-slate-600"
+                        placeholder="Type 'python -m backend.ml.analyzer' or 'help'..."
+                        className="flex-1 bg-transparent border-none outline-none text-[11px] font-mono text-slate-200 placeholder:text-slate-600"
                       />
                     </div>
-                  </div>
+                  </>
                 ) : (
                   <div className="text-slate-400 space-y-1">
-                    <p className="text-blue-400">[Neuron Engine] Spatial Graph initialized with 500+ nodes and 40 clusters.</p>
+                    <p className="text-blue-400">[Neuron Engine] Spatial Graph synchronized with 58 nodes and 6 community nebulae.</p>
                     <p className="text-emerald-400">[WebGPU] Hardware acceleration verified at 300 FPS.</p>
                     <p className="text-slate-500">[Diagnostics] 0 syntax errors detected.</p>
                   </div>
@@ -2812,7 +2139,7 @@ export default function NeuronHeroEngine() {
         </div>
       </div>
 
-      {/* 3. STATUS BAR (Parity with StatusBar.jsx) */}
+      {/* 3. STATUS BAR */}
       <div 
         className="h-6 shrink-0 border-t flex items-center justify-between px-3 text-[11px] font-mono select-none z-50 transition-colors duration-150"
         style={{
@@ -2831,9 +2158,9 @@ export default function NeuronHeroEngine() {
             <span>3 bridges</span>
           </button>
           <span className="opacity-40">·</span>
-          <span>186 nodes · 214 links</span>
+          <span>58 nodes · 56 links</span>
           <span className="opacity-40">·</span>
-          <span>0 errors</span>
+          <span>6 nebulae</span>
         </div>
 
         {/* Right */}
@@ -2876,7 +2203,7 @@ export default function NeuronHeroEngine() {
 
           <span className="opacity-40">·</span>
           <div className="text-[10px]">
-            <span>{activeDocTab === 'spatial' ? 'Spatial Map' : 'JavaScript React'}</span>
+            <span>{activeDocTab === 'spatial' ? 'Spatial Map' : 'Python'}</span>
           </div>
 
           <span className="opacity-40">·</span>
