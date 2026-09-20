@@ -1,6 +1,15 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import * as d3 from 'd3-force';
-import { polygonHull } from 'd3-polygon';
+import { 
+  forceSimulation, 
+  forceLink, 
+  forceManyBody, 
+  forceCollide, 
+  forceX, 
+  forceY 
+} from '../../utils/spatialPhysicsEngine';
+import { polygonHull } from '../../utils/polygonHull';
+
+const d3 = { forceSimulation, forceLink, forceManyBody, forceCollide, forceX, forceY };
 import { 
   Folder, FileCode2, ZoomIn, ZoomOut, RotateCcw, Type,
   Minus, Square, X, Files, GitBranch, Sparkles, Settings,
