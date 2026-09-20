@@ -322,6 +322,8 @@ export default function NeuronHeroEngine() {
   const hasStartedAnimRef = useRef(false);
   const isRefactoringRef = useRef(false);
   const refactorStartRef = useRef(0);
+  const isVisibleRef = useRef(false);
+  const renderTriggerRef = useRef(null);
 
   const mouseRef = useRef({
     screenX: -1000,
@@ -720,17 +722,36 @@ export default function NeuronHeroEngine() {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting && entry.intersectionRatio >= 0.18) {
-            startAnimation();
+          const isIntersecting = entry.isIntersecting;
+          isVisibleRef.current = isIntersecting;
+          if (isIntersecting) {
+            if (!hasStartedAnimRef.current) {
+              startAnimation();
+            }
+            if (renderTriggerRef.current) {
+              renderTriggerRef.current();
+            }
           }
         });
       },
       {
-        threshold: [0.1, 0.18, 0.3, 0.5]
+        threshold: [0, 0.05],
+        rootMargin: '120px 0px 120px 0px'
       }
     );
 
     observer.observe(container);
+
+    // Immediate check if container is already in viewport on load
+    const rect = container.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.95 && rect.bottom > 0) {
+      isVisibleRef.current = true;
+      startAnimation();
+      if (renderTriggerRef.current) {
+        renderTriggerRef.current();
+      }
+    }
+
     return () => observer.disconnect();
   }, []);
 
@@ -809,6 +830,9 @@ export default function NeuronHeroEngine() {
     let prevTime = performance.now();
 
     const render = (time) => {
+      if (!isVisibleRef.current) {
+        return;
+      }
       const dt = Math.min(time - prevTime, 64);
       prevTime = time;
 
@@ -1440,8 +1464,18 @@ export default function NeuronHeroEngine() {
       animFrameRef.current = requestAnimationFrame(render);
     };
 
-    animFrameRef.current = requestAnimationFrame(render);
+    renderTriggerRef.current = () => {
+      cancelAnimationFrame(animFrameRef.current);
+      prevTime = performance.now();
+      animFrameRef.current = requestAnimationFrame(render);
+    };
+
+    if (isVisibleRef.current) {
+      animFrameRef.current = requestAnimationFrame(render);
+    }
+
     return () => {
+      renderTriggerRef.current = null;
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     };
   }, [showLabels]);

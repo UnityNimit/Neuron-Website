@@ -9,7 +9,7 @@ const TASKS = {
       '[0.014s] Discovered 1,420 AST syntax symbols across 84 source files.',
       '[0.038s] Constructing directional invocation call-graph matrix...',
       '[0.062s] Calculating PageRank and cyclomatic complexity indices...',
-      '✓ AST extraction complete: 1,420 nodes, 3,892 edges indexed in 62ms.'
+      '[OK] AST extraction complete: 1,420 nodes, 3,892 edges indexed in 62ms.'
     ]
   },
   louvain: {
@@ -19,7 +19,7 @@ const TASKS = {
       '[0.018s] Executing modularity maximization with gamma=1.0...',
       '[0.041s] Pass 1 complete: 14 microservice communities discovered (Q=0.72)',
       '[0.076s] Pass 2 complete: Consolidated to 4 core clusters (Modularity Q=0.84)',
-      '✓ Microservices detected: Auth (14n), Pipeline (32n), Memory (19n), WebGPU (28n).'
+      '[OK] Microservices detected: Auth (14n), Pipeline (32n), Memory (19n), WebGPU (28n).'
     ]
   },
   benchmark: {
@@ -29,7 +29,7 @@ const TASKS = {
       '[0.021s] Initializing PixiJS v8 instanced sprite batching pipeline...',
       '[0.045s] Starting D3-force physical integration loop (144 Hz)...',
       '[0.089s] GPU Frame Time: 3.32ms (300.9 FPS) | DOM Garbage Collection: 0ms',
-      '✓ Benchmark passed: 100k nodes rendering at 300 FPS with zero frame drops.'
+      '[OK] Benchmark passed: 100k nodes rendering at 300 FPS with zero frame drops.'
     ]
   }
 };
@@ -127,12 +127,12 @@ export default function InteractiveTerminalCard() {
               <p
                 key={i}
                 className={
-                  line.startsWith('✓')
+                  line.startsWith('[OK]')
                     ? 'text-emerald-400 font-semibold pt-1 flex items-center gap-1.5'
                     : 'text-slate-400 leading-relaxed text-[11px]'
                 }
               >
-                {line.startsWith('✓') && <CheckCircle2 size={13} className="shrink-0" />}
+                {line.startsWith('[OK]') && <CheckCircle2 size={13} className="shrink-0" />}
                 <span>{line}</span>
               </p>
             ))

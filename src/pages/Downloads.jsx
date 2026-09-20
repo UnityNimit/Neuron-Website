@@ -1,15 +1,15 @@
 import Footer from '../components/Footer';
 
 const LATEST_RELEASE = {
-  version: 'v1.2.4',
-  date: 'September 10, 2026'
+  version: 'v1.0.0 Beta Release',
+  date: 'September 2026'
 };
 
 export default function Downloads() {
   return (
     <div className="min-h-screen bg-[#050505] text-[#EDEDED] font-sans relative selection:bg-[#3B82F6]/30 selection:text-white flex flex-col justify-between">
 
-      <main className="relative z-10 pt-[72px] pb-8 px-4 sm:px-6 w-full">
+      <main className="relative z-10 pt-[72px] pb-8 px-6 sm:px-8 md:px-12 w-full max-w-7xl mx-auto">
         
         {/* Header */}
         <div className="text-left mb-8">
@@ -21,7 +21,7 @@ export default function Downloads() {
           </p>
         </div>
 
-        {/* Minimal Version Row */}
+        {/* Minimal Version Row - Strictly v1.0.0 Beta Release */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-2 max-w-2xl">
           <div className="flex items-center gap-3">
             <span className="text-lg font-bold text-white tracking-tight">

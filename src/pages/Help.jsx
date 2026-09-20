@@ -52,7 +52,7 @@ export default function Help() {
   return (
     <div className="min-h-screen bg-[#050505] text-[#EDEDED] font-sans relative selection:bg-[#3B82F6]/30 selection:text-white flex flex-col justify-between">
 
-      <main className="relative z-10 pt-[72px] pb-8 px-4 sm:px-6 w-full">
+      <main className="relative z-10 pt-[72px] pb-8 px-6 sm:px-8 md:px-12 w-full max-w-7xl mx-auto">
         <div className="text-left mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-2">
             Help & Queries
@@ -89,11 +89,17 @@ export default function Help() {
                     />
                   </button>
 
-                  {isOpen && (
-                    <div className="px-4 pb-5 sm:px-5 sm:pb-5 pt-1 text-xs sm:text-sm text-slate-400 leading-relaxed border-t border-white/[0.04]">
-                      {faq.a}
+                  <div
+                    className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out ${
+                      isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+                    }`}
+                  >
+                    <div className="overflow-hidden">
+                      <div className="px-4 pb-5 sm:px-5 sm:pb-5 pt-2 text-xs sm:text-sm text-slate-400 leading-relaxed border-t border-white/[0.04]">
+                        {faq.a}
+                      </div>
                     </div>
-                  )}
+                  </div>
                 </div>
               );
             })}

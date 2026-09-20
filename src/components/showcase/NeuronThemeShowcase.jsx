@@ -3,6 +3,7 @@ import {
   Files, GitBranch, Sparkles, Settings, 
   Folder, FileCode2, ChevronDown 
 } from 'lucide-react';
+import { ScrollWriteHeading } from '../ScrollReveal';
 
 // The 5 official themes directly from frontend/src/config/themeConfig.js
 const THEMES = [
@@ -404,9 +405,11 @@ export default function NeuronThemeShowcase() {
 
         {/* RIGHT COLUMN: Simple theme presentation */}
         <div className="lg:col-span-5 order-1 lg:order-2 text-left flex flex-col justify-center">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white mb-2 leading-snug">
-            Customizable themes
-          </h2>
+          <ScrollWriteHeading
+            text="Customizable themes"
+            as="h2"
+            className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white mb-2 leading-snug"
+          />
         </div>
 
       </div>

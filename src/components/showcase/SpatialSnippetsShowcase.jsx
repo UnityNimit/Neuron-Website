@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Terminal, ShieldAlert, CheckCircle2 } from 'lucide-react';
+import { ScrollWriteHeading } from '../ScrollReveal';
 
 // =========================================================================
 // NEURON FEATURE SHOWCASE: 3 DEDICATED LEFT/RIGHT INTERACTIVE SECTIONS
@@ -283,12 +284,26 @@ function HotspotDetectionBox() {
       ctx.fill();
       ctx.restore();
 
-      animFrameRef.current = requestAnimationFrame(render);
+      if (isVisible) {
+        animFrameRef.current = requestAnimationFrame(render);
+      }
       ctx.restore();
     };
 
-    animFrameRef.current = requestAnimationFrame(render);
+    let isVisible = false;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        isVisible = entry.isIntersecting;
+        if (isVisible) {
+          cancelAnimationFrame(animFrameRef.current);
+          animFrameRef.current = requestAnimationFrame(render);
+        }
+      });
+    }, { rootMargin: '120px 0px 120px 0px' });
+    observer.observe(canvas);
+
     return () => {
+      observer.disconnect();
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     };
   }, []);
@@ -347,9 +362,11 @@ function HotspotDetectionBox() {
     <div ref={containerRef} className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
       {/* Left Column: Single Heading (matching chatbot layout) */}
       <div className="lg:col-span-5 flex flex-col justify-center select-none text-left">
-        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white font-sans leading-tight">
-          Critical Hotspot Detection
-        </h2>
+        <ScrollWriteHeading
+          text="Critical Hotspot Detection"
+          as="h2"
+          className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white font-sans leading-tight"
+        />
       </div>
 
       {/* Right Column: Interactive Box (as big as chatbot box: h-[460px] sm:h-[480px]) */}
@@ -762,11 +779,25 @@ function InteractiveCouplingBox() {
         ctx.restore();
       });
 
-      animFrameRef.current = requestAnimationFrame(render);
+      if (isVisible) {
+        animFrameRef.current = requestAnimationFrame(render);
+      }
     };
 
-    animFrameRef.current = requestAnimationFrame(render);
+    let isVisible = false;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        isVisible = entry.isIntersecting;
+        if (isVisible) {
+          cancelAnimationFrame(animFrameRef.current);
+          animFrameRef.current = requestAnimationFrame(render);
+        }
+      });
+    }, { rootMargin: '120px 0px 120px 0px' });
+    observer.observe(canvas);
+
     return () => {
+      observer.disconnect();
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     };
   }, []);
@@ -914,9 +945,11 @@ function InteractiveCouplingBox() {
 
       {/* Heading on Right on desktop (order-1 on mobile, lg:order-2 on desktop) */}
       <div className="lg:col-span-5 flex flex-col justify-center select-none text-left order-1 lg:order-2">
-        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white font-sans leading-tight">
-          Interactive Coupling
-        </h2>
+        <ScrollWriteHeading
+          text="Interactive Coupling"
+          as="h2"
+          className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white font-sans leading-tight"
+        />
       </div>
     </div>
   );
@@ -1232,11 +1265,25 @@ function DeepCodeInspectionBox() {
         ctx.restore();
       }
 
-      animFrameRef.current = requestAnimationFrame(render);
+      if (isVisible) {
+        animFrameRef.current = requestAnimationFrame(render);
+      }
     };
 
-    animFrameRef.current = requestAnimationFrame(render);
+    let isVisible = false;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        isVisible = entry.isIntersecting;
+        if (isVisible) {
+          cancelAnimationFrame(animFrameRef.current);
+          animFrameRef.current = requestAnimationFrame(render);
+        }
+      });
+    }, { rootMargin: '120px 0px 120px 0px' });
+    observer.observe(canvas);
+
     return () => {
+      observer.disconnect();
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     };
   }, []);
@@ -1327,9 +1374,11 @@ function DeepCodeInspectionBox() {
     <div ref={containerRef} className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
       {/* Left Column: Heading with AI Summary */}
       <div className="lg:col-span-5 flex flex-col justify-center select-none text-left">
-        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white font-sans leading-tight">
-          Deep Code Inspection
-        </h2>
+        <ScrollWriteHeading
+          text="Deep Code Inspection"
+          as="h2"
+          className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white font-sans leading-tight"
+        />
         <p className="text-sm sm:text-base text-slate-400 font-sans mt-2 tracking-normal">
           Interactive AI Summary & AST Topology
         </p>
@@ -1719,11 +1768,25 @@ function ClusterDetectionBox() {
         ctx.restore();
       });
 
-      animFrameRef.current = requestAnimationFrame(render);
+      if (isVisible) {
+        animFrameRef.current = requestAnimationFrame(render);
+      }
     };
 
-    animFrameRef.current = requestAnimationFrame(render);
+    let isVisible = false;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        isVisible = entry.isIntersecting;
+        if (isVisible) {
+          cancelAnimationFrame(animFrameRef.current);
+          animFrameRef.current = requestAnimationFrame(render);
+        }
+      });
+    }, { rootMargin: '120px 0px 120px 0px' });
+    observer.observe(canvas);
+
     return () => {
+      observer.disconnect();
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     };
   }, []);

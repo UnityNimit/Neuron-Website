@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { ScrollWriteHeading } from '../ScrollReveal';
 
 const INITIAL_MESSAGES = [
   {
@@ -224,9 +225,11 @@ export default function AntigravityAgentShowcase() {
         
         {/* LEFT COLUMN: Simplified AI integration copy */}
         <div className="lg:col-span-5 text-left flex flex-col justify-center">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white mb-2 leading-snug">
-            Integrate AI with your codebase
-          </h2>
+          <ScrollWriteHeading
+            text="Integrate AI with your codebase"
+            as="h2"
+            className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white mb-2 leading-snug"
+          />
         </div>
 
         {/* RIGHT COLUMN: Clean Interactive Assistant Window (Fixed height matching theme box) */}

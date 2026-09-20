@@ -3,6 +3,7 @@ import {
   Search, ChevronLeft, ChevronRight, Menu, X
 } from 'lucide-react';
 import Footer from '../components/Footer';
+import { useDocsSearch } from '../context/DocsSearchContext';
 
 // --- COMPREHENSIVE DOCUMENTATION REGISTRY (Inspired by media_1789742450965.png & media_1789742457799.png) ---
 const DOCS_DATA = {
@@ -85,27 +86,17 @@ const DOCS_DATA = {
   'changelog': {
     category: 'Get Started',
     title: 'Changelog',
-    subtitle: 'Recent updates, performance improvements, and architectural milestones in Neuron.',
+    subtitle: 'Milestones, performance improvements, and release notes for Neuron.',
     sections: [
       {
-        id: 'v124-highlights',
-        title: 'v1.2.4 Latest',
-        desc: 'Released September 10, 2026',
+        id: 'v100-beta',
+        title: 'v1.0.0 Beta Release',
+        desc: 'Released September 2026',
         points: [
-          { label: 'Spatial Engine Synchronization', text: 'Full bidirectional mapping between filesystem trees and real-time 2D AST spatial canvases.' },
-          { label: 'Calibrated Theme Engine', text: '5 high-contrast themes (Obsidian, Zinc, Ruby, Cyan, Purple) with live hot-reloading.' },
-          { label: 'Pure-RAM D3 Relaxation', text: 'Zero-latency 60 FPS spring relaxation without canvas latency.' },
-          { label: 'Static Daemon Logs', text: 'Fixed terminal logs to maintain static stability during user canvas interaction.' }
-        ]
-      },
-      {
-        id: 'v120-highlights',
-        title: 'v1.2.0 Release',
-        desc: 'Released August 27, 2026',
-        points: [
-          { label: 'Autonomous Agent Studio', text: 'Direct agent orchestration with full topological graph context.' },
-          { label: 'Context @ Mentions', text: 'Attach @files, @conduits, and @terminals directly to agent prompts.' },
-          { label: 'Deterministic Local Verification', text: 'Synthesizes diffs with automated AST sanity checks to prevent hallucinations.' }
+          { label: 'Spatial Canvas Engine', text: 'Full bidirectional mapping between physical filesystems and real-time 2D AST topological graphs.' },
+          { label: 'Localhost Architecture', text: '100% on-device Tree-Sitter AST parsing, NetworkX modularity clustering, and physics relaxation.' },
+          { label: 'Multi-Language Support', text: 'First-class AST intelligence for Python, JavaScript, TypeScript, and modern web frameworks.' },
+          { label: 'Autonomous Agent Studio', text: 'Context-aware LLM agents orchestrated with concrete AST topological graph context.' }
         ]
       }
     ]
@@ -549,7 +540,7 @@ export default function Docs() {
   };
 
   const [activeDocId, setActiveDocId] = useState(getInitialDocId);
-  const [searchQuery, setSearchQuery] = useState('');
+  const { searchQuery, setSearchQuery } = useDocsSearch();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Sync hash to activeDocId and listen to back/forward navigation
@@ -601,24 +592,12 @@ export default function Docs() {
   return (
     <div className="min-h-screen bg-[#050505] text-[#EDEDED] font-sans relative selection:bg-[#3B82F6]/30 selection:text-white flex flex-col justify-between">
       
-      {/* Full-width container flush to the left */}
-      <div className="w-full flex-1 flex flex-col md:flex-row px-4 sm:px-6 pt-[72px] pb-0">
+      {/* Edge-to-edge full-width container with zero outer margin */}
+      <div className="w-full flex-1 flex flex-col md:flex-row px-0 pt-14 pb-0">
         
-        {/* LEFT SIDEBAR (Desktop) */}
-        <aside className="w-52 border-r border-white/[0.08] hidden md:flex flex-col justify-between pt-0 pb-8 pr-4 shrink-0 font-sans text-xs">
+        {/* LEFT SIDEBAR (Desktop - Docked flush to left edge) */}
+        <aside className="w-56 lg:w-64 border-r border-white/[0.08] hidden md:flex flex-col justify-between pt-6 pb-8 px-5 shrink-0 font-sans text-xs">
           <div>
-            {/* Search Box */}
-            <div className="mb-5 relative">
-              <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search docs..."
-                className="w-full bg-[#0d0e12] border border-white/[0.08] focus:border-[#60A5FA]/50 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-600 focus:outline-none transition-colors"
-              />
-            </div>
-
             {/* Navigation Groups or Empty State */}
             {filteredGroups.length === 0 ? (
               <div className="py-8 px-2 text-center text-slate-500 text-xs space-y-2">
@@ -665,7 +644,7 @@ export default function Docs() {
         </aside>
 
         {/* Mobile Header / Drawer Toggle */}
-        <div className="md:hidden w-full py-2.5 border-b border-white/[0.08] flex items-center justify-between mb-2">
+        <div className="md:hidden w-full py-2.5 px-4 border-b border-white/[0.08] flex items-center justify-between mb-2">
           <div className="text-xs text-slate-400 flex items-center gap-2 truncate pr-2">
             <span>Docs</span>
             <span>/</span>
@@ -681,7 +660,7 @@ export default function Docs() {
         </div>
 
         {/* Split Screen / Mobile Horizontal Doc Tabs */}
-        <div className="md:hidden w-full overflow-x-auto flex items-center gap-1.5 pb-2 mb-4 scrollbar-none border-b border-white/[0.06]">
+        <div className="md:hidden w-full overflow-x-auto flex items-center gap-1.5 px-4 pb-2 mb-4 scrollbar-none border-b border-white/[0.06]">
           {ALL_DOC_IDS.map(id => {
             const doc = DOCS_DATA[id];
             if (!doc) return null;
@@ -759,7 +738,7 @@ export default function Docs() {
         )}
 
         {/* MAIN DOCUMENTATION CONTENT */}
-        <main className="flex-1 md:pl-6 lg:pl-8 pt-0 pb-8 min-h-[calc(100vh-12rem)] flex flex-col justify-between">
+        <main className="flex-1 px-6 sm:px-10 md:px-14 lg:px-18 pt-6 pb-12 min-h-[calc(100vh-12rem)] flex flex-col justify-between">
           <div>
             {/* Category Tag */}
             <div className="text-xs text-slate-500 mb-1.5 font-medium uppercase tracking-wider">
@@ -804,8 +783,8 @@ export default function Docs() {
             </div>
           </div>
 
-          {/* Bottom Pagination (border extends flush from sidebar border-r to right edge) */}
-          <div className="mt-12 pt-6 -ml-4 sm:-ml-6 md:-ml-6 lg:-ml-8 -mr-4 sm:-mr-6 pl-4 sm:pl-6 md:pl-6 lg:pl-8 pr-4 sm:pr-6 border-t border-white/[0.08] flex items-center justify-between text-xs">
+          {/* Bottom Pagination */}
+          <div className="mt-12 pt-6 border-t border-white/[0.08] flex items-center justify-between text-xs">
             {prevDocId ? (
               <button
                 onClick={() => selectDoc(prevDocId)}
