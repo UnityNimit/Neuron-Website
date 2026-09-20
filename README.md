@@ -38,12 +38,12 @@ Traditional code editors treat source code as static files organized in linear d
 - Deterministic diff synthesis with local AST sanity checks to prevent regressions.
 
 ### 4. Calibrated Theme Engine
-- 5 high-contrast themes engineered for spatial visual clarity:
-  - Obsidian
-  - Zinc
-  - Ruby
-  - Cyan
-  - Purple
+- 5 official built-in themes engineered for spatial visual clarity:
+  - Obsidian Black
+  - Alabaster White
+  - Sakura Rose
+  - Galaxy Dark Blue
+  - Sakura Mist
 
 ---
 

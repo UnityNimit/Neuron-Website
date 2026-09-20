@@ -1,7 +1,124 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { 
-  Folder, FileCode2, ZoomIn, ZoomOut, RotateCcw, Type
+  Folder, FileCode2, ZoomIn, ZoomOut, RotateCcw, Type,
+  Minus, Square, X, Files, GitBranch, Sparkles, Settings,
+  Palette, ChevronDown, ChevronRight, FilePlus, FolderPlus,
+  RefreshCw, ListCollapse, Network, Play, Trash2, Bell, Check, CheckCircle2, UserCircle
 } from 'lucide-react';
+
+// The 5 official built-in themes directly matching frontend/src/config/themeConfig.js
+const THEMES_MAP = {
+  black: {
+    id: 'black',
+    name: 'Obsidian Black',
+    isDark: true,
+    primary: '#121212',
+    secondary: '#191a1b',
+    background: '#121314',
+    surface: '#161719',
+    surfaceHover: '#222426',
+    surfaceActive: '#2a2c2e',
+    border: '#242628',
+    borderSubtle: '#2e3032',
+    textBright: '#f8fafc',
+    textPrimary: '#e2e8f0',
+    textSecondary: '#94a3b8',
+    textMuted: '#64748b',
+    accent: '#3b82f6',
+    folderIcon: '#dcb67a',
+    circleColor: '#121212',
+    circleBorder: '#4b5563',
+    laserBridge: '#00f0ff'
+  },
+  white: {
+    id: 'white',
+    name: 'Alabaster White',
+    isDark: false,
+    primary: '#e8eaed',
+    secondary: '#f1f3f4',
+    background: '#ffffff',
+    surface: '#ffffff',
+    surfaceHover: '#e4e7eb',
+    surfaceActive: '#dadce0',
+    border: '#dadce0',
+    borderSubtle: '#d0d4d9',
+    textBright: '#111827',
+    textPrimary: '#1f2937',
+    textSecondary: '#4b5563',
+    textMuted: '#6b7280',
+    accent: '#2563eb',
+    folderIcon: '#b45309',
+    circleColor: '#ffffff',
+    circleBorder: '#cbd5e1',
+    laserBridge: '#0284c7'
+  },
+  pink: {
+    id: 'pink',
+    name: 'Sakura Rose',
+    isDark: true,
+    primary: '#1e111a',
+    secondary: '#271622',
+    background: '#180c14',
+    surface: '#2e1828',
+    surfaceHover: '#381b31',
+    surfaceActive: '#47223e',
+    border: '#3c1e33',
+    borderSubtle: '#4a253f',
+    textBright: '#fff1f2',
+    textPrimary: '#fce7f3',
+    textSecondary: '#f472b6',
+    textMuted: '#9d6a89',
+    accent: '#ec4899',
+    folderIcon: '#f472b6',
+    circleColor: '#f472b6',
+    circleBorder: '#fb7185',
+    laserBridge: '#f472b6'
+  },
+  galaxy: {
+    id: 'galaxy',
+    name: 'Galaxy Dark Blue',
+    isDark: true,
+    primary: '#090d16',
+    secondary: '#0e1422',
+    background: '#080b12',
+    surface: '#121929',
+    surfaceHover: '#1a243a',
+    surfaceActive: '#243252',
+    border: '#1c2842',
+    borderSubtle: '#253556',
+    textBright: '#f0f6fc',
+    textPrimary: '#cbd5e1',
+    textSecondary: '#8ba2c4',
+    textMuted: '#506689',
+    accent: '#38bdf8',
+    folderIcon: '#38bdf8',
+    circleColor: '#0e172a',
+    circleBorder: '#38bdf8',
+    laserBridge: '#38bdf8'
+  },
+  rosewater: {
+    id: 'rosewater',
+    name: 'Sakura Mist',
+    isDark: false,
+    primary: '#fdf2f4',
+    secondary: '#fff1f4',
+    background: '#ffffff',
+    surface: '#ffffff',
+    surfaceHover: '#fce7ec',
+    surfaceActive: '#fad2df',
+    border: '#f4d3dc',
+    borderSubtle: '#eabecb',
+    textBright: '#1e141a',
+    textPrimary: '#36222e',
+    textSecondary: '#6b495d',
+    textMuted: '#967285',
+    accent: '#db2777',
+    folderIcon: '#db2777',
+    circleColor: '#fce7ec',
+    circleBorder: '#db2777',
+    laserBridge: '#db2777'
+  }
+};
 
 // =========================================================================
 // NEURON SPATIAL UNIVERSE: 40-FOLDER ORGANIC ECOSYSTEM (500+ NODES)
@@ -296,6 +413,57 @@ export default function NeuronHeroEngine() {
   const zoomRef = useRef(1.85);
   const panRef = useRef({ x: 0, y: 0 });
   const [zoomDisplay, setZoomDisplay] = useState(185);
+
+  // 5 Official Themes directly matching themeConfig.js
+  const [activeThemeId, setActiveThemeId] = useState('black');
+  const activeTheme = THEMES_MAP[activeThemeId] || THEMES_MAP.black;
+  const activeThemeRef = useRef(activeTheme);
+  activeThemeRef.current = activeTheme;
+  const [isThemePickerOpen, setIsThemePickerOpen] = useState(false);
+
+  // Window Menu & Sidebar Layout State
+  const [activeMenu, setActiveMenu] = useState(null);
+  const [activeSidebarView, setActiveSidebarView] = useState('explorer');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [activeDocTab, setActiveDocTab] = useState('spatial');
+  const [isTerminalOpen, setIsTerminalOpen] = useState(true);
+  const [activeTerminalTab, setActiveTerminalTab] = useState('powershell');
+  const [terminalInput, setTerminalInput] = useState('');
+  const [terminalHistory, setTerminalHistory] = useState([
+    { 
+      cmd: 'git status', 
+      stdout: 'On branch main\nYour branch is up to date with \'origin/main\'.\nChanges not staged for commit:\n  modified:   src/App.jsx\n  modified:   src/components/canvas/PixiSpatialEngine.jsx\n\nUntracked files:\n  src/services/astBridge.ts' 
+    }
+  ]);
+  const [openFolders, setOpenFolders] = useState({
+    neuron: true,
+    backend: true,
+    frontend: true,
+    src: true,
+    components: false,
+    config: false
+  });
+  const menuRef = useRef(null);
+  const themePopoverRef = useRef(null);
+  const themeButtonRef = useRef(null);
+
+  useEffect(() => {
+    const handleOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setActiveMenu(null);
+      }
+      if (
+        themePopoverRef.current && 
+        !themePopoverRef.current.contains(e.target) &&
+        themeButtonRef.current &&
+        !themeButtonRef.current.contains(e.target)
+      ) {
+        setIsThemePickerOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutside);
+    return () => document.removeEventListener('mousedown', handleOutside);
+  }, []);
 
   const [selectedNode, setSelectedNode] = useState(null);
   const [hoveredNode, setHoveredNode] = useState(null);
@@ -848,8 +1016,8 @@ export default function NeuronHeroEngine() {
       ctx.scale(dpr, dpr);
       ctx.clearRect(0, 0, width, height);
 
-      // Deep space backdrop
-      ctx.fillStyle = '#08090c';
+      // Dynamic theme-matching backdrop
+      ctx.fillStyle = activeThemeRef.current ? activeThemeRef.current.background : '#08090c';
       ctx.fillRect(0, 0, width, height);
 
       const nodes = nodesRef.current;
@@ -1745,143 +1913,978 @@ export default function NeuronHeroEngine() {
     setZoomDisplay(Math.round(newZoom * 100));
   };
 
+  // Trigger immediate canvas repaint when theme changes
+  useEffect(() => {
+    activeThemeRef.current = activeTheme;
+    if (renderTriggerRef.current) {
+      renderTriggerRef.current();
+    }
+  }, [activeTheme]);
+
+  // Scaled radar minimap nodes (matching SpatialMinimap.jsx in Neuron desktop app)
+  const minimapNodes = useMemo(() => {
+    const rawNodes = nodesRef.current.length > 0 ? nodesRef.current : [];
+    if (rawNodes.length === 0) return [];
+    
+    const minX = 0, maxX = 2980, minY = 0, maxY = 1520;
+    const spanX = Math.max(maxX - minX, 1);
+    const spanY = Math.max(maxY - minY, 1);
+    const svgWidth = 104;
+    const svgHeight = 60;
+
+    return rawNodes.slice(0, 140).map(n => {
+      const isFolder = n.type === 'folder';
+      const isFile = !isFolder;
+      let color = n.color || '#38bdf8';
+      if (isFolder) color = '#facc15';
+
+      const normX = Math.max(0, Math.min(1, ((n.cleanX ?? n.x ?? 0) - minX) / spanX));
+      const normY = Math.max(0, Math.min(1, ((n.cleanY ?? n.y ?? 0) - minY) / spanY));
+
+      return {
+        id: n.id,
+        cx: 6 + normX * svgWidth,
+        cy: 6 + normY * svgHeight,
+        r: isFolder ? 2.2 : isFile ? 1.4 : 1.0,
+        color
+      };
+    });
+  }, [hasStartedAnimRef.current, nodesRef.current.length]);
+
+  const handleTerminalSubmit = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const cmd = terminalInput.trim();
+      if (!cmd) return;
+      if (cmd === 'clear' || cmd === 'cls') {
+        setTerminalHistory([]);
+        setTerminalInput('');
+        return;
+      }
+      let output = '';
+      if (cmd === 'git status') {
+        output = 'On branch main\nYour branch is up to date with \'origin/main\'.\nChanges not staged for commit:\n  modified:   src/App.jsx\n  modified:   src/components/canvas/PixiSpatialEngine.jsx\n\nUntracked files:\n  src/services/astBridge.ts';
+      } else if (cmd === 'cargo check' || cmd === 'cargo test') {
+        output = '    Finished dev [unoptimized + debuginfo] target(s) in 0.42s\n    Running unittests src/lib.rs (12 passed, 0 failed)';
+      } else if (cmd.startsWith('help') || cmd === '?') {
+        output = 'Available commands: git status, cargo check, clear, ls, echo <text>';
+      } else if (cmd.startsWith('echo ')) {
+        output = cmd.slice(5);
+      } else if (cmd === 'ls' || cmd === 'dir') {
+        output = 'backend/   frontend/   Cargo.toml   README.md';
+      } else {
+        output = `'${cmd}' executed via spatial bridge (exit code 0)`;
+      }
+      setTerminalHistory(prev => [...prev, { cmd, stdout: output }]);
+      setTerminalInput('');
+    }
+  };
+
   return (
     <div 
       ref={containerRef}
       onBlur={() => setIsCanvasFocused(false)}
-      className="w-full h-[560px] md:h-[600px] bg-[#08090c] border border-white/[0.08] rounded-xl overflow-hidden shadow-2xl flex flex-col font-sans select-none relative text-left"
+      className="w-full h-[620px] md:h-[680px] rounded-xl overflow-hidden shadow-2xl flex flex-col font-sans select-none relative text-left border transition-colors duration-200"
+      style={{
+        backgroundColor: activeTheme.background,
+        borderColor: activeTheme.border,
+        color: activeTheme.textPrimary
+      }}
     >
-      {/* 1. TOP TITLEBAR */}
-      <div className="h-9 border-b border-white/[0.08] bg-[#0e1017] px-4 flex items-center justify-between text-xs text-slate-400 shrink-0 select-none">
-        <div className="flex items-center">
-          <span className="text-slate-300 font-mono text-[11px] font-semibold tracking-wide">Neuron IDE</span>
+      {/* 1. TOP TITLEBAR (Parity with TopBar.jsx) */}
+      <div 
+        className="h-[42px] shrink-0 border-b flex items-center justify-between pl-3 pr-0 text-[12px] font-sans select-none z-[150] relative transition-colors duration-150"
+        style={{
+          backgroundColor: activeTheme.primary,
+          borderColor: activeTheme.border,
+          color: activeTheme.textPrimary
+        }}
+      >
+        {/* Left: Flat Matte Logo + Dropdown Menus */}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center pr-1 cursor-pointer" title="Neuron IDE">
+            <img 
+              src="/logo.png" 
+              alt="Neuron" 
+              className="h-5 w-5 object-contain opacity-95" 
+              onError={(e) => { e.target.style.display = 'none'; }}
+            />
+          </div>
+
+          <div className="flex items-center text-xs font-mono" ref={menuRef}>
+            {['File', 'Edit', 'Layout', 'Help'].map((item) => (
+              <div key={item} className="relative">
+                <button 
+                  onClick={() => setActiveMenu(activeMenu === item ? null : item)}
+                  className="px-2.5 py-1 rounded-md transition-colors cursor-pointer text-xs"
+                  style={{
+                    backgroundColor: activeMenu === item ? activeTheme.surfaceActive : 'transparent',
+                    color: activeMenu === item ? activeTheme.textBright : activeTheme.textSecondary
+                  }}
+                >
+                  {item}
+                </button>
+
+                {activeMenu === item && (
+                  <div 
+                    className="absolute top-full left-0 mt-1 w-56 border shadow-2xl rounded-xl py-1.5 text-xs font-mono backdrop-blur-xl animate-in fade-in zoom-in-95 duration-100 select-none z-[200]"
+                    style={{
+                      backgroundColor: activeTheme.secondary,
+                      borderColor: activeTheme.borderSubtle,
+                      color: activeTheme.textPrimary
+                    }}
+                  >
+                    {item === 'File' && (
+                      <>
+                        <button onClick={() => setActiveMenu(null)} className="w-full px-3 py-1.5 flex items-center justify-between hover:bg-white/[0.06] transition-colors cursor-pointer text-left">
+                          <span>Open Folder...</span>
+                          <span className="text-[10px] text-slate-400 font-mono">Ctrl+K Ctrl+O</span>
+                        </button>
+                        <button onClick={() => setActiveMenu(null)} className="w-full px-3 py-1.5 flex items-center justify-between hover:bg-white/[0.06] transition-colors cursor-pointer text-left">
+                          <span>Save</span>
+                          <span className="text-[10px] text-slate-400 font-mono">Ctrl+S</span>
+                        </button>
+                        <button onClick={() => setActiveMenu(null)} className="w-full px-3 py-1.5 flex items-center justify-between hover:bg-white/[0.06] transition-colors cursor-pointer text-left">
+                          <span>Auto Save</span>
+                          <Check size={12} className="text-blue-400" />
+                        </button>
+                        <div className="my-1 border-t" style={{ borderColor: activeTheme.border }} />
+                        <button onClick={() => setActiveMenu(null)} className="w-full px-3 py-1.5 flex items-center justify-between hover:bg-white/[0.06] transition-colors cursor-pointer text-left">
+                          <span>Close Window</span>
+                          <span className="text-[10px] text-slate-400 font-mono">Ctrl+W</span>
+                        </button>
+                      </>
+                    )}
+                    {item === 'Edit' && (
+                      <>
+                        <button onClick={() => setActiveMenu(null)} className="w-full px-3 py-1.5 flex items-center justify-between hover:bg-white/[0.06] transition-colors cursor-pointer text-left">
+                          <span>Undo</span>
+                          <span className="text-[10px] text-slate-400 font-mono">Ctrl+Z</span>
+                        </button>
+                        <button onClick={() => setActiveMenu(null)} className="w-full px-3 py-1.5 flex items-center justify-between hover:bg-white/[0.06] transition-colors cursor-pointer text-left">
+                          <span>Redo</span>
+                          <span className="text-[10px] text-slate-400 font-mono">Ctrl+Y</span>
+                        </button>
+                        <div className="my-1 border-t" style={{ borderColor: activeTheme.border }} />
+                        <button onClick={() => setActiveMenu(null)} className="w-full px-3 py-1.5 flex items-center justify-between hover:bg-white/[0.06] transition-colors cursor-pointer text-left">
+                          <span>Cut</span>
+                          <span className="text-[10px] text-slate-400 font-mono">Ctrl+X</span>
+                        </button>
+                        <button onClick={() => setActiveMenu(null)} className="w-full px-3 py-1.5 flex items-center justify-between hover:bg-white/[0.06] transition-colors cursor-pointer text-left">
+                          <span>Copy</span>
+                          <span className="text-[10px] text-slate-400 font-mono">Ctrl+C</span>
+                        </button>
+                        <button onClick={() => setActiveMenu(null)} className="w-full px-3 py-1.5 flex items-center justify-between hover:bg-white/[0.06] transition-colors cursor-pointer text-left">
+                          <span>Paste</span>
+                          <span className="text-[10px] text-slate-400 font-mono">Ctrl+V</span>
+                        </button>
+                      </>
+                    )}
+                    {item === 'Layout' && (
+                      <>
+                        <button 
+                          onClick={() => { setIsSidebarOpen(!isSidebarOpen); setActiveMenu(null); }} 
+                          className="w-full px-3 py-1.5 flex items-center justify-between hover:bg-white/[0.06] transition-colors cursor-pointer text-left"
+                        >
+                          <span>Explorer Sidebar</span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] text-slate-400 font-mono">Ctrl+B</span>
+                            <Check size={12} className={isSidebarOpen ? "text-blue-400" : "opacity-0"} />
+                          </div>
+                        </button>
+                        <button 
+                          onClick={() => { setIsTerminalOpen(!isTerminalOpen); setActiveMenu(null); }} 
+                          className="w-full px-3 py-1.5 flex items-center justify-between hover:bg-white/[0.06] transition-colors cursor-pointer text-left"
+                        >
+                          <span>Interactive Terminal</span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] text-slate-400 font-mono">Ctrl+`</span>
+                            <Check size={12} className={isTerminalOpen ? "text-blue-400" : "opacity-0"} />
+                          </div>
+                        </button>
+                      </>
+                    )}
+                    {item === 'Help' && (
+                      <>
+                        <button onClick={() => setActiveMenu(null)} className="w-full px-3 py-1.5 flex items-center justify-between hover:bg-white/[0.06] transition-colors cursor-pointer text-left">
+                          <span>Documentation</span>
+                        </button>
+                        <button onClick={() => setActiveMenu(null)} className="w-full px-3 py-1.5 flex items-center justify-between hover:bg-white/[0.06] transition-colors cursor-pointer text-left">
+                          <span>Keyboard Shortcuts</span>
+                        </button>
+                        <div className="my-1 border-t" style={{ borderColor: activeTheme.border }} />
+                        <button onClick={() => setActiveMenu(null)} className="w-full px-3 py-1.5 flex items-center justify-between hover:bg-white/[0.06] transition-colors cursor-pointer text-left">
+                          <span>About Neuron</span>
+                        </button>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
 
-        <div className="flex items-center gap-1 text-[11px] font-mono text-slate-400">
-          <span className="text-slate-500">topology</span>
-          <span className="text-slate-600">/</span>
-          <span className="text-slate-200">main</span>
+        {/* Center: Title */}
+        <div className="hidden sm:flex items-center gap-1 text-[11px] font-mono opacity-70">
+          <span>Neuron - workspace</span>
+        </div>
+
+        {/* Right: Window Controls */}
+        <div className="flex items-center h-full">
+          <button className="w-10 h-full flex items-center justify-center hover:bg-white/[0.06] transition-colors cursor-pointer text-slate-400 hover:text-white" title="Minimize">
+            <Minus size={13} />
+          </button>
+          <button className="w-10 h-full flex items-center justify-center hover:bg-white/[0.06] transition-colors cursor-pointer text-slate-400 hover:text-white" title="Maximize">
+            <Square size={11} />
+          </button>
+          <button className="w-10 h-full flex items-center justify-center hover:bg-[#e81123] transition-colors cursor-pointer text-slate-400 hover:text-white" title="Close">
+            <X size={14} />
+          </button>
         </div>
       </div>
 
-      {/* 2. WORKSPACE: Clean Static File Explorer (No scrolling, no interaction) + Massive Living Canvas */}
+      {/* 2. WORKSPACE BODY: ActivityBar + Sidebar + Central Viewport */}
       <div className="flex-1 flex overflow-hidden relative">
-        
-        {/* Clean Static File Explorer */}
-        <div className="w-48 sm:w-56 border-r border-white/[0.08] bg-[#0a0b10] flex flex-col shrink-0 text-left overflow-hidden select-none">
-          <div className="h-8 px-3 flex items-center justify-between text-[11px] font-mono uppercase tracking-wider text-slate-400 border-b border-white/[0.06] bg-[#0d0e14]">
-            <span>EXPLORER</span>
+
+        {/* ActivityBar (w-12 / 48px) */}
+        <div 
+          className="w-12 h-full border-r flex flex-col items-center justify-between py-2.5 shrink-0 z-40 select-none transition-colors duration-150"
+          style={{
+            backgroundColor: activeTheme.secondary,
+            borderColor: activeTheme.border
+          }}
+        >
+          {/* Top Actions */}
+          <div className="flex flex-col gap-2 w-full items-center">
+            {/* Explorer Toggle */}
+            <button 
+              onClick={() => {
+                if (!isSidebarOpen) {
+                  setIsSidebarOpen(true);
+                  setActiveSidebarView('explorer');
+                } else if (activeSidebarView === 'explorer') {
+                  setIsSidebarOpen(false);
+                } else {
+                  setActiveSidebarView('explorer');
+                }
+              }}
+              className="p-2 rounded-xl transition-all relative group cursor-pointer"
+              style={{
+                color: isSidebarOpen && activeSidebarView === 'explorer' ? activeTheme.textBright : activeTheme.textMuted,
+                backgroundColor: isSidebarOpen && activeSidebarView === 'explorer' ? activeTheme.surfaceHover : 'transparent'
+              }}
+              title="Explorer (Ctrl+B)"
+            >
+              {isSidebarOpen && activeSidebarView === 'explorer' && (
+                <div 
+                  className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r"
+                  style={{
+                    backgroundColor: activeTheme.accent,
+                    boxShadow: `0 0 8px ${activeTheme.accent}`
+                  }}
+                />
+              )}
+              <Files size={18} strokeWidth={1.6} />
+            </button>
+
+            {/* Git Branch Toggle */}
+            <button 
+              onClick={() => {
+                if (!isSidebarOpen) {
+                  setIsSidebarOpen(true);
+                  setActiveSidebarView('git');
+                } else if (activeSidebarView === 'git') {
+                  setIsSidebarOpen(false);
+                } else {
+                  setActiveSidebarView('git');
+                }
+              }}
+              className="p-2 rounded-xl transition-all relative group cursor-pointer"
+              style={{
+                color: isSidebarOpen && activeSidebarView === 'git' ? activeTheme.textBright : activeTheme.textMuted,
+                backgroundColor: isSidebarOpen && activeSidebarView === 'git' ? activeTheme.surfaceHover : 'transparent'
+              }}
+              title="Source Control"
+            >
+              {isSidebarOpen && activeSidebarView === 'git' && (
+                <div 
+                  className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r"
+                  style={{
+                    backgroundColor: activeTheme.accent,
+                    boxShadow: `0 0 8px ${activeTheme.accent}`
+                  }}
+                />
+              )}
+              <GitBranch size={18} strokeWidth={1.6} />
+              <span 
+                className="absolute -top-0.5 -right-0.5 px-1 min-w-[14px] h-[14px] rounded-full text-[9px] font-mono font-bold text-white flex items-center justify-center shadow"
+                style={{ backgroundColor: activeTheme.accent }}
+              >
+                2
+              </span>
+            </button>
+
+            {/* AI Studio */}
+            <button 
+              onClick={() => {
+                if (!isSidebarOpen) {
+                  setIsSidebarOpen(true);
+                  setActiveSidebarView('ai');
+                } else if (activeSidebarView === 'ai') {
+                  setIsSidebarOpen(false);
+                } else {
+                  setActiveSidebarView('ai');
+                }
+              }}
+              className="p-2 rounded-xl transition-all relative group cursor-pointer"
+              style={{
+                color: isSidebarOpen && activeSidebarView === 'ai' ? activeTheme.textBright : activeTheme.textMuted,
+                backgroundColor: isSidebarOpen && activeSidebarView === 'ai' ? activeTheme.surfaceHover : 'transparent'
+              }}
+              title="Antigravity AI (Ctrl+Shift+A)"
+            >
+              {isSidebarOpen && activeSidebarView === 'ai' && (
+                <div 
+                  className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r"
+                  style={{
+                    backgroundColor: activeTheme.accent,
+                    boxShadow: `0 0 8px ${activeTheme.accent}`
+                  }}
+                />
+              )}
+              <Sparkles size={18} strokeWidth={1.6} />
+            </button>
           </div>
 
-          <div className="flex-1 p-2 font-mono text-[11px] select-none text-left overflow-hidden">
-            <div className="space-y-3 text-left">
-              {EXPLORER_MODULES.map(group => (
-                <div key={group.label} className="space-y-1">
-                  <div className="flex items-center gap-1.5 px-1 py-0.5 text-slate-300 font-medium select-none">
-                    <Folder size={12} style={{ color: group.color }} className="shrink-0" />
-                    <span className="text-[11px]">{group.label}</span>
-                  </div>
+          {/* Bottom Actions */}
+          <div className="flex flex-col gap-2 w-full items-center relative">
+            {/* Theme Selector Popover Button */}
+            <div className="relative">
+              <button 
+                ref={themeButtonRef}
+                onClick={() => setIsThemePickerOpen(!isThemePickerOpen)}
+                className="p-2 rounded-xl transition-colors cursor-pointer"
+                style={{
+                  color: isThemePickerOpen ? activeTheme.textBright : activeTheme.textMuted,
+                  backgroundColor: isThemePickerOpen ? activeTheme.surfaceHover : 'transparent'
+                }}
+                title="Color Themes"
+              >
+                <Palette size={18} strokeWidth={1.6} />
+              </button>
 
-                  <div className="pl-3.5 space-y-0.5">
-                    {group.files.map(fName => (
-                      <div
-                        key={fName}
-                        className="px-2 py-0.5 rounded truncate flex items-center gap-1.5 text-slate-400 select-none"
+              {/* Floating Minimal Horizontal Bar with 5 Color Circles */}
+              {isThemePickerOpen && (
+                <div
+                  ref={themePopoverRef}
+                  className="absolute left-14 bottom-0 z-[250] flex items-center gap-2 px-2.5 py-1.5 rounded-full border shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-100 select-none"
+                  style={{
+                    backgroundColor: activeTheme.surface,
+                    borderColor: activeTheme.border,
+                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.45)'
+                  }}
+                >
+                  {Object.entries(THEMES_MAP).map(([id, t]) => {
+                    const isSelected = activeThemeId === id;
+                    return (
+                      <button
+                        key={id}
+                        onClick={() => {
+                          setActiveThemeId(id);
+                          setIsThemePickerOpen(false);
+                        }}
+                        className={`w-5 h-5 rounded-full cursor-pointer transition-all transform hover:scale-115 relative flex items-center justify-center shrink-0 ${
+                          isSelected ? 'ring-2 ring-offset-2 scale-105' : 'opacity-80 hover:opacity-100'
+                        }`}
+                        style={{
+                          backgroundColor: t.circleColor,
+                          border: `1.5px solid ${t.circleBorder}`,
+                          outline: 'none'
+                        }}
+                        title={t.name}
                       >
-                        <FileCode2 size={11} className="shrink-0 text-slate-500" />
-                        <span className="truncate text-[11px]">{fName}</span>
-                      </div>
-                    ))}
-                  </div>
+                        {isSelected && (
+                          <span 
+                            className="w-1.5 h-1.5 rounded-full"
+                            style={{
+                              backgroundColor: t.isDark ? '#ffffff' : '#000000'
+                            }}
+                          />
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
-              ))}
+              )}
+            </div>
+
+            {/* Settings */}
+            <button 
+              className="p-2 rounded-xl transition-colors cursor-pointer"
+              style={{ color: activeTheme.textMuted }}
+              title="Preferences (Ctrl+,)"
+            >
+              <Settings size={18} strokeWidth={1.6} />
+            </button>
+
+            {/* User Avatar */}
+            <div 
+              className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-600 to-indigo-700 text-white font-mono font-bold text-[10px] flex items-center justify-center uppercase shadow cursor-pointer"
+              title="Signed in as Developer"
+            >
+              N
             </div>
           </div>
         </div>
 
-        {/* Central Spatial Canvas Viewport */}
-        <div className="flex-1 flex flex-col relative overflow-hidden text-left bg-[#08090c]">
-          
-          {/* Canvas HUD Header */}
-          <div className="h-8 border-b border-white/[0.08] flex items-center justify-between px-3 text-xs bg-[#0e1017]">
-            <div className="flex items-center gap-2">
-              <span className="text-slate-400 text-[11px] font-mono">spatial_universe</span>
-            </div>
-
-            {/* HUD Controls */}
-            <div className="flex items-center gap-1.5">
-              <button
-                onClick={() => setShowLabels(!showLabels)}
-                className={`px-2 py-0.5 rounded text-[10px] font-mono border transition-all cursor-pointer flex items-center gap-1 ${
-                  showLabels 
-                    ? 'bg-white/[0.08] text-white border-white/[0.15]' 
-                    : 'bg-white/[0.02] text-slate-500 border-white/[0.06] hover:text-slate-300'
-                }`}
-                title="Toggle node label visibility"
-              >
-                <Type size={11} />
-                <span>{showLabels ? 'Labels: ON' : 'Labels: OFF'}</span>
-              </button>
-
-              <div className="flex items-center bg-white/[0.04] border border-white/[0.08] rounded">
-                <button
-                  onClick={handleZoomIn}
-                  className="p-1 hover:bg-white/[0.08] text-slate-300 hover:text-white transition-colors cursor-pointer"
-                  title="Zoom in"
-                >
-                  <ZoomIn size={12} />
+        {/* Sidebar (w-52 / 208px) */}
+        {isSidebarOpen && (
+          <div 
+            className="w-52 border-r flex flex-col shrink-0 text-left overflow-hidden select-none transition-colors duration-150"
+            style={{
+              backgroundColor: activeTheme.secondary,
+              borderColor: activeTheme.border,
+              color: activeTheme.textPrimary
+            }}
+          >
+            {/* Header with action icons */}
+            <div 
+              className="h-8 px-3 text-[11px] font-mono font-medium tracking-wide flex items-center justify-between shrink-0 border-b"
+              style={{ borderColor: activeTheme.border }}
+            >
+              <span className="font-medium tracking-wide" style={{ color: activeTheme.textPrimary }}>Explorer</span>
+              <div className="flex items-center gap-0.5">
+                <button className="p-1 rounded hover:bg-white/[0.06] transition-colors cursor-pointer" style={{ color: activeTheme.textMuted }} title="New File">
+                  <FilePlus size={13} />
                 </button>
-                <button
-                  onClick={handleZoomOut}
-                  className="p-1 hover:bg-white/[0.08] text-slate-300 hover:text-white transition-colors cursor-pointer"
-                  title="Zoom out"
-                >
-                  <ZoomOut size={12} />
+                <button className="p-1 rounded hover:bg-white/[0.06] transition-colors cursor-pointer" style={{ color: activeTheme.textMuted }} title="New Folder">
+                  <FolderPlus size={13} />
                 </button>
-                <button
-                  onClick={handleResetZoom}
-                  className="px-1.5 py-0.5 text-[10px] text-slate-400 hover:text-white transition-colors cursor-pointer border-l border-white/[0.08]"
-                  title="Reset zoom"
+                <button className="p-1 rounded hover:bg-white/[0.06] transition-colors cursor-pointer" style={{ color: activeTheme.textMuted }} title="Refresh Explorer">
+                  <RefreshCw size={12} />
+                </button>
+                <button 
+                  onClick={() => setOpenFolders({ neuron: true, backend: false, frontend: false, src: false, components: false, config: false })}
+                  className="p-1 rounded hover:bg-white/[0.06] transition-colors cursor-pointer" 
+                  style={{ color: activeTheme.textMuted }} 
+                  title="Collapse All Folders"
                 >
-                  {Math.round(zoomDisplay)}%
+                  <ListCollapse size={13} />
                 </button>
               </div>
-
-              {/* Refactor Button */}
-              <button
-                onClick={handleRefactor}
-                className="px-2 py-0.5 rounded bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.1] text-slate-300 hover:text-white transition-all cursor-pointer text-[10px] font-mono flex items-center gap-1"
-                title="Refactor graph back to pristine initial layout"
-              >
-                <RotateCcw size={10} />
-                <span>Refactor</span>
-              </button>
             </div>
-          </div>
 
-          {/* 60 FPS Canvas Viewport */}
-          <div className="flex-1 w-full h-full relative bg-[#08090c]">
-            <canvas
-              ref={canvasRef}
-              onPointerDown={handlePointerDown}
-              onPointerMove={handlePointerMove}
-              onPointerUp={handlePointerUp}
-              onPointerLeave={handlePointerLeave}
-              className={`w-full h-full block touch-none ${isDragging ? 'cursor-grabbing' : (hoveredNode ? (hoveredNode.type === 'folder' ? 'cursor-grab' : 'cursor-pointer') : 'cursor-default')}`}
-            />
+            {/* Root Workspace Toggler */}
+            <div 
+              onClick={() => setOpenFolders(p => ({ ...p, neuron: !p.neuron }))}
+              className="px-2.5 py-1 text-[11px] font-mono font-bold tracking-wider flex items-center gap-1 shrink-0 hover:bg-white/[0.04] cursor-pointer transition-colors select-none"
+              style={{ color: activeTheme.textPrimary }}
+            >
+              {openFolders.neuron ? <ChevronDown size={13} className="text-slate-500 shrink-0" /> : <ChevronRight size={13} className="text-slate-500 shrink-0" />}
+              <span className="truncate font-bold">NEURON</span>
+            </div>
 
-            {/* Conflict-Free Scroll Hint Toast */}
-            {showScrollHint && (
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 pointer-events-none z-20 transition-opacity duration-200">
-                <div className="px-3 py-1 bg-black/80 backdrop-blur border border-white/15 rounded-full text-[11px] font-mono text-slate-300 shadow-xl flex items-center gap-1.5">
-                  <span className="px-1 py-0.2 bg-white/10 rounded text-[10px] text-slate-200">Ctrl</span>
-                  <span>+ scroll to zoom graph</span>
+            {/* File Tree */}
+            {openFolders.neuron && (
+              <div className="flex-1 overflow-y-auto pb-4 font-mono text-[11px]">
+                {/* backend folder */}
+                <div 
+                  onClick={() => setOpenFolders(p => ({ ...p, backend: !p.backend }))}
+                  className="px-4 py-0.5 flex items-center gap-1.5 hover:bg-white/[0.04] cursor-pointer transition-colors"
+                >
+                  {openFolders.backend ? <ChevronDown size={12} className="text-slate-500 shrink-0" /> : <ChevronRight size={12} className="text-slate-500 shrink-0" />}
+                  <Folder size={13} style={{ color: activeTheme.folderIcon }} className="shrink-0" />
+                  <span className="truncate">backend</span>
+                </div>
+                {openFolders.backend && (
+                  <div className="pl-7 space-y-0.5">
+                    <div 
+                      onClick={() => setActiveDocTab('spatial')}
+                      className="px-1 py-0.5 flex items-center justify-between hover:bg-white/[0.04] cursor-pointer rounded"
+                    >
+                      <div className="flex items-center gap-1.5 truncate">
+                        <FileCode2 size={12} className="text-slate-400 shrink-0" />
+                        <span className="truncate text-slate-300">main.py</span>
+                      </div>
+                      <span className="text-[10px] text-amber-500 font-bold pr-1">M</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* frontend folder */}
+                <div 
+                  onClick={() => setOpenFolders(p => ({ ...p, frontend: !p.frontend }))}
+                  className="px-4 py-0.5 flex items-center gap-1.5 hover:bg-white/[0.04] cursor-pointer transition-colors"
+                >
+                  {openFolders.frontend ? <ChevronDown size={12} className="text-slate-500 shrink-0" /> : <ChevronRight size={12} className="text-slate-500 shrink-0" />}
+                  <Folder size={13} style={{ color: activeTheme.folderIcon }} className="shrink-0" />
+                  <span className="truncate">frontend</span>
+                </div>
+                {openFolders.frontend && (
+                  <div className="pl-6 space-y-0.5">
+                    {/* src */}
+                    <div 
+                      onClick={() => setOpenFolders(p => ({ ...p, src: !p.src }))}
+                      className="px-2 py-0.5 flex items-center gap-1.5 hover:bg-white/[0.04] cursor-pointer"
+                    >
+                      {openFolders.src ? <ChevronDown size={11} className="text-slate-500 shrink-0" /> : <ChevronRight size={11} className="text-slate-500 shrink-0" />}
+                      <Folder size={12} style={{ color: activeTheme.folderIcon }} className="shrink-0" />
+                      <span className="truncate">src</span>
+                    </div>
+                    {openFolders.src && (
+                      <div className="pl-4 space-y-0.5">
+                        {/* App.jsx */}
+                        <div 
+                          onClick={() => setActiveDocTab('app')}
+                          className={`px-2 py-0.5 flex items-center justify-between cursor-pointer rounded ${activeDocTab === 'app' ? 'bg-blue-600/20 text-blue-400 font-medium' : 'hover:bg-white/[0.04] text-slate-300'}`}
+                        >
+                          <div className="flex items-center gap-1.5 truncate">
+                            <FileCode2 size={12} className={activeDocTab === 'app' ? 'text-blue-400' : 'text-slate-400'} />
+                            <span className="truncate">App.jsx</span>
+                          </div>
+                          <span className="text-[10px] text-amber-500 font-bold pr-1">M</span>
+                        </div>
+
+                        {/* PixiSpatialEngine.jsx */}
+                        <div 
+                          onClick={() => setActiveDocTab('spatial')}
+                          className={`px-2 py-0.5 flex items-center justify-between cursor-pointer rounded ${activeDocTab === 'spatial' ? 'bg-blue-600/20 text-blue-400 font-medium' : 'hover:bg-white/[0.04] text-slate-300'}`}
+                        >
+                          <div className="flex items-center gap-1.5 truncate">
+                            <FileCode2 size={12} className={activeDocTab === 'spatial' ? 'text-blue-400' : 'text-slate-400'} />
+                            <span className="truncate">PixiSpatialEngine.jsx</span>
+                          </div>
+                          <span className="text-[10px] text-amber-500 font-bold pr-1">M</span>
+                        </div>
+
+                        {/* TopBar.jsx */}
+                        <div className="px-2 py-0.5 flex items-center gap-1.5 text-slate-400 hover:bg-white/[0.04] cursor-pointer rounded">
+                          <FileCode2 size={12} className="text-slate-500" />
+                          <span className="truncate">TopBar.jsx</span>
+                        </div>
+                      </div>
+                    )}
+                    {/* package.json */}
+                    <div className="px-3 py-0.5 flex items-center gap-1.5 text-slate-400 hover:bg-white/[0.04] cursor-pointer rounded">
+                      <FileCode2 size={12} className="text-slate-500" />
+                      <span className="truncate">package.json</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Cargo.toml */}
+                <div className="px-6 py-0.5 flex items-center gap-1.5 text-slate-400 hover:bg-white/[0.04] cursor-pointer rounded">
+                  <FileCode2 size={12} className="text-slate-500" />
+                  <span className="truncate">Cargo.toml</span>
+                </div>
+
+                {/* README.md */}
+                <div className="px-6 py-0.5 flex items-center justify-between text-slate-400 hover:bg-white/[0.04] cursor-pointer rounded">
+                  <div className="flex items-center gap-1.5 truncate">
+                    <FileCode2 size={12} className="text-slate-500" />
+                    <span className="truncate">README.md</span>
+                  </div>
+                  <span className="text-[10px] text-emerald-500 font-bold pr-1">U</span>
                 </div>
               </div>
             )}
           </div>
+        )}
+
+        {/* Central Viewport */}
+        <div 
+          className="flex-1 flex flex-col relative overflow-hidden text-left"
+          style={{ backgroundColor: activeTheme.background }}
+        >
+          {/* Document Tab Strip (h-8) */}
+          <div 
+            className="h-8 shrink-0 border-b flex items-center justify-between select-none"
+            style={{
+              backgroundColor: activeTheme.secondary,
+              borderColor: activeTheme.border
+            }}
+          >
+            <div className="flex items-center h-full">
+              {/* Spatial Map Tab */}
+              <button
+                onClick={() => setActiveDocTab('spatial')}
+                className={`h-full px-3 flex items-center gap-2 text-[11px] font-mono font-medium border-r transition-colors cursor-pointer ${
+                  activeDocTab === 'spatial' ? 'font-semibold border-t-2' : 'hover:text-white'
+                }`}
+                style={{
+                  backgroundColor: activeDocTab === 'spatial' ? activeTheme.background : activeTheme.secondary,
+                  borderColor: activeTheme.border,
+                  borderTopColor: activeDocTab === 'spatial' ? activeTheme.accent : 'transparent',
+                  color: activeDocTab === 'spatial' ? activeTheme.textBright : activeTheme.textSecondary
+                }}
+              >
+                <Network size={13} style={{ color: activeDocTab === 'spatial' ? activeTheme.accent : undefined }} />
+                <span>Spatial Map</span>
+              </button>
+
+              {/* App.jsx Tab */}
+              <button
+                onClick={() => setActiveDocTab('app')}
+                className={`h-full px-3 flex items-center gap-2 text-[11px] font-mono font-medium border-r transition-colors cursor-pointer ${
+                  activeDocTab === 'app' ? 'font-semibold border-t-2' : 'hover:text-white'
+                }`}
+                style={{
+                  backgroundColor: activeDocTab === 'app' ? activeTheme.background : activeTheme.secondary,
+                  borderColor: activeTheme.border,
+                  borderTopColor: activeDocTab === 'app' ? activeTheme.accent : 'transparent',
+                  color: activeDocTab === 'app' ? activeTheme.textBright : activeTheme.textSecondary
+                }}
+              >
+                <FileCode2 size={13} style={{ color: activeDocTab === 'app' ? activeTheme.accent : undefined }} />
+                <span>App.jsx</span>
+                <span className="text-[10px] text-amber-500 font-bold">M</span>
+              </button>
+            </div>
+
+            {/* Run Button (F5) */}
+            <div className="flex items-center pr-3">
+              <button 
+                onClick={handleRefactor}
+                className="w-7 h-6 flex items-center justify-center rounded hover:bg-white/10 text-slate-300 hover:text-white transition-all cursor-pointer" 
+                title="Run Active File (F5)"
+              >
+                <Play size={13} strokeWidth={1.8} />
+              </button>
+            </div>
+          </div>
+
+          {/* Canvas HUD Header (when Spatial Map is open) */}
+          {activeDocTab === 'spatial' && (
+            <div 
+              className="h-8 border-b flex items-center justify-between px-3 text-xs shrink-0"
+              style={{
+                backgroundColor: activeTheme.primary,
+                borderColor: activeTheme.border
+              }}
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-mono" style={{ color: activeTheme.textMuted }}>spatial_universe</span>
+              </div>
+
+              {/* HUD Controls */}
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => setShowLabels(!showLabels)}
+                  className="px-2 py-0.5 rounded text-[10px] font-mono border transition-all cursor-pointer flex items-center gap-1"
+                  style={{
+                    backgroundColor: showLabels ? 'rgba(255,255,255,0.08)' : 'transparent',
+                    borderColor: activeTheme.border,
+                    color: showLabels ? activeTheme.textBright : activeTheme.textMuted
+                  }}
+                  title="Toggle node label visibility"
+                >
+                  <Type size={11} />
+                  <span>{showLabels ? 'Labels: ON' : 'Labels: OFF'}</span>
+                </button>
+
+                <div className="flex items-center rounded border" style={{ borderColor: activeTheme.border, backgroundColor: 'rgba(255,255,255,0.02)' }}>
+                  <button
+                    onClick={handleZoomIn}
+                    className="p-1 hover:bg-white/[0.08] transition-colors cursor-pointer"
+                    style={{ color: activeTheme.textSecondary }}
+                    title="Zoom in"
+                  >
+                    <ZoomIn size={12} />
+                  </button>
+                  <button
+                    onClick={handleZoomOut}
+                    className="p-1 hover:bg-white/[0.08] transition-colors cursor-pointer"
+                    style={{ color: activeTheme.textSecondary }}
+                    title="Zoom out"
+                  >
+                    <ZoomOut size={12} />
+                  </button>
+                  <button
+                    onClick={handleResetZoom}
+                    className="px-1.5 py-0.5 text-[10px] transition-colors cursor-pointer border-l"
+                    style={{ borderColor: activeTheme.border, color: activeTheme.textMuted }}
+                    title="Reset zoom"
+                  >
+                    {Math.round(zoomDisplay)}%
+                  </button>
+                </div>
+
+                <button
+                  onClick={handleRefactor}
+                  className="px-2 py-0.5 rounded border transition-all cursor-pointer text-[10px] font-mono flex items-center gap-1"
+                  style={{
+                    backgroundColor: 'rgba(255,255,255,0.05)',
+                    borderColor: activeTheme.border,
+                    color: activeTheme.textSecondary
+                  }}
+                  title="Refactor graph back to pristine initial layout"
+                >
+                  <RotateCcw size={10} />
+                  <span>Refactor</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Viewport Content */}
+          <div className="flex-1 w-full h-full relative overflow-hidden">
+            {activeDocTab === 'spatial' ? (
+              <>
+                <canvas
+                  ref={canvasRef}
+                  onPointerDown={handlePointerDown}
+                  onPointerMove={handlePointerMove}
+                  onPointerUp={handlePointerUp}
+                  onPointerLeave={handlePointerLeave}
+                  className={`w-full h-full block touch-none ${isDragging ? 'cursor-grabbing' : (hoveredNode ? (hoveredNode.type === 'folder' ? 'cursor-grab' : 'cursor-pointer') : 'cursor-default')}`}
+                />
+
+                {/* Spatial Radar Minimap */}
+                <div 
+                  className="absolute bottom-3 right-3 z-30 w-32 h-20 rounded-xl border shadow-xl overflow-hidden pointer-events-none select-none backdrop-blur-md flex items-center justify-center p-1.5 animate-in fade-in zoom-in-95 duration-200"
+                  style={{
+                    backgroundColor: activeTheme.surface,
+                    borderColor: activeTheme.border,
+                    boxShadow: '0 8px 30px rgba(0, 0, 0, 0.45)'
+                  }}
+                >
+                  <svg width="100%" height="100%" className="overflow-visible">
+                    {minimapNodes.map(mn => (
+                      <circle key={mn.id} cx={mn.cx} cy={mn.cy} r={mn.r} fill={mn.color} opacity={0.85} />
+                    ))}
+                  </svg>
+                </div>
+
+                {/* Conflict-Free Scroll Hint Toast */}
+                {showScrollHint && (
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 pointer-events-none z-20 transition-opacity duration-200">
+                    <div className="px-3 py-1 bg-black/80 backdrop-blur border border-white/15 rounded-full text-[11px] font-mono text-slate-300 shadow-xl flex items-center gap-1.5">
+                      <span className="px-1 py-0.2 bg-white/10 rounded text-[10px] text-slate-200">Ctrl</span>
+                      <span>+ scroll to zoom graph</span>
+                    </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              /* Code Editor View for App.jsx */
+              <div 
+                className="w-full h-full p-4 overflow-y-auto font-mono text-xs select-text"
+                style={{
+                  backgroundColor: activeTheme.background,
+                  color: activeTheme.textPrimary
+                }}
+              >
+                <div className="space-y-1 leading-relaxed">
+                  <p className="text-slate-500">// src/App.jsx - Hardware-Accelerated Spatial Universe</p>
+                  <p><span className="text-purple-400">import</span> React, &#123; useState, useEffect &#125; <span className="text-purple-400">from</span> <span className="text-emerald-400">'react'</span>;</p>
+                  <p><span className="text-purple-400">import</span> PixiSpatialEngine <span className="text-purple-400">from</span> <span className="text-emerald-400">'./components/canvas/PixiSpatialEngine'</span>;</p>
+                  <p><span className="text-purple-400">import</span> TopBar <span className="text-purple-400">from</span> <span className="text-emerald-400">'./components/layout/TopBar'</span>;</p>
+                  <p><span className="text-purple-400">import</span> ActivityBar <span className="text-purple-400">from</span> <span className="text-emerald-400">'./components/layout/ActivityBar'</span>;</p>
+                  <p><span className="text-purple-400">import</span> &#123; usePhysicsEngine &#125; <span className="text-purple-400">from</span> <span className="text-emerald-400">'./hooks/usePhysicsEngine'</span>;</p>
+                  <br />
+                  <p><span className="text-blue-400">export default function</span> <span className="text-amber-400">App</span>() &#123;</p>
+                  <p className="pl-4"><span className="text-blue-400">const</span> [activeTheme, setActiveTheme] = <span className="text-amber-400">useState</span>(<span className="text-emerald-400">'black'</span>);</p>
+                  <p className="pl-4"><span className="text-blue-400">const</span> &#123; nodes, edges, simDataRef &#125; = <span className="text-amber-400">usePhysicsEngine</span>();</p>
+                  <br />
+                  <p className="pl-4"><span className="text-purple-400">return</span> (</p>
+                  <p className="pl-8 text-slate-300">&lt;<span className="text-blue-400">div</span> <span className="text-sky-300">className</span>=<span className="text-emerald-400">"neuron-universe flex flex-col h-screen"</span>&gt;</p>
+                  <p className="pl-12 text-slate-300">&lt;<span className="text-blue-400">TopBar</span> <span className="text-sky-300">title</span>=<span className="text-emerald-400">"Neuron - workspace"</span> /&gt;</p>
+                  <p className="pl-12 text-slate-300">&lt;<span className="text-blue-400">div</span> <span className="text-sky-300">className</span>=<span className="text-emerald-400">"flex-1 flex overflow-hidden"</span>&gt;</p>
+                  <p className="pl-16 text-slate-300">&lt;<span className="text-blue-400">ActivityBar</span> /&gt;</p>
+                  <p className="pl-16 text-slate-300">&lt;<span className="text-blue-400">PixiSpatialEngine</span> <span className="text-sky-300">nodes</span>=&#123;nodes&#125; <span className="text-sky-300">edges</span>=&#123;edges&#125; /&gt;</p>
+                  <p className="pl-12 text-slate-300">&lt;/<span className="text-blue-400">div</span>&gt;</p>
+                  <p className="pl-8 text-slate-300">&lt;/<span className="text-blue-400">div</span>&gt;</p>
+                  <p className="pl-4">);</p>
+                  <p>&#125;</p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Bottom Terminal Panel (h-24) */}
+          {isTerminalOpen && (
+            <div 
+              className="h-24 shrink-0 border-t flex flex-col font-mono text-xs select-none transition-colors duration-150"
+              style={{
+                backgroundColor: activeTheme.secondary,
+                borderColor: activeTheme.border,
+                color: activeTheme.textPrimary
+              }}
+            >
+              {/* Terminal Header */}
+              <div 
+                className="h-7 shrink-0 border-b flex items-center justify-between px-0 select-none"
+                style={{ borderColor: activeTheme.border }}
+              >
+                <div className="flex items-center h-full">
+                  <button 
+                    onClick={() => setActiveTerminalTab('output')}
+                    className={`h-full px-3 flex items-center text-[11px] font-mono font-medium border-r transition-colors cursor-pointer ${
+                      activeTerminalTab === 'output' ? 'font-semibold border-t-2' : 'hover:text-white'
+                    }`}
+                    style={{
+                      backgroundColor: activeTerminalTab === 'output' ? activeTheme.background : activeTheme.secondary,
+                      borderColor: activeTheme.border,
+                      borderTopColor: activeTerminalTab === 'output' ? activeTheme.accent : 'transparent',
+                      color: activeTerminalTab === 'output' ? activeTheme.accent : activeTheme.textSecondary
+                    }}
+                  >
+                    Output
+                  </button>
+
+                  <button 
+                    onClick={() => setActiveTerminalTab('powershell')}
+                    className={`h-full px-3 flex items-center gap-1.5 text-[11px] font-mono font-medium border-r transition-colors cursor-pointer ${
+                      activeTerminalTab === 'powershell' ? 'font-semibold border-t-2' : 'hover:text-white'
+                    }`}
+                    style={{
+                      backgroundColor: activeTerminalTab === 'powershell' ? activeTheme.background : activeTheme.secondary,
+                      borderColor: activeTheme.border,
+                      borderTopColor: activeTerminalTab === 'powershell' ? activeTheme.accent : 'transparent',
+                      color: activeTerminalTab === 'powershell' ? activeTheme.accent : activeTheme.textSecondary
+                    }}
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    powershell
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-2 pr-2">
+                  <button 
+                    onClick={() => setTerminalHistory([])}
+                    className="p-1 text-slate-400 hover:text-white transition-colors cursor-pointer" 
+                    title="Clear Terminal"
+                  >
+                    <Trash2 size={11} />
+                  </button>
+                  <button 
+                    onClick={() => setIsTerminalOpen(false)}
+                    className="p-1 text-slate-400 hover:text-white transition-colors cursor-pointer" 
+                    title="Close Panel"
+                  >
+                    <X size={12} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Terminal Content */}
+              <div className="flex-1 p-2 overflow-y-auto font-mono text-[11px] select-text">
+                {activeTerminalTab === 'powershell' ? (
+                  <div className="space-y-1">
+                    {terminalHistory.map((item, idx) => (
+                      <div key={idx} className="space-y-0.5">
+                        <div className="flex items-center gap-2">
+                          <span style={{ color: activeTheme.accent }}>PS C:\Neuron&gt;</span>
+                          <span className="text-white">{item.cmd}</span>
+                        </div>
+                        {item.stdout && (
+                          <pre className="text-slate-400 whitespace-pre-wrap pl-2 leading-tight">
+                            {item.stdout}
+                          </pre>
+                        )}
+                      </div>
+                    ))}
+
+                    {/* Active Prompt Input */}
+                    <div className="flex items-center gap-2 pt-0.5">
+                      <span style={{ color: activeTheme.accent }}>PS C:\Neuron&gt;</span>
+                      <input 
+                        type="text"
+                        value={terminalInput}
+                        onChange={(e) => setTerminalInput(e.target.value)}
+                        onKeyDown={handleTerminalSubmit}
+                        placeholder="Type 'git status' or 'clear'..."
+                        className="flex-1 bg-transparent border-none outline-none text-white text-[11px] font-mono placeholder:text-slate-600"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-slate-400 space-y-1">
+                    <p className="text-blue-400">[Neuron Engine] Spatial Graph initialized with 500+ nodes and 40 clusters.</p>
+                    <p className="text-emerald-400">[WebGPU] Hardware acceleration verified at 300 FPS.</p>
+                    <p className="text-slate-500">[Diagnostics] 0 syntax errors detected.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* 3. STATUS BAR (Parity with StatusBar.jsx) */}
+      <div 
+        className="h-6 shrink-0 border-t flex items-center justify-between px-3 text-[11px] font-mono select-none z-50 transition-colors duration-150"
+        style={{
+          backgroundColor: activeTheme.secondary,
+          borderColor: activeTheme.border,
+          color: activeTheme.textSecondary
+        }}
+      >
+        {/* Left */}
+        <div className="flex items-center gap-2 h-full overflow-hidden">
+          <button 
+            onClick={handleResetZoom}
+            className="hover:text-blue-400 transition-colors cursor-pointer"
+            title="Center Spatial Map on Active Bridges"
+          >
+            <span>3 bridges</span>
+          </button>
+          <span className="opacity-40">·</span>
+          <span>186 nodes · 214 links</span>
+          <span className="opacity-40">·</span>
+          <span>0 errors</span>
         </div>
 
+        {/* Right */}
+        <div className="flex items-center gap-2.5 h-full shrink-0">
+          <div className="flex items-center gap-1 text-[10px]">
+            <GitBranch size={11} className="text-blue-400" />
+            <span className="text-slate-300 hover:text-white cursor-pointer">main*</span>
+          </div>
+
+          <span className="opacity-40">·</span>
+          <div className="flex items-center gap-1 text-[10px]">
+            <CheckCircle2 size={10} className="text-emerald-500" />
+            <span>Saved</span>
+          </div>
+
+          <span className="opacity-40 hidden sm:inline">·</span>
+          <button 
+            onClick={handleRefactor}
+            className="text-[10px] hover:text-white transition-colors font-mono flex items-center gap-1 cursor-pointer"
+          >
+            <span>Refactor:</span>
+            <span className="text-blue-400 font-semibold">ON</span>
+          </button>
+
+          <span className="opacity-40 hidden sm:inline">·</span>
+          <div className="text-[10px] font-mono flex items-center gap-1">
+            <span className="hidden sm:inline">Blast:</span>
+            <span className="text-blue-400 font-semibold">ON</span>
+          </div>
+
+          <span className="opacity-40 hidden md:inline">·</span>
+          <div className="text-[10px] hidden md:flex">
+            Ln 42, Col 1
+          </div>
+
+          <span className="opacity-40 hidden sm:inline">·</span>
+          <div className="text-[10px] uppercase hidden sm:flex">
+            UTF-8
+          </div>
+
+          <span className="opacity-40">·</span>
+          <div className="text-[10px]">
+            <span>{activeDocTab === 'spatial' ? 'Spatial Map' : 'JavaScript React'}</span>
+          </div>
+
+          <span className="opacity-40">·</span>
+          <div className="relative flex items-center">
+            <Bell size={12} className="text-slate-400 hover:text-white cursor-pointer" />
+            <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-blue-500" />
+          </div>
+        </div>
       </div>
     </div>
   );

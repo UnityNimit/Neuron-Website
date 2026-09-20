@@ -1,27 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { 
   Files, GitBranch, Sparkles, Settings, 
-  Folder, FileCode2, ChevronDown 
+  Folder, FileCode2, ChevronDown, Minus, Square, X, Bell
 } from 'lucide-react';
 import { ScrollWriteHeading } from '../ScrollReveal';
 
 // The 5 official themes directly from frontend/src/config/themeConfig.js
 const THEMES = [
-  {
-    id: 'pink',
-    name: 'Sakura Rose',
-    circleColor: '#f472b6',
-    circleBorder: '#fb7185',
-    primary: '#1e111a',
-    secondary: '#271622',
-    background: '#180c14',
-    border: '#3c1e33',
-    accent: '#ec4899',
-    text: '#fce7f3',
-    textMuted: '#9d6a89',
-    folderColor: '#f472b6',
-    isDark: true
-  },
   {
     id: 'black',
     name: 'Obsidian Black',
@@ -35,6 +20,36 @@ const THEMES = [
     text: '#e2e8f0',
     textMuted: '#64748b',
     folderColor: '#dcb67a',
+    isDark: true
+  },
+  {
+    id: 'white',
+    name: 'Alabaster White',
+    circleColor: '#ffffff',
+    circleBorder: '#cbd5e1',
+    primary: '#e8eaed',
+    secondary: '#f1f3f4',
+    background: '#ffffff',
+    border: '#dadce0',
+    accent: '#2563eb',
+    text: '#1f2937',
+    textMuted: '#6b7280',
+    folderColor: '#b45309',
+    isDark: false
+  },
+  {
+    id: 'pink',
+    name: 'Sakura Rose',
+    circleColor: '#f472b6',
+    circleBorder: '#fb7185',
+    primary: '#1e111a',
+    secondary: '#271622',
+    background: '#180c14',
+    border: '#3c1e33',
+    accent: '#ec4899',
+    text: '#fce7f3',
+    textMuted: '#9d6a89',
+    folderColor: '#f472b6',
     isDark: true
   },
   {
@@ -146,6 +161,39 @@ export default function NeuronThemeShowcase() {
               boxShadow: `0 25px 60px -15px ${activeTheme.isDark ? 'rgba(0,0,0,0.8)' : 'rgba(0,0,0,0.12)'}`
             }}
           >
+            {/* TopBar matching TopBar.jsx */}
+            <div 
+              className="h-9 border-b flex items-center justify-between px-3 text-[11px] font-mono shrink-0 select-none transition-colors duration-700"
+              style={{
+                backgroundColor: activeTheme.primary,
+                borderColor: activeTheme.border,
+                color: activeTheme.textMuted
+              }}
+            >
+              <div className="flex items-center gap-2.5">
+                <div 
+                  className="w-2.5 h-2.5 rounded-full" 
+                  style={{ backgroundColor: activeTheme.accent }} 
+                  title="Neuron IDE"
+                />
+                <div className="flex items-center gap-2 text-xs font-mono">
+                  <span className="font-semibold text-[11px]" style={{ color: activeTheme.text }}>Neuron</span>
+                  <span className="opacity-30">|</span>
+                  <span className="cursor-pointer transition-colors hover:opacity-100" style={{ color: activeTheme.textMuted }}>File</span>
+                  <span className="cursor-pointer transition-colors hover:opacity-100" style={{ color: activeTheme.textMuted }}>Edit</span>
+                  <span className="cursor-pointer transition-colors hover:opacity-100" style={{ color: activeTheme.textMuted }}>Layout</span>
+                  <span className="cursor-pointer transition-colors hover:opacity-100" style={{ color: activeTheme.textMuted }}>Help</span>
+                </div>
+              </div>
+
+              {/* Window Controls */}
+              <div className="flex items-center gap-2" style={{ color: activeTheme.textMuted }}>
+                <Minus size={11} className="cursor-pointer hover:opacity-100" />
+                <Square size={10} className="cursor-pointer hover:opacity-100" />
+                <X size={12} className="cursor-pointer hover:opacity-100" />
+              </div>
+            </div>
+
             {/* Main Area: ActivityBar + Explorer + Center Code Viewport */}
             <div className="flex flex-1 min-h-[380px] sm:min-h-[420px] relative">
               
@@ -398,6 +446,33 @@ export default function NeuronThemeShowcase() {
 
               </div>
 
+            </div>
+
+            {/* StatusBar matching StatusBar.jsx */}
+            <div 
+              className="h-6 border-t flex items-center justify-between px-3 text-[10px] font-mono shrink-0 select-none transition-colors duration-700"
+              style={{
+                backgroundColor: activeTheme.secondary,
+                borderColor: activeTheme.border,
+                color: activeTheme.textMuted
+              }}
+            >
+              <div className="flex items-center gap-2">
+                <span style={{ color: activeTheme.accent }}>3 bridges</span>
+                <span className="opacity-40">·</span>
+                <span>42 nodes</span>
+                <span className="opacity-40">·</span>
+                <span className="text-emerald-500">0 errors</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span>main*</span>
+                <span className="opacity-40">·</span>
+                <span>UTF-8</span>
+                <span className="opacity-40">·</span>
+                <span style={{ color: activeTheme.accent }}>Neuron v1.0.0</span>
+                <span className="opacity-40">·</span>
+                <Bell size={10} />
+              </div>
             </div>
 
           </div>
