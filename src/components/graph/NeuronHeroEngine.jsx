@@ -599,33 +599,25 @@ export default function NeuronHeroEngine() {
         };
         nodes.push(childNode);
 
+        let lineColor = 'rgba(255, 255, 255, 0.12)';
+        if (folder.theme === 'coral') lineColor = 'rgba(239, 68, 68, 0.35)';
+        else if (folder.theme === 'purple') lineColor = 'rgba(168, 85, 247, 0.30)';
+        else if (folder.theme === 'cyan') lineColor = 'rgba(6, 182, 212, 0.30)';
+        else if (folder.theme === 'indigo') lineColor = 'rgba(99, 102, 241, 0.30)';
+        else if (folder.theme === 'amber') lineColor = 'rgba(245, 158, 11, 0.30)';
+
         edges.push({
           id: `e-${folder.id}-${childNode.id}`,
           source: folder.id,
           target: childNode.id,
           type: 'folder-child',
           restLength: lf.dist,
-          color: lf.isCritical ? 'rgba(239, 68, 68, 0.28)' : (lf.isPomegranate ? 'rgba(255, 255, 255, 0.16)' : 'rgba(255, 255, 255, 0.10)'),
+          color: lf.isCritical ? 'rgba(239, 68, 68, 0.40)' : lineColor,
           growthStart: leafGrowthStart,
           growthEnd: leafBirthStart,
           growthSource: folder.id,
           growthTarget: childNode.id
         });
-
-        // For pomegranate clusters: add delicate internal cross-links between neighboring seeds
-        if (lf.isPomegranate && lIdx > 0 && lIdx % 3 === 0) {
-          const neighborIdx = Math.max(0, lIdx - 1);
-          edges.push({
-            id: `pome-${folder.id}-${lIdx}-${neighborIdx}`,
-            source: `${folder.id}_node_${lIdx}`,
-            target: `${folder.id}_node_${neighborIdx}`,
-            type: 'pome-seed-link',
-            restLength: 14,
-            color: 'rgba(255, 255, 255, 0.08)',
-            growthStart: leafGrowthStart,
-            growthEnd: leafBirthStart
-          });
-        }
       });
     });
 
@@ -728,24 +720,17 @@ export default function NeuronHeroEngine() {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting && (entry.intersectionRatio >= 0.30 || entry.boundingClientRect.top < window.innerHeight * 0.75)) {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.18) {
             startAnimation();
           }
         });
       },
       {
-        threshold: [0.1, 0.2, 0.3, 0.5, 0.7]
+        threshold: [0.1, 0.18, 0.3, 0.5]
       }
     );
 
     observer.observe(container);
-
-    // Immediate check if container is already in viewport on load
-    const rect = container.getBoundingClientRect();
-    if (rect.top < window.innerHeight * 0.85 && rect.bottom > 0) {
-      startAnimation();
-    }
-
     return () => observer.disconnect();
   }, []);
 
@@ -1208,27 +1193,35 @@ export default function NeuronHeroEngine() {
 
         // If currently in growing phase, branch extends progressively from growthSource to growthTarget!
         if (isBirthPlayingRef.current && elapsedBirth < (edge.growthEnd || 999999)) {
-          const gSource = nodeMap.get(edge.growthSource || edge.source) || source;
-          const gTarget = nodeMap.get(edge.growthTarget || edge.target) || target;
-          startX = gSource.x;
-          startY = gSource.y;
+          if (edge.type === 'folder-backbone') {
+            const gSource = nodeMap.get(edge.growthSource || edge.source) || source;
+            const gTarget = nodeMap.get(edge.growthTarget || edge.target) || target;
+            startX = gSource.x;
+            startY = gSource.y;
 
-          const gStart = edge.growthStart || 0;
-          const gEnd = edge.growthEnd || (gStart + 80);
-          const duration = Math.max(gEnd - gStart, 30);
-          const p = Math.min(Math.max((elapsedBirth - gStart) / duration, 0), 1.0);
-          endX = gSource.x + (gTarget.x - gSource.x) * p;
-          endY = gSource.y + (gTarget.y - gSource.y) * p;
+            const gStart = edge.growthStart || 0;
+            const gEnd = edge.growthEnd || (gStart + 80);
+            const duration = Math.max(gEnd - gStart, 30);
+            const p = Math.min(Math.max((elapsedBirth - gStart) / duration, 0), 1.0);
+            endX = gSource.x + (gTarget.x - gSource.x) * p;
+            endY = gSource.y + (gTarget.y - gSource.y) * p;
 
-          // Glowing energy spark at the tip of the growing branch!
-          ctx.save();
-          ctx.beginPath();
-          ctx.arc(endX, endY, 3.5, 0, Math.PI * 2);
-          ctx.fillStyle = '#fde047';
-          ctx.shadowColor = '#facc15';
-          ctx.shadowBlur = 10;
-          ctx.fill();
-          ctx.restore();
+            // Glowing energy spark at the tip of the growing branch!
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(endX, endY, 3.5, 0, Math.PI * 2);
+            ctx.fillStyle = '#fde047';
+            ctx.shadowColor = '#facc15';
+            ctx.shadowBlur = 10;
+            ctx.fill();
+            ctx.restore();
+          } else {
+            // folder-child edge: target is already animated from source center to target clean pos!
+            startX = source.x;
+            startY = source.y;
+            endX = target.x;
+            endY = target.y;
+          }
         }
 
         let lineWidth = edge.type === 'folder-backbone' ? 1.0 : 0.65;

@@ -24,6 +24,7 @@ import { Terminal, ShieldAlert, CheckCircle2 } from 'lucide-react';
 // -------------------------------------------------------------------------
 function HotspotDetectionBox() {
   const [activeTab, setActiveTab] = useState('powershell');
+  const containerRef = useRef(null);
   const canvasRef = useRef(null);
   const animFrameRef = useRef(null);
 
@@ -32,6 +33,30 @@ function HotspotDetectionBox() {
   const hoveredNodeRef = useRef(null);
   const isDraggingRef = useRef(false);
   const startTimeRef = useRef(performance.now());
+  const isVisibleRef = useRef(false);
+
+  // Scroll-triggered activation: animation triggers only when user scrolls on it
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            isVisibleRef.current = true;
+            startTimeRef.current = performance.now();
+          } else {
+            isVisibleRef.current = false;
+          }
+        });
+      },
+      { threshold: 0.20 }
+    );
+
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -146,22 +171,24 @@ function HotspotDetectionBox() {
       const folder = nodes[0];
       const satellites = nodes.slice(1);
 
-      // Red ball slowly turning red animation (no line animation)
+      // Red ball slowly turning red animation (only triggers when user scrolls onto the box)
       const loopTime = 6500;
-      const elapsed = (now - startTimeRef.current) % loopTime;
+      const elapsed = isVisibleRef.current ? ((now - startTimeRef.current) % loopTime) : 0;
       let ballRedProgress = 0;
 
-      if (elapsed >= 1000 && elapsed < 3500) {
-        // Slowly turning red
-        const u = (elapsed - 1000) / 2500;
-        ballRedProgress = 1 - Math.pow(1 - u, 2.2);
-      } else if (elapsed >= 3500 && elapsed < 5500) {
-        // Deep solid red
-        ballRedProgress = 1.0;
-      } else if (elapsed >= 5500) {
-        // Return to blue
-        const u = (elapsed - 5500) / 1000;
-        ballRedProgress = 1.0 - u;
+      if (isVisibleRef.current) {
+        if (elapsed >= 1000 && elapsed < 3500) {
+          // Slowly turning red
+          const u = (elapsed - 1000) / 2500;
+          ballRedProgress = 1 - Math.pow(1 - u, 2.2);
+        } else if (elapsed >= 3500 && elapsed < 5500) {
+          // Deep solid red
+          ballRedProgress = 1.0;
+        } else if (elapsed >= 5500) {
+          // Return to blue
+          const u = (elapsed - 5500) / 1000;
+          ballRedProgress = 1.0 - u;
+        }
       }
 
       // Physics update (folder is affixated at edge, satellite files can be dragged)
@@ -183,13 +210,39 @@ function HotspotDetectionBox() {
         node.vx -= (dx / dist) * delta * 0.035;
         node.vy -= (dy / dist) * delta * 0.035;
 
-        node.vx += Math.sin(now * 0.0012 + node.seedX) * 0.02;
-        node.vy += Math.cos(now * 0.0010 + node.seedY) * 0.02;
+        if (isVisibleRef.current) {
+          node.vx += Math.sin(now * 0.0012 + node.seedX) * 0.02;
+          node.vy += Math.cos(now * 0.0010 + node.seedY) * 0.02;
+        }
         node.vx *= 0.88;
         node.vy *= 0.88;
         node.x += node.vx;
         node.y += node.vy;
       });
+
+      // Atmospheric Cosmic Background Gradients behind the balls (just like main graph)
+      const targetSat = satellites.find(s => s.isTarget) || satellites[0];
+      if (targetSat) {
+        const redGrad = ctx.createRadialGradient(targetSat.x, targetSat.y, 15, targetSat.x, targetSat.y, 185);
+        redGrad.addColorStop(0, 'rgba(239, 68, 68, 0.22)');
+        redGrad.addColorStop(0.50, 'rgba(220, 38, 38, 0.08)');
+        redGrad.addColorStop(0.80, 'rgba(185, 28, 28, 0.02)');
+        redGrad.addColorStop(1, 'rgba(239, 68, 68, 0)');
+        ctx.fillStyle = redGrad;
+        ctx.beginPath();
+        ctx.arc(targetSat.x, targetSat.y, 185, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      const yelGrad = ctx.createRadialGradient(folder.x, folder.y, 25, folder.x, folder.y, 195);
+      yelGrad.addColorStop(0, 'rgba(250, 204, 21, 0.20)');
+      yelGrad.addColorStop(0.50, 'rgba(250, 204, 21, 0.07)');
+      yelGrad.addColorStop(0.80, 'rgba(250, 204, 21, 0.015)');
+      yelGrad.addColorStop(1, 'rgba(250, 204, 21, 0)');
+      ctx.fillStyle = yelGrad;
+      ctx.beginPath();
+      ctx.arc(folder.x, folder.y, 195, 0, Math.PI * 2);
+      ctx.fill();
 
       // Draw Conduit Lines (clean conduits, no laser shooting)
       satellites.forEach(sat => {
@@ -291,7 +344,7 @@ function HotspotDetectionBox() {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+    <div ref={containerRef} className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
       {/* Left Column: Single Heading (matching chatbot layout) */}
       <div className="lg:col-span-5 flex flex-col justify-center select-none text-left">
         <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white font-sans leading-tight">
@@ -368,6 +421,9 @@ function HotspotDetectionBox() {
 // -------------------------------------------------------------------------
 function InteractiveCouplingBox() {
   const [activeTab, setActiveTab] = useState('powershell');
+  const [showHarmfulPopup, setShowHarmfulPopup] = useState(false);
+  const showHarmfulPopupRef = useRef(false);
+  const containerRef = useRef(null);
   const canvasRef = useRef(null);
   const animFrameRef = useRef(null);
 
@@ -381,6 +437,32 @@ function InteractiveCouplingBox() {
     isBlockedTarget: false
   });
   const startTimeRef = useRef(performance.now());
+  const isVisibleRef = useRef(false);
+
+  // Scroll-triggered activation
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            isVisibleRef.current = true;
+            startTimeRef.current = performance.now();
+          } else {
+            isVisibleRef.current = false;
+            setShowHarmfulPopup(false);
+            showHarmfulPopupRef.current = false;
+          }
+        });
+      },
+      { threshold: 0.20 }
+    );
+
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -522,23 +604,70 @@ function InteractiveCouplingBox() {
       nodes.forEach(n => nodeMap.set(n.id, n));
 
       // Automated joining demonstration when user is idle
-      // Automated attempt demonstration: repeatedly trying to connect to the red ball
       const loopTime = 3200;
-      const elapsed = (now - startTimeRef.current) % loopTime;
-      let isAutoDemo = !dragConnectRef.current.isConnecting;
+      const elapsed = isVisibleRef.current ? ((now - startTimeRef.current) % loopTime) : 0;
+      let isAutoDemo = !dragConnectRef.current.isConnecting && isVisibleRef.current;
 
       const originNode = nodeMap.get('f_viewport') || nodes[2];
       const critNode = nodeMap.get('f_critical');
 
+      // Check for blocked coupling attempt to trigger "Harmful Coupling" popup
+      const isAutoBlocked = isAutoDemo && (elapsed >= 1700 && elapsed < 2650);
+      const isUserBlocked = dragConnectRef.current.isConnecting && dragConnectRef.current.isBlockedTarget;
+      const shouldShowBlocked = isVisibleRef.current && (isAutoBlocked || isUserBlocked);
+
+      if (shouldShowBlocked !== showHarmfulPopupRef.current) {
+        showHarmfulPopupRef.current = shouldShowBlocked;
+        setShowHarmfulPopup(shouldShowBlocked);
+      }
+
       // Physics micro-drift
-      nodes.forEach(node => {
-        node.vx += Math.sin(now * 0.0012 + (node.seedX || 0)) * 0.015;
-        node.vy += Math.cos(now * 0.0010 + (node.seedY || 0)) * 0.015;
-        node.vx *= 0.88;
-        node.vy *= 0.88;
-        node.x += node.vx;
-        node.y += node.vy;
-      });
+      if (isVisibleRef.current) {
+        nodes.forEach(node => {
+          node.vx += Math.sin(now * 0.0012 + (node.seedX || 0)) * 0.015;
+          node.vy += Math.cos(now * 0.0010 + (node.seedY || 0)) * 0.015;
+          node.vx *= 0.88;
+          node.vy *= 0.88;
+          node.x += node.vx;
+          node.y += node.vy;
+        });
+      }
+
+      // Atmospheric Cosmic Background Gradients behind the clusters (just like main graph)
+      const hubEngine = nodeMap.get('dir_engine');
+      const hubRuntime = nodeMap.get('dir_runtime');
+      if (hubEngine) {
+        const gradEngine = ctx.createRadialGradient(hubEngine.x, hubEngine.y, 20, hubEngine.x, hubEngine.y, 185);
+        gradEngine.addColorStop(0, 'rgba(6, 182, 212, 0.22)');
+        gradEngine.addColorStop(0.50, 'rgba(6, 182, 212, 0.07)');
+        gradEngine.addColorStop(1, 'rgba(6, 182, 212, 0)');
+        ctx.fillStyle = gradEngine;
+        ctx.beginPath();
+        ctx.arc(hubEngine.x, hubEngine.y, 185, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      if (hubRuntime) {
+        const gradRuntime = ctx.createRadialGradient(hubRuntime.x, hubRuntime.y, 20, hubRuntime.x, hubRuntime.y, 185);
+        gradRuntime.addColorStop(0, 'rgba(56, 189, 248, 0.22)');
+        gradRuntime.addColorStop(0.50, 'rgba(56, 189, 248, 0.07)');
+        gradRuntime.addColorStop(1, 'rgba(56, 189, 248, 0)');
+        ctx.fillStyle = gradRuntime;
+        ctx.beginPath();
+        ctx.arc(hubRuntime.x, hubRuntime.y, 185, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      if (critNode) {
+        const gradCrit = ctx.createRadialGradient(critNode.x, critNode.y, 10, critNode.x, critNode.y, 110);
+        gradCrit.addColorStop(0, 'rgba(239, 68, 68, 0.22)');
+        gradCrit.addColorStop(0.50, 'rgba(239, 68, 68, 0.06)');
+        gradCrit.addColorStop(1, 'rgba(239, 68, 68, 0)');
+        ctx.fillStyle = gradCrit;
+        ctx.beginPath();
+        ctx.arc(critNode.x, critNode.y, 110, 0, Math.PI * 2);
+        ctx.fill();
+      }
 
       // Draw Existing Links
       links.forEach(l => {
@@ -714,7 +843,7 @@ function InteractiveCouplingBox() {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+    <div ref={containerRef} className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
       {/* Box on Left on desktop (order-2 on mobile, lg:order-1 on desktop) */}
       <div className="lg:col-span-7 w-full order-2 lg:order-1">
         <div className="w-full bg-[#08090c] border border-white/[0.08] rounded-xl overflow-hidden shadow-2xl flex flex-col h-[460px] sm:h-[480px] relative font-sans text-left">
@@ -732,6 +861,13 @@ function InteractiveCouplingBox() {
 
           {/* Canvas */}
           <div className="flex-1 w-full relative overflow-hidden bg-[#08090c]">
+            {/* Harmful Coupling Popup Pill (Clean single border, no double borders) */}
+            {showHarmfulPopup && (
+              <div className="absolute top-4 left-1/2 -translate-x-1/2 pointer-events-none z-20 flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#18080a]/95 border border-red-500/40 text-red-200 text-xs font-mono shadow-lg shadow-red-950/50 backdrop-blur-sm transition-all duration-150 animate-in fade-in">
+                <ShieldAlert size={14} className="text-red-400 shrink-0" />
+                <span>Harmful Coupling: This cannot be done</span>
+              </div>
+            )}
             <canvas
               ref={canvasRef}
               onMouseDown={handleMouseDown}
@@ -858,18 +994,17 @@ const INSPECTION_NODES_DATA = [
 ];
 
 const INSPECTION_LINKS = [
-  { source: 'ast_scanner', target: 'tokens' },
+  { source: 'tokens', target: 'ast_scanner' },
   { source: 'ast_scanner', target: 'visitor' },
-  { source: 'ast_scanner', target: 'grammar' },
   { source: 'ast_scanner', target: 'semantic' },
-  { source: 'tokens', target: 'grammar' },
-  { source: 'visitor', target: 'semantic' }
+  { source: 'tokens', target: 'grammar' }
 ];
 
 function DeepCodeInspectionBox() {
   const [activeTab, setActiveTab] = useState('powershell');
   const [activeFile, setActiveFile] = useState('ast_scanner.py');
   const [isHoveringBall, setIsHoveringBall] = useState(false);
+  const containerRef = useRef(null);
   const canvasRef = useRef(null);
   const animFrameRef = useRef(null);
 
@@ -879,18 +1014,32 @@ function DeepCodeInspectionBox() {
   const camYRef = useRef(0);
   const zoomRef = useRef(1.0);
   const cardAlphaRef = useRef(0);
+  const isVisibleRef = useRef(false);
 
-  // Auto-cycle through nodes every 4.5s when user has not clicked
+  // Dragging support: balls only move when touched/dragged!
+  const draggedNodeRef = useRef(null);
+  const isDraggingRef = useRef(false);
+
+  // Scroll-triggered activation
   useEffect(() => {
-    const timer = setInterval(() => {
-      if (userClickedRef.current) return;
-      const currentIdx = INSPECTION_NODES_DATA.findIndex(f => f.id === focusedIdRef.current);
-      const nextIdx = (currentIdx + 1) % INSPECTION_NODES_DATA.length;
-      focusedIdRef.current = INSPECTION_NODES_DATA[nextIdx].id;
-      setActiveFile(INSPECTION_NODES_DATA[nextIdx].label);
-    }, 4500);
+    const container = containerRef.current;
+    if (!container) return;
 
-    return () => clearInterval(timer);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            isVisibleRef.current = true;
+          } else {
+            isVisibleRef.current = false;
+          }
+        });
+      },
+      { threshold: 0.20 }
+    );
+
+    observer.observe(container);
+    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
@@ -939,6 +1088,7 @@ function DeepCodeInspectionBox() {
       const baseCx = width * 0.28;
       const baseCy = height * 0.50;
 
+      // Nodes do not move on their own - only when touched or dragged!
       const nodes = INSPECTION_NODES_DATA.map(f => ({
         ...f,
         x: baseCx + f.relX,
@@ -970,12 +1120,23 @@ function DeepCodeInspectionBox() {
       const screenTargetX = width * 0.26;
       const screenTargetY = height * 0.50;
 
+      // Cosmic Nebula Background Gradient behind inspection cluster (like main graph)
+      const gradInspect = ctx.createRadialGradient(screenTargetX, screenTargetY, 20, screenTargetX, screenTargetY, 210);
+      gradInspect.addColorStop(0, 'rgba(56, 189, 248, 0.20)');
+      gradInspect.addColorStop(0.50, 'rgba(14, 165, 233, 0.06)');
+      gradInspect.addColorStop(0.85, 'rgba(2, 132, 199, 0.015)');
+      gradInspect.addColorStop(1, 'rgba(56, 189, 248, 0)');
+      ctx.fillStyle = gradInspect;
+      ctx.beginPath();
+      ctx.arc(screenTargetX, screenTargetY, 210, 0, Math.PI * 2);
+      ctx.fill();
+
       ctx.save();
       ctx.translate(screenTargetX, screenTargetY);
       ctx.scale(zoomRef.current, zoomRef.current);
       ctx.translate(-camXRef.current, -camYRef.current);
 
-      // 1. Draw Conduits between nodes
+      // 1. Draw Conduits between nodes (clean sparse tree, not all interconnected)
       INSPECTION_LINKS.forEach(link => {
         const s = nodeMap.get(link.source);
         const t = nodeMap.get(link.target);
@@ -984,7 +1145,7 @@ function DeepCodeInspectionBox() {
         ctx.beginPath();
         ctx.moveTo(s.x, s.y);
         ctx.lineTo(t.x, t.y);
-        ctx.strokeStyle = isLinkedToFocus ? 'rgba(56, 189, 248, 0.45)' : 'rgba(255, 255, 255, 0.05)';
+        ctx.strokeStyle = isLinkedToFocus ? 'rgba(56, 189, 248, 0.45)' : 'rgba(255, 255, 255, 0.07)';
         ctx.lineWidth = (isLinkedToFocus ? 1.6 : 0.8) / zoomRef.current;
         ctx.stroke();
       });
@@ -1027,15 +1188,15 @@ function DeepCodeInspectionBox() {
 
       ctx.restore();
 
-      // 3. Draw Sleek Code Summary Window for the Focused Ball (beside the zoomed ball)
+      // 3. Draw Sleek AI Summary Window for the Focused Ball (beside the zoomed ball)
       if (cardAlphaRef.current > 0.05) {
         ctx.save();
         ctx.globalAlpha = cardAlphaRef.current;
 
         const cardX = Math.max(width * 0.48, 280);
-        const cardY = height * 0.22;
+        const cardY = height * 0.20;
         const cardW = Math.min(width * 0.46, 260);
-        const cardH = 115;
+        const cardH = 125;
 
         // Card backdrop (clean subtle border, NO double borders)
         ctx.fillStyle = 'rgba(10, 12, 18, 0.94)';
@@ -1046,22 +1207,26 @@ function DeepCodeInspectionBox() {
         ctx.fill();
         ctx.stroke();
 
-        // Card header: clicked file name only
+        // Card header: AI SUMMARY badge and clicked file name
+        ctx.fillStyle = '#38bdf8';
+        ctx.font = '700 9px ui-monospace, SFMono-Regular, Menlo, monospace';
+        ctx.fillText('AI SUMMARY', cardX + 14, cardY + 20);
+
         ctx.fillStyle = '#f1f5f9';
         ctx.font = '600 12px ui-monospace, SFMono-Regular, Menlo, monospace';
-        ctx.fillText(focusedNode.label, cardX + 14, cardY + 24);
+        ctx.fillText(focusedNode.label, cardX + 14, cardY + 36);
 
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
         ctx.beginPath();
-        ctx.moveTo(cardX + 14, cardY + 34);
-        ctx.lineTo(cardX + cardW - 14, cardY + 34);
+        ctx.moveTo(cardX + 14, cardY + 44);
+        ctx.lineTo(cardX + cardW - 14, cardY + 44);
         ctx.stroke();
 
-        // Simple Summary of what this file does
-        ctx.font = '400 10px ui-monospace, SFMono-Regular, Menlo, monospace';
+        // Concise summary of what this file does
+        ctx.font = '400 9.5px ui-monospace, SFMono-Regular, Menlo, monospace';
         ctx.fillStyle = '#94a3b8';
         focusedNode.summary.forEach((line, idx) => {
-          ctx.fillText(line, cardX + 14, cardY + 54 + idx * 16);
+          ctx.fillText(line, cardX + 14, cardY + 62 + idx * 16);
         });
 
         ctx.restore();
@@ -1076,7 +1241,7 @@ function DeepCodeInspectionBox() {
     };
   }, []);
 
-  // Pointer Click on Any Ball to Focus & Zoom
+  // Pointer Click & Drag on Any Ball to Focus & Zoom
   const handlePointerDown = (e) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -1106,6 +1271,8 @@ function DeepCodeInspectionBox() {
         userClickedRef.current = true;
         focusedIdRef.current = f.id;
         setActiveFile(f.label);
+        draggedNodeRef.current = f;
+        isDraggingRef.current = true;
         break;
       }
     }
@@ -1132,6 +1299,12 @@ function DeepCodeInspectionBox() {
     const wx = curCamX + (mx - screenTargetX) / curZoom;
     const wy = curCamY + (my - screenTargetY) / curZoom;
 
+    if (isDraggingRef.current && draggedNodeRef.current) {
+      draggedNodeRef.current.relX = wx - baseCx;
+      draggedNodeRef.current.relY = wy - baseCy;
+      return;
+    }
+
     let hit = false;
     for (let i = INSPECTION_NODES_DATA.length - 1; i >= 0; i--) {
       const f = INSPECTION_NODES_DATA[i];
@@ -1145,13 +1318,21 @@ function DeepCodeInspectionBox() {
     setIsHoveringBall(hit);
   };
 
+  const handlePointerUp = () => {
+    draggedNodeRef.current = null;
+    isDraggingRef.current = false;
+  };
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
-      {/* Left Column: Single Heading */}
+    <div ref={containerRef} className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+      {/* Left Column: Heading with AI Summary */}
       <div className="lg:col-span-5 flex flex-col justify-center select-none text-left">
         <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white font-sans leading-tight">
           Deep Code Inspection
         </h2>
+        <p className="text-sm sm:text-base text-slate-400 font-sans mt-2 tracking-normal">
+          Interactive AI Summary & AST Topology
+        </p>
       </div>
 
       {/* Right Column: Interactive Box */}
@@ -1160,7 +1341,7 @@ function DeepCodeInspectionBox() {
           {/* Header */}
           <div className="h-9 bg-[#0e1017] border-b border-white/[0.08] px-4 flex items-center justify-between text-xs text-slate-400 select-none shrink-0">
             <span className="text-slate-300 font-mono text-[11px] font-medium">
-              Deep Code Inspection
+              Deep Code Inspection: AI Summary
             </span>
             <div className="flex items-center gap-1.5 font-mono text-[11px]">
               <span className="text-slate-500">parser</span>
@@ -1175,6 +1356,8 @@ function DeepCodeInspectionBox() {
               ref={canvasRef}
               onPointerDown={handlePointerDown}
               onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
+              onPointerLeave={handlePointerUp}
               className={`w-full h-full block touch-none ${isHoveringBall ? 'cursor-pointer' : 'cursor-default'}`}
             />
             {/* Subtle instructional hint */}
@@ -1225,6 +1408,7 @@ function DeepCodeInspectionBox() {
 // -------------------------------------------------------------------------
 function ClusterDetectionBox() {
   const [activeTab, setActiveTab] = useState('powershell');
+  const containerRef = useRef(null);
   const canvasRef = useRef(null);
   const animFrameRef = useRef(null);
 
@@ -1233,6 +1417,29 @@ function ClusterDetectionBox() {
   const draggedNodeRef = useRef(null);
   const isDraggingRef = useRef(false);
   const startTimeRef = useRef(performance.now());
+  const isVisibleRef = useRef(false);
+
+  // Scroll-triggered activation
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            isVisibleRef.current = true;
+          } else {
+            isVisibleRef.current = false;
+          }
+        });
+      },
+      { threshold: 0.20 }
+    );
+
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -1578,7 +1785,7 @@ function ClusterDetectionBox() {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+    <div ref={containerRef} className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
       {/* Box on Left on desktop (order-2 on mobile, lg:order-1 on desktop) */}
       <div className="lg:col-span-7 w-full order-2 lg:order-1">
         <div className="w-full bg-[#08090c] border border-white/[0.08] rounded-xl overflow-hidden shadow-2xl flex flex-col h-[460px] sm:h-[480px] relative font-sans text-left">
