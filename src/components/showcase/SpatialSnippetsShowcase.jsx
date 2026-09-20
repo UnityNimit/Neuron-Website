@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Terminal, ShieldAlert, CheckCircle2 } from 'lucide-react';
 import { ScrollWriteHeading } from '../ScrollReveal';
+import { polygonHull } from '../../utils/polygonHull';
 
 // =========================================================================
 // NEURON FEATURE SHOWCASE: 3 DEDICATED LEFT/RIGHT INTERACTIVE SECTIONS
@@ -69,8 +70,8 @@ function HotspotDetectionBox() {
 
     // GIGANTIC Yellow Folder Sun (Affixated / pinned permanently at the left edge of the box)
     const folderNode = {
-      id: 'folder_parser',
-      label: 'parser',
+      id: 'folder_core',
+      label: 'core',
       type: 'folder',
       radius: 68, // Biggest ball in the box!
       color: '#facc15',
@@ -85,11 +86,11 @@ function HotspotDetectionBox() {
       seedY: 28
     };
 
-    // Reduced satellite files: only 2 huge blue balls + 1 huge target red ball!
+    // Authentic satellite files: 2 blue balls + 1 target red ball (parser.py hotspot)
     const files = [
-      { name: 'ast_scanner.py', relX: 320, relY: -10, radius: 30, isTarget: true },
-      { name: 'token_stream.py', relX: 200, relY: -95, radius: 24, isTarget: false },
-      { name: 'syntax_tree.py', relX: 190, relY: 95, radius: 24, isTarget: false }
+      { name: 'parser.py', relX: 320, relY: -10, radius: 30, isTarget: true },
+      { name: 'mutator.py', relX: 200, relY: -95, radius: 24, isTarget: false },
+      { name: 'state.py', relX: 190, relY: 95, radius: 24, isTarget: false }
     ];
 
     const childNodes = files.map((f, idx) => {
@@ -378,9 +379,9 @@ function HotspotDetectionBox() {
               Critical Hotspot Detection
             </span>
             <div className="flex items-center gap-1.5 font-mono text-[11px]">
-              <span className="text-slate-500">parser</span>
+              <span className="text-slate-500">core</span>
               <span className="text-slate-600">/</span>
-              <span className="text-slate-300">ast</span>
+              <span className="text-slate-300">parser.py</span>
             </div>
           </div>
 
@@ -422,7 +423,8 @@ function HotspotDetectionBox() {
 
             <div className="flex-1 p-2.5 font-mono text-[11px] text-slate-300 flex items-center">
               <div className="flex items-center gap-1.5">
-                <span className="text-slate-500">PS C:\Neuron\parser&gt;</span>
+                <span className="text-slate-500">PS C:\Neuron\core&gt;</span>
+                <span className="text-amber-400/90 text-[10.5px]">parser.py: high cyclomatic risk detected</span>
                 <span className="w-1.5 h-3 bg-[#38bdf8] animate-pulse inline-block" />
               </div>
             </div>
@@ -446,6 +448,7 @@ function InteractiveCouplingBox() {
 
   const nodesRef = useRef([]);
   const linksRef = useRef([]);
+  const shockwavesRef = useRef([]);
   const dragConnectRef = useRef({
     isConnecting: false,
     fromNode: null,
@@ -489,12 +492,12 @@ function InteractiveCouplingBox() {
     const cx = width * 0.48;
     const cy = height * 0.50;
 
-    // Huge Yellow Folder Hubs (radius: 48) and satellite balls
+    // Authentic Yellow Folder Hubs from Neuron
     const yellowHub1 = {
-      id: 'dir_engine',
-      label: 'engine',
+      id: 'dir_frontend',
+      label: 'frontend',
       type: 'folder',
-      radius: 48,
+      radius: 46,
       color: '#facc15',
       x: cx - 145,
       y: cy - 20,
@@ -505,10 +508,10 @@ function InteractiveCouplingBox() {
     };
 
     const yellowHub2 = {
-      id: 'dir_runtime',
-      label: 'runtime',
+      id: 'dir_backend',
+      label: 'backend',
       type: 'folder',
-      radius: 48,
+      radius: 46,
       color: '#facc15',
       x: cx + 145,
       y: cy + 20,
@@ -518,29 +521,29 @@ function InteractiveCouplingBox() {
       seedY: 44
     };
 
-    // Blue satellite file balls (Richly populated: 12 nodes total)
+    // Authentic Blue Satellite Files matching Neuron codebase
     const blueNodes = [
-      // Left Engine Cluster
-      { id: 'f_viewport', label: 'viewport.ts', x: cx - 75, y: cy - 95, radius: 21, color: '#38bdf8', parent: 'dir_engine', seedX: 12, seedY: 14 },
-      { id: 'f_renderer', label: 'renderer.ts', x: cx - 225, y: cy - 70, radius: 21, color: '#38bdf8', parent: 'dir_engine', seedX: 18, seedY: 22 },
-      { id: 'f_pipeline', label: 'pipeline.ts', x: cx - 200, y: cy + 85, radius: 21, color: '#38bdf8', parent: 'dir_engine', seedX: 25, seedY: 31 },
-      { id: 'f_shaders', label: 'shaders.wgsl', x: cx - 110, y: cy + 105, radius: 19, color: '#38bdf8', parent: 'dir_engine', seedX: 29, seedY: 36 },
-      { id: 'f_canvas', label: 'canvas.ts', x: cx - 245, y: cy + 15, radius: 19, color: '#38bdf8', parent: 'dir_engine', seedX: 34, seedY: 42 },
-      { id: 'f_events', label: 'events.ts', x: cx - 155, y: cy - 110, radius: 19, color: '#38bdf8', parent: 'dir_engine', seedX: 39, seedY: 47 },
+      // Left: Frontend Cluster
+      { id: 'f_ws', label: 'useWorkspace.js', x: cx - 75, y: cy - 95, radius: 21, color: '#38bdf8', parent: 'dir_frontend', seedX: 12, seedY: 14 },
+      { id: 'f_phys', label: 'usePhysicsEngine.js', x: cx - 225, y: cy - 70, radius: 21, color: '#38bdf8', parent: 'dir_frontend', seedX: 18, seedY: 22 },
+      { id: 'f_editor', label: 'CodeEditor.jsx', x: cx - 200, y: cy + 85, radius: 21, color: '#38bdf8', parent: 'dir_frontend', seedX: 25, seedY: 31 },
+      { id: 'f_term', label: 'TerminalPanel.jsx', x: cx - 110, y: cy + 105, radius: 19, color: '#38bdf8', parent: 'dir_frontend', seedX: 29, seedY: 36 },
+      { id: 'f_app', label: 'App.jsx', x: cx - 245, y: cy + 15, radius: 19, color: '#38bdf8', parent: 'dir_frontend', seedX: 34, seedY: 42 },
+      { id: 'f_top', label: 'TopBar.jsx', x: cx - 155, y: cy - 110, radius: 19, color: '#38bdf8', parent: 'dir_frontend', seedX: 39, seedY: 47 },
 
-      // Right Runtime Cluster
-      { id: 'f_vfs', label: 'vfs.ts', x: cx + 75, y: cy + 95, radius: 21, color: '#38bdf8', parent: 'dir_runtime', seedX: 51, seedY: 58 },
-      { id: 'f_db_pool', label: 'db_pool.ts', x: cx + 225, y: cy + 70, radius: 21, color: '#38bdf8', parent: 'dir_runtime', seedX: 56, seedY: 63 },
-      { id: 'f_sandbox', label: 'sandbox.ts', x: cx + 195, y: cy - 80, radius: 21, color: '#38bdf8', parent: 'dir_runtime', seedX: 62, seedY: 69 },
-      { id: 'f_sqlite', label: 'sqlite.rs', x: cx + 115, y: cy - 105, radius: 19, color: '#38bdf8', parent: 'dir_runtime', seedX: 67, seedY: 74 },
-      { id: 'f_cache', label: 'cache.ts', x: cx + 250, y: cy - 10, radius: 19, color: '#38bdf8', parent: 'dir_runtime', seedX: 72, seedY: 79 },
-      { id: 'f_wasm', label: 'wasm.ts', x: cx + 155, y: cy + 115, radius: 19, color: '#38bdf8', parent: 'dir_runtime', seedX: 77, seedY: 84 }
+      // Right: Backend Cluster
+      { id: 'b_ws', label: 'websocket_router.py', x: cx + 75, y: cy + 95, radius: 21, color: '#38bdf8', parent: 'dir_backend', seedX: 51, seedY: 58 },
+      { id: 'b_parser', label: 'parser.py', x: cx + 225, y: cy + 70, radius: 21, color: '#38bdf8', parent: 'dir_backend', seedX: 56, seedY: 63 },
+      { id: 'b_state', label: 'state.py', x: cx + 195, y: cy - 80, radius: 21, color: '#38bdf8', parent: 'dir_backend', seedX: 62, seedY: 69 },
+      { id: 'b_analyzer', label: 'analyzer.py', x: cx + 115, y: cy - 105, radius: 19, color: '#38bdf8', parent: 'dir_backend', seedX: 67, seedY: 74 },
+      { id: 'b_ai', label: 'ai_service.py', x: cx + 250, y: cy - 10, radius: 19, color: '#38bdf8', parent: 'dir_backend', seedX: 72, seedY: 79 },
+      { id: 'b_term', label: 'terminal_service.py', x: cx + 155, y: cy + 115, radius: 19, color: '#38bdf8', parent: 'dir_backend', seedX: 77, seedY: 84 }
     ];
 
-    // ONE Critical Node that cannot be connected in either direction!
+    // ONE Critical Node: mutator.py (Direct AST mutation rejected by CSP Guard)
     const criticalNode = {
-      id: 'f_critical',
-      label: 'core_alloc.rs',
+      id: 'b_mutator',
+      label: 'mutator.py',
       type: 'critical',
       radius: 23,
       color: '#ef4444',
@@ -554,18 +557,18 @@ function InteractiveCouplingBox() {
     };
 
     const initialLinks = [
-      { source: 'dir_engine', target: 'f_viewport' },
-      { source: 'dir_engine', target: 'f_renderer' },
-      { source: 'dir_engine', target: 'f_pipeline' },
-      { source: 'dir_engine', target: 'f_shaders' },
-      { source: 'dir_engine', target: 'f_canvas' },
-      { source: 'dir_engine', target: 'f_events' },
-      { source: 'dir_runtime', target: 'f_vfs' },
-      { source: 'dir_runtime', target: 'f_db_pool' },
-      { source: 'dir_runtime', target: 'f_sandbox' },
-      { source: 'dir_runtime', target: 'f_sqlite' },
-      { source: 'dir_runtime', target: 'f_cache' },
-      { source: 'dir_runtime', target: 'f_wasm' }
+      { source: 'dir_frontend', target: 'f_ws' },
+      { source: 'dir_frontend', target: 'f_phys' },
+      { source: 'dir_frontend', target: 'f_editor' },
+      { source: 'dir_frontend', target: 'f_term' },
+      { source: 'dir_frontend', target: 'f_app' },
+      { source: 'dir_frontend', target: 'f_top' },
+      { source: 'dir_backend', target: 'b_ws' },
+      { source: 'dir_backend', target: 'b_parser' },
+      { source: 'dir_backend', target: 'b_state' },
+      { source: 'dir_backend', target: 'b_analyzer' },
+      { source: 'dir_backend', target: 'b_ai' },
+      { source: 'dir_backend', target: 'b_term' }
     ];
 
     nodesRef.current = [yellowHub1, yellowHub2, ...blueNodes, criticalNode];
@@ -579,6 +582,8 @@ function InteractiveCouplingBox() {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+
+    let lastShockwaveTime = 0;
 
     const render = (now) => {
       const width = canvas.clientWidth;
@@ -625,8 +630,8 @@ function InteractiveCouplingBox() {
       const elapsed = isVisibleRef.current ? ((now - startTimeRef.current) % loopTime) : 0;
       let isAutoDemo = !dragConnectRef.current.isConnecting && isVisibleRef.current;
 
-      const originNode = nodeMap.get('f_viewport') || nodes[2];
-      const critNode = nodeMap.get('f_critical');
+      const originNode = nodeMap.get('f_ws') || nodes[2];
+      const critNode = nodeMap.get('b_mutator');
 
       // Check for blocked coupling attempt to trigger "Harmful Coupling" popup
       const isAutoBlocked = isAutoDemo && (elapsed >= 1700 && elapsed < 2650);
@@ -636,6 +641,18 @@ function InteractiveCouplingBox() {
       if (shouldShowBlocked !== showHarmfulPopupRef.current) {
         showHarmfulPopupRef.current = shouldShowBlocked;
         setShowHarmfulPopup(shouldShowBlocked);
+      }
+
+      // Trigger CSP rejection shockwave
+      if (shouldShowBlocked && critNode && now - lastShockwaveTime > 600) {
+        lastShockwaveTime = now;
+        shockwavesRef.current.push({
+          x: critNode.x,
+          y: critNode.y,
+          radius: 20,
+          maxRadius: 180,
+          alpha: 1.0
+        });
       }
 
       // Physics micro-drift
@@ -650,28 +667,28 @@ function InteractiveCouplingBox() {
         });
       }
 
-      // Atmospheric Cosmic Background Gradients behind the clusters (just like main graph)
-      const hubEngine = nodeMap.get('dir_engine');
-      const hubRuntime = nodeMap.get('dir_runtime');
-      if (hubEngine) {
-        const gradEngine = ctx.createRadialGradient(hubEngine.x, hubEngine.y, 20, hubEngine.x, hubEngine.y, 185);
-        gradEngine.addColorStop(0, 'rgba(6, 182, 212, 0.22)');
-        gradEngine.addColorStop(0.50, 'rgba(6, 182, 212, 0.07)');
-        gradEngine.addColorStop(1, 'rgba(6, 182, 212, 0)');
-        ctx.fillStyle = gradEngine;
+      // Atmospheric Cosmic Background Gradients behind the clusters
+      const hubFrontend = nodeMap.get('dir_frontend');
+      const hubBackend = nodeMap.get('dir_backend');
+      if (hubFrontend) {
+        const gradFrontend = ctx.createRadialGradient(hubFrontend.x, hubFrontend.y, 20, hubFrontend.x, hubFrontend.y, 185);
+        gradFrontend.addColorStop(0, 'rgba(6, 182, 212, 0.22)');
+        gradFrontend.addColorStop(0.50, 'rgba(6, 182, 212, 0.07)');
+        gradFrontend.addColorStop(1, 'rgba(6, 182, 212, 0)');
+        ctx.fillStyle = gradFrontend;
         ctx.beginPath();
-        ctx.arc(hubEngine.x, hubEngine.y, 185, 0, Math.PI * 2);
+        ctx.arc(hubFrontend.x, hubFrontend.y, 185, 0, Math.PI * 2);
         ctx.fill();
       }
 
-      if (hubRuntime) {
-        const gradRuntime = ctx.createRadialGradient(hubRuntime.x, hubRuntime.y, 20, hubRuntime.x, hubRuntime.y, 185);
-        gradRuntime.addColorStop(0, 'rgba(56, 189, 248, 0.22)');
-        gradRuntime.addColorStop(0.50, 'rgba(56, 189, 248, 0.07)');
-        gradRuntime.addColorStop(1, 'rgba(56, 189, 248, 0)');
-        ctx.fillStyle = gradRuntime;
+      if (hubBackend) {
+        const gradBackend = ctx.createRadialGradient(hubBackend.x, hubBackend.y, 20, hubBackend.x, hubBackend.y, 185);
+        gradBackend.addColorStop(0, 'rgba(56, 189, 248, 0.22)');
+        gradBackend.addColorStop(0.50, 'rgba(56, 189, 248, 0.07)');
+        gradBackend.addColorStop(1, 'rgba(56, 189, 248, 0)');
+        ctx.fillStyle = gradBackend;
         ctx.beginPath();
-        ctx.arc(hubRuntime.x, hubRuntime.y, 185, 0, Math.PI * 2);
+        ctx.arc(hubBackend.x, hubBackend.y, 185, 0, Math.PI * 2);
         ctx.fill();
       }
 
@@ -686,23 +703,78 @@ function InteractiveCouplingBox() {
         ctx.fill();
       }
 
+      // Render CSP Rejection Expanding Shockwaves
+      for (let i = shockwavesRef.current.length - 1; i >= 0; i--) {
+        const sw = shockwavesRef.current[i];
+        sw.radius += 4.5;
+        sw.alpha -= 0.024;
+        if (sw.alpha <= 0 || sw.radius >= sw.maxRadius) {
+          shockwavesRef.current.splice(i, 1);
+          continue;
+        }
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(sw.x, sw.y, sw.radius, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(239, 68, 68, ${sw.alpha * 0.85})`;
+        ctx.lineWidth = 3.0;
+        ctx.stroke();
+        ctx.restore();
+      }
+
       // Draw Existing Links
       links.forEach(l => {
         const s = nodeMap.get(l.source);
         const t = nodeMap.get(l.target);
         if (!s || !t) return;
-        ctx.beginPath();
-        ctx.moveTo(s.x, s.y);
-        ctx.lineTo(t.x, t.y);
-        ctx.strokeStyle = l.isCoupled ? '#38bdf8' : 'rgba(255, 255, 255, 0.16)';
-        ctx.lineWidth = l.isCoupled ? 2.2 : 1.2;
-        ctx.stroke();
+
+        if (l.isLaserBridge) {
+          // Cyan Laser Bridge with Wide Neon Aura
+          ctx.save();
+          ctx.beginPath();
+          ctx.moveTo(s.x, s.y);
+          ctx.lineTo(t.x, t.y);
+          ctx.strokeStyle = 'rgba(0, 240, 255, 0.20)';
+          ctx.lineWidth = 8.0;
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(s.x, s.y);
+          ctx.lineTo(t.x, t.y);
+          ctx.strokeStyle = '#00f0ff';
+          ctx.lineWidth = 2.5;
+          ctx.stroke();
+
+          // Stream 2 Traveling High-Speed Photons
+          for (let pIdx = 0; pIdx < 2; pIdx++) {
+            const photonT = ((now * 0.0018) + (pIdx * 0.5)) % 1.0;
+            const px = s.x + (t.x - s.x) * photonT;
+            const py = s.y + (t.y - s.y) * photonT;
+
+            ctx.beginPath();
+            ctx.arc(px, py, 6.5, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(0, 240, 255, 0.40)';
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.arc(px, py, 3.0, 0, Math.PI * 2);
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
+          }
+          ctx.restore();
+        } else {
+          ctx.beginPath();
+          ctx.moveTo(s.x, s.y);
+          ctx.lineTo(t.x, t.y);
+          ctx.strokeStyle = l.isCoupled ? '#00f0ff' : 'rgba(255, 255, 255, 0.16)';
+          ctx.lineWidth = l.isCoupled ? 2.2 : 1.2;
+          ctx.stroke();
+        }
       });
 
-      // Automated Demo: Repeatedly attempts to connect to the red ball, recoiling upon rejection
+      // Automated Demo: Repeatedly attempts to connect to mutator.py, recoiling upon CSP rejection
       if (isAutoDemo && originNode && critNode) {
         if (elapsed >= 300 && elapsed < 2100) {
-          // Tether reaching out towards red ball
+          // Tether reaching out towards mutator.py
           const u = (elapsed - 300) / 1800;
           const p = 1 - Math.pow(1 - u, 2.2);
           const curX = originNode.x + (critNode.x - originNode.x) * p;
@@ -712,7 +784,7 @@ function InteractiveCouplingBox() {
           ctx.beginPath();
           ctx.moveTo(originNode.x, originNode.y);
           ctx.lineTo(curX, curY);
-          ctx.strokeStyle = isNearCrit ? '#ef4444' : '#38bdf8';
+          ctx.strokeStyle = isNearCrit ? '#ef4444' : '#00f0ff';
           ctx.lineWidth = 2.2;
           ctx.setLineDash([4, 4]);
           ctx.stroke();
@@ -720,7 +792,7 @@ function InteractiveCouplingBox() {
 
           ctx.beginPath();
           ctx.arc(curX, curY, 4.5, 0, Math.PI * 2);
-          ctx.fillStyle = isNearCrit ? '#ef4444' : '#38bdf8';
+          ctx.fillStyle = isNearCrit ? '#ef4444' : '#00f0ff';
           ctx.fill();
         } else if (elapsed >= 2100 && elapsed < 2650) {
           // Rejection recoil / snap back
@@ -755,21 +827,21 @@ function InteractiveCouplingBox() {
         ctx.beginPath();
         ctx.moveTo(from.x, from.y);
         ctx.lineTo(cur.x, cur.y);
-        ctx.strokeStyle = isBlocked ? '#ef4444' : '#38bdf8';
+        ctx.strokeStyle = isBlocked ? '#ef4444' : '#00f0ff';
         ctx.lineWidth = 2.4;
         ctx.setLineDash([5, 4]);
         ctx.stroke();
         ctx.setLineDash([]);
 
-        // Tether bead (no text)
+        // Tether bead
         ctx.beginPath();
         ctx.arc(cur.x, cur.y, 5, 0, Math.PI * 2);
-        ctx.fillStyle = isBlocked ? '#ef4444' : '#38bdf8';
+        ctx.fillStyle = isBlocked ? '#ef4444' : '#00f0ff';
         ctx.fill();
         ctx.restore();
       }
 
-      // Draw Nodes (Yellow hubs, blue files, one critical red - NO text, NO double borders)
+      // Draw Nodes
       nodes.forEach(node => {
         ctx.save();
         ctx.beginPath();
@@ -858,10 +930,12 @@ function InteractiveCouplingBox() {
         // Disallow coupling if either node is critical!
         const isBlocked = from.isCritical || target.isCritical;
         if (!isBlocked) {
+          const isLaser = (from.id === 'f_ws' && target.id === 'b_ws') || (from.id === 'b_ws' && target.id === 'f_ws');
           linksRef.current.push({
             source: from.id,
             target: target.id,
-            isCoupled: true
+            isCoupled: true,
+            isLaserBridge: isLaser
           });
         }
       }
@@ -886,17 +960,17 @@ function InteractiveCouplingBox() {
             <div className="flex items-center gap-1.5 font-mono text-[11px]">
               <span className="text-slate-500">topology</span>
               <span className="text-slate-600">/</span>
-              <span className="text-slate-300">conduits</span>
+              <span className="text-slate-300">laser_conduits</span>
             </div>
           </div>
 
           {/* Canvas */}
           <div className="flex-1 w-full relative overflow-hidden bg-[#08090c]">
-            {/* Harmful Coupling Popup Pill (Clean single border, no double borders) */}
+            {/* CSP Guard Blocked Coupling Alert Badge */}
             {showHarmfulPopup && (
               <div className="absolute top-4 left-1/2 -translate-x-1/2 pointer-events-none z-20 flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#18080a]/95 border border-red-500/40 text-red-200 text-xs font-mono shadow-lg shadow-red-950/50 backdrop-blur-sm transition-all duration-150 animate-in fade-in">
                 <ShieldAlert size={14} className="text-red-400 shrink-0" />
-                <span>Harmful Coupling: This cannot be done</span>
+                <span>CSP Guard: Direct Mutation Blocked. Must route via websocket_router.py</span>
               </div>
             )}
             <canvas
@@ -936,6 +1010,7 @@ function InteractiveCouplingBox() {
             <div className="flex-1 p-2.5 font-mono text-[11px] text-slate-300 flex items-center">
               <div className="flex items-center gap-1.5">
                 <span className="text-slate-500">PS C:\Neuron\coupling&gt;</span>
+                <span className="text-emerald-400 text-[10.5px]">conduit_guard: active (laser bridge ready)</span>
                 <span className="w-1.5 h-3 bg-[#38bdf8] animate-pulse inline-block" />
               </div>
             </div>
@@ -960,88 +1035,134 @@ function InteractiveCouplingBox() {
 // -------------------------------------------------------------------------
 const INSPECTION_NODES_DATA = [
   {
-    id: 'ast_scanner',
-    label: 'ast_scanner.py',
+    id: 'parser',
+    label: 'parser.py',
+    path: 'backend/core/parser.py',
     relX: 0,
     relY: 0,
     radius: 26,
     color: '#38bdf8',
-    summary: [
-      'Recursively parses abstract syntax trees',
-      'into spatial graph nodes, mapping cross-file',
-      'dependencies and structural complexity.'
+    community: 0,
+    metrics: {
+      community: 'Community 0 (Core Backend)',
+      entropy: '4.82 bits',
+      pagerank: '0.048',
+      betweenness: '0.035',
+      fanInOut: 'In: 4 | Out: 7'
+    },
+    codeSnippet: [
+      'def parse_ast(self, content: str):',
+      '    tree = ast.parse(content)',
+      '    return self.extract_symbols(tree)'
     ]
   },
   {
-    id: 'tokens',
-    label: 'tokens.rs',
+    id: 'mutator',
+    label: 'mutator.py',
+    path: 'backend/core/mutator.py',
     relX: -92,
     relY: -68,
-    radius: 20,
+    radius: 21,
     color: '#38bdf8',
-    summary: [
-      'High-performance lexical token stream',
-      'providing zero-copy byte slicing and syntax',
-      'token categorization for the parser.'
+    community: 0,
+    metrics: {
+      community: 'Community 0 (Core Backend)',
+      entropy: '4.15 bits',
+      pagerank: '0.032',
+      betweenness: '0.021',
+      fanInOut: 'In: 3 | Out: 5'
+    },
+    codeSnippet: [
+      'def apply_refactor(self, mutation):',
+      '    self.backup_state()',
+      '    return self.execute_ast_transform(mutation)'
     ]
   },
   {
-    id: 'visitor',
-    label: 'visitor.py',
+    id: 'state',
+    label: 'state.py',
+    path: 'backend/core/state.py',
     relX: -85,
     relY: 75,
     radius: 20,
     color: '#38bdf8',
-    summary: [
-      'Traverses syntax tree nodes using depth-first',
-      'search, emitting symbol references and call',
-      'hierarchies to the engine.'
+    community: 0,
+    metrics: {
+      community: 'Community 0 (Core Backend)',
+      entropy: '3.62 bits',
+      pagerank: '0.028',
+      betweenness: '0.019',
+      fanInOut: 'In: 5 | Out: 2'
+    },
+    codeSnippet: [
+      'class WorkspaceState:',
+      '    active_graph = {}',
+      '    undo_stack = []'
     ]
   },
   {
-    id: 'grammar',
-    label: 'grammar.g4',
-    relX: 82,
+    id: 'analyzer',
+    label: 'analyzer.py',
+    path: 'backend/ml/analyzer.py',
+    relX: 86,
     relY: -72,
-    radius: 20,
-    color: '#38bdf8',
-    summary: [
-      'Formal context-free grammar definition',
-      'specifying language precedence rules,',
-      'statement blocks, and expression syntax.'
+    radius: 22,
+    color: '#a855f7',
+    community: 1,
+    metrics: {
+      community: 'Community 1 (Graph ML)',
+      entropy: '4.95 bits',
+      pagerank: '0.065',
+      betweenness: '0.058',
+      fanInOut: 'In: 6 | Out: 8'
+    },
+    codeSnippet: [
+      'def analyze_graph_ml(nodes, edges):',
+      '    communities = louvain_communities(G)',
+      '    return {"communities": communities}'
     ]
   },
   {
-    id: 'semantic',
-    label: 'semantic_pass.py',
+    id: 'router',
+    label: 'websocket_router.py',
+    path: 'backend/api/websocket_router.py',
     relX: 92,
     relY: 68,
-    radius: 20,
+    radius: 21,
     color: '#38bdf8',
-    summary: [
-      'Resolves type inference, scope visibility,',
-      'and symbol lifetimes across interconnected',
-      'module boundaries.'
+    community: 0,
+    metrics: {
+      community: 'Community 0 (Core Backend)',
+      entropy: '3.91 bits',
+      pagerank: '0.041',
+      betweenness: '0.031',
+      fanInOut: 'In: 2 | Out: 6'
+    },
+    codeSnippet: [
+      'async def ws_handler(websocket):',
+      '    async for msg in websocket:',
+      '        await dispatch_action(msg)'
     ]
   }
 ];
 
 const INSPECTION_LINKS = [
-  { source: 'tokens', target: 'ast_scanner' },
-  { source: 'ast_scanner', target: 'visitor' },
-  { source: 'ast_scanner', target: 'semantic' },
-  { source: 'tokens', target: 'grammar' }
+  { source: 'mutator', target: 'parser' },
+  { source: 'parser', target: 'state' },
+  { source: 'parser', target: 'router' },
+  { source: 'mutator', target: 'analyzer' },
+  { source: 'analyzer', target: 'parser' }
 ];
 
 function DeepCodeInspectionBox() {
   const [activeTab, setActiveTab] = useState('powershell');
-  const [activeFile, setActiveFile] = useState('ast_scanner.py');
+  const [activeFile, setActiveFile] = useState('parser.py');
   const [isHoveringBall, setIsHoveringBall] = useState(false);
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
   const animFrameRef = useRef(null);
 
-  const focusedIdRef = useRef('ast_scanner');
+  const focusedIdRef = useRef('parser');
   const userClickedRef = useRef(false);
   const camXRef = useRef(0);
   const camYRef = useRef(0);
@@ -1135,7 +1256,7 @@ function DeepCodeInspectionBox() {
       if (isFirst) {
         camXRef.current = focusedNode.x;
         camYRef.current = focusedNode.y;
-        zoomRef.current = 1.85;
+        zoomRef.current = 1.75;
         cardAlphaRef.current = 1.0;
         isFirst = false;
       }
@@ -1143,7 +1264,7 @@ function DeepCodeInspectionBox() {
       // Smooth camera lerp to centered focused node
       const targetCamX = focusedNode.x;
       const targetCamY = focusedNode.y;
-      const targetZoom = 1.85;
+      const targetZoom = 1.75;
 
       camXRef.current += (targetCamX - camXRef.current) * 0.085;
       camYRef.current += (targetCamY - camYRef.current) * 0.085;
@@ -1153,23 +1274,39 @@ function DeepCodeInspectionBox() {
       const screenTargetX = width * 0.26;
       const screenTargetY = height * 0.50;
 
-      // Cosmic Nebula Background Gradient behind inspection cluster (like main graph)
-      const gradInspect = ctx.createRadialGradient(screenTargetX, screenTargetY, 20, screenTargetX, screenTargetY, 210);
-      gradInspect.addColorStop(0, 'rgba(56, 189, 248, 0.20)');
-      gradInspect.addColorStop(0.50, 'rgba(14, 165, 233, 0.06)');
-      gradInspect.addColorStop(0.85, 'rgba(2, 132, 199, 0.015)');
-      gradInspect.addColorStop(1, 'rgba(56, 189, 248, 0)');
-      ctx.fillStyle = gradInspect;
-      ctx.beginPath();
-      ctx.arc(screenTargetX, screenTargetY, 210, 0, Math.PI * 2);
-      ctx.fill();
-
       ctx.save();
       ctx.translate(screenTargetX, screenTargetY);
       ctx.scale(zoomRef.current, zoomRef.current);
       ctx.translate(-camXRef.current, -camYRef.current);
 
-      // 1. Draw Conduits between nodes (clean sparse tree, not all interconnected)
+      // 1. Render Louvain Modularity Convex Hull Nebula behind the cluster
+      const pts = [];
+      const pad = 85;
+      nodes.forEach(n => {
+        pts.push([n.x - pad, n.y - pad]);
+        pts.push([n.x + pad, n.y - pad]);
+        pts.push([n.x - pad, n.y + pad]);
+        pts.push([n.x + pad, n.y + pad]);
+      });
+      const hull = polygonHull(pts);
+      if (hull) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(hull[0][0], hull[0][1]);
+        for (let idx = 1; idx < hull.length; idx++) {
+          ctx.lineTo(hull[idx][0], hull[idx][1]);
+        }
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(59, 130, 246, 0.08)';
+        ctx.fill();
+        ctx.lineWidth = 75;
+        ctx.lineJoin = 'round';
+        ctx.strokeStyle = 'rgba(59, 130, 246, 0.22)';
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // 2. Draw Conduits between nodes (Incident edges to focused node highlighted)
       INSPECTION_LINKS.forEach(link => {
         const s = nodeMap.get(link.source);
         const t = nodeMap.get(link.target);
@@ -1178,38 +1315,36 @@ function DeepCodeInspectionBox() {
         ctx.beginPath();
         ctx.moveTo(s.x, s.y);
         ctx.lineTo(t.x, t.y);
-        ctx.strokeStyle = isLinkedToFocus ? 'rgba(56, 189, 248, 0.45)' : 'rgba(255, 255, 255, 0.07)';
-        ctx.lineWidth = (isLinkedToFocus ? 1.6 : 0.8) / zoomRef.current;
+        ctx.strokeStyle = isLinkedToFocus ? 'rgba(0, 240, 255, 0.90)' : 'rgba(255, 255, 255, 0.04)';
+        ctx.lineWidth = (isLinkedToFocus ? 2.5 : 0.8) / zoomRef.current;
         ctx.stroke();
       });
 
-      // 2. Draw Balls (Focused ball highlights, other balls become dull, NO double borders)
+      // 3. Draw Nodes (Focused ball highlights with crisp vector aura, others dim to 0.04)
       nodes.forEach(n => {
         const isFocused = n.id === focusedNode.id;
         ctx.save();
 
         if (isFocused) {
-          // Highlighted focused ball: pure solid vector disc (NO double border)
           ctx.globalAlpha = 1.0;
           ctx.beginPath();
           ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
-          ctx.fillStyle = n.color; // #38bdf8
+          ctx.fillStyle = n.color;
           ctx.fill();
 
-          // Clean white label under focused ball
+          // Focused node label
           ctx.font = '600 9.5px ui-monospace, SFMono-Regular, Menlo, monospace';
           ctx.fillStyle = '#ffffff';
           ctx.textAlign = 'center';
           ctx.fillText(n.label, n.x, n.y + n.radius + 12 / zoomRef.current);
         } else {
-          // Dull dimmed ball: low opacity, muted
-          ctx.globalAlpha = 0.20;
+          // Dimmed non-focused node (matching opacityDimmed 0.04 law)
+          ctx.globalAlpha = 0.25;
           ctx.beginPath();
           ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
-          ctx.fillStyle = '#38bdf8';
+          ctx.fillStyle = n.color;
           ctx.fill();
 
-          // Subtle label
           ctx.font = '400 8.5px ui-monospace, SFMono-Regular, Menlo, monospace';
           ctx.fillStyle = '#64748b';
           ctx.textAlign = 'center';
@@ -1221,18 +1356,18 @@ function DeepCodeInspectionBox() {
 
       ctx.restore();
 
-      // 3. Draw Sleek AI Summary Window for the Focused Ball (beside the zoomed ball)
+      // 4. Draw Official ML Telemetry Card for the Focused Ball
       if (cardAlphaRef.current > 0.05) {
         ctx.save();
         ctx.globalAlpha = cardAlphaRef.current;
 
-        const cardX = Math.max(width * 0.48, 280);
-        const cardY = height * 0.20;
-        const cardW = Math.min(width * 0.46, 260);
-        const cardH = 125;
+        const cardX = Math.max(width * 0.44, 250);
+        const cardY = height * 0.12;
+        const cardW = Math.min(width * 0.52, 310);
+        const cardH = 190;
 
-        // Card backdrop (clean subtle border, NO double borders)
-        ctx.fillStyle = 'rgba(10, 12, 18, 0.94)';
+        // Card backdrop
+        ctx.fillStyle = 'rgba(10, 13, 20, 0.94)';
         ctx.strokeStyle = 'rgba(56, 189, 248, 0.35)';
         ctx.lineWidth = 1;
         ctx.beginPath();
@@ -1240,14 +1375,14 @@ function DeepCodeInspectionBox() {
         ctx.fill();
         ctx.stroke();
 
-        // Card header: AI SUMMARY badge and clicked file name
-        ctx.fillStyle = '#38bdf8';
+        // Card header
+        ctx.fillStyle = '#00f0ff';
         ctx.font = '700 9px ui-monospace, SFMono-Regular, Menlo, monospace';
-        ctx.fillText('AI SUMMARY', cardX + 14, cardY + 20);
+        ctx.fillText('ML TELEMETRY · ' + focusedNode.metrics.community.toUpperCase(), cardX + 14, cardY + 20);
 
         ctx.fillStyle = '#f1f5f9';
         ctx.font = '600 12px ui-monospace, SFMono-Regular, Menlo, monospace';
-        ctx.fillText(focusedNode.label, cardX + 14, cardY + 36);
+        ctx.fillText(focusedNode.path, cardX + 14, cardY + 36);
 
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
         ctx.beginPath();
@@ -1255,11 +1390,26 @@ function DeepCodeInspectionBox() {
         ctx.lineTo(cardX + cardW - 14, cardY + 44);
         ctx.stroke();
 
-        // Concise summary of what this file does
-        ctx.font = '400 9.5px ui-monospace, SFMono-Regular, Menlo, monospace';
+        // ML Telemetry Grid
+        ctx.font = '500 10px ui-monospace, SFMono-Regular, Menlo, monospace';
         ctx.fillStyle = '#94a3b8';
-        focusedNode.summary.forEach((line, idx) => {
-          ctx.fillText(line, cardX + 14, cardY + 62 + idx * 16);
+        ctx.fillText(`Entropy: ${focusedNode.metrics.entropy}`, cardX + 14, cardY + 62);
+        ctx.fillText(`PageRank: ${focusedNode.metrics.pagerank}`, cardX + 150, cardY + 62);
+        ctx.fillText(`Betweenness: ${focusedNode.metrics.betweenness}`, cardX + 14, cardY + 78);
+        ctx.fillText(`Degree: ${focusedNode.metrics.fanInOut}`, cardX + 150, cardY + 78);
+
+        // AST Code Snippet Box
+        ctx.fillStyle = 'rgba(2, 6, 23, 0.75)';
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
+        ctx.beginPath();
+        ctx.roundRect(cardX + 14, cardY + 92, cardW - 28, 84, 5);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.font = '400 9.5px ui-monospace, SFMono-Regular, Menlo, monospace';
+        focusedNode.codeSnippet.forEach((line, idx) => {
+          ctx.fillStyle = idx === 0 ? '#c084fc' : (idx === 1 ? '#e2e8f0' : '#4ade80');
+          ctx.fillText(line, cardX + 22, cardY + 112 + idx * 18);
         });
 
         ctx.restore();
@@ -1303,7 +1453,7 @@ function DeepCodeInspectionBox() {
     const screenTargetX = width * 0.26;
     const screenTargetY = height * 0.50;
 
-    const curZoom = zoomRef.current || 1.85;
+    const curZoom = zoomRef.current || 1.75;
     const curCamX = camXRef.current || baseCx;
     const curCamY = camYRef.current || baseCy;
 
@@ -1339,7 +1489,7 @@ function DeepCodeInspectionBox() {
     const screenTargetX = width * 0.26;
     const screenTargetY = height * 0.50;
 
-    const curZoom = zoomRef.current || 1.85;
+    const curZoom = zoomRef.current || 1.75;
     const curCamX = camXRef.current || baseCx;
     const curCamY = camYRef.current || baseCy;
 
@@ -1380,7 +1530,7 @@ function DeepCodeInspectionBox() {
           className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white font-sans leading-tight"
         />
         <p className="text-sm sm:text-base text-slate-400 font-sans mt-2 tracking-normal">
-          Interactive AI Summary & AST Topology
+          Interactive AST Topology & ML Telemetry
         </p>
       </div>
 
@@ -1390,10 +1540,10 @@ function DeepCodeInspectionBox() {
           {/* Header */}
           <div className="h-9 bg-[#0e1017] border-b border-white/[0.08] px-4 flex items-center justify-between text-xs text-slate-400 select-none shrink-0">
             <span className="text-slate-300 font-mono text-[11px] font-medium">
-              Deep Code Inspection: AI Summary
+              Deep Code Inspection: ML Telemetry
             </span>
             <div className="flex items-center gap-1.5 font-mono text-[11px]">
-              <span className="text-slate-500">parser</span>
+              <span className="text-slate-500">core</span>
               <span className="text-slate-600">/</span>
               <span className="text-slate-300">{activeFile}</span>
             </div>
@@ -1409,7 +1559,6 @@ function DeepCodeInspectionBox() {
               onPointerLeave={handlePointerUp}
               className={`w-full h-full block touch-none ${isHoveringBall ? 'cursor-pointer' : 'cursor-default'}`}
             />
-            {/* Subtle instructional hint */}
             <div className="absolute bottom-2.5 right-3 pointer-events-none text-[10px] font-mono text-slate-500/70 select-none">
               click any node to inspect
             </div>
@@ -1442,6 +1591,7 @@ function DeepCodeInspectionBox() {
             <div className="flex-1 p-2.5 font-mono text-[11px] text-slate-300 flex items-center">
               <div className="flex items-center gap-1.5">
                 <span className="text-slate-500">PS C:\Neuron\inspect\{activeFile}&gt;</span>
+                <span className="text-emerald-400 text-[10.5px]">ast_parsed: 58 symbols · 0 errors</span>
                 <span className="w-1.5 h-3 bg-[#38bdf8] animate-pulse inline-block" />
               </div>
             </div>
@@ -1453,7 +1603,7 @@ function DeepCodeInspectionBox() {
 }
 
 // -------------------------------------------------------------------------
-// COMPONENT 4: CLUSTER DETECTION (Louvain Community Modularity, Huge Gradients)
+// COMPONENT 4: CLUSTER DETECTION (Official Louvain Community Modularity)
 // -------------------------------------------------------------------------
 function ClusterDetectionBox() {
   const [activeTab, setActiveTab] = useState('powershell');
@@ -1467,6 +1617,31 @@ function ClusterDetectionBox() {
   const isDraggingRef = useRef(false);
   const startTimeRef = useRef(performance.now());
   const isVisibleRef = useRef(false);
+
+  // Community configurations matching backend/ml/analyzer.py & engineConfig.js
+  const COMMUNITIES = [
+    {
+      id: 0,
+      name: 'Core Backend',
+      color: '#3b82f6',
+      fill: 'rgba(59, 130, 246, 0.08)',
+      stroke: 'rgba(59, 130, 246, 0.22)'
+    },
+    {
+      id: 1,
+      name: 'Graph ML Engine',
+      color: '#a855f7',
+      fill: 'rgba(168, 85, 247, 0.08)',
+      stroke: 'rgba(168, 85, 247, 0.22)'
+    },
+    {
+      id: 2,
+      name: 'Services & AI',
+      color: '#22c55e',
+      fill: 'rgba(34, 197, 94, 0.08)',
+      stroke: 'rgba(34, 197, 94, 0.22)'
+    }
+  ];
 
   // Scroll-triggered activation
   useEffect(() => {
@@ -1498,112 +1673,120 @@ function ClusterDetectionBox() {
     const cx = width * 0.48;
     const cy = height * 0.50;
 
-    // Cluster 1 Center (Purple Community, Left)
-    const c1x = cx - 135;
-    const c1y = cy;
-
-    // Cluster 2 Center (Azure Blue Community, Right)
-    const c2x = cx + 135;
-    const c2y = cy;
-
-    // Yellow Hub 1 (Cluster 1: Parser & Compiler)
-    const hub1 = {
-      id: 'c1_hub',
-      label: 'parser',
+    // Authentic Community 0: Core Backend (Left, #3b82f6)
+    const c0x = cx - 150;
+    const c0y = cy + 18;
+    const hub0 = {
+      id: 'core_hub',
+      label: 'core',
       type: 'folder',
-      radius: 46,
+      radius: 30,
+      color: '#facc15',
+      x: c0x,
+      y: c0y,
+      vx: 0,
+      vy: 0,
+      seedX: 12,
+      seedY: 22,
+      isHub: true,
+      community: 0
+    };
+    const c0Nodes = [
+      { id: 'parser.py', label: 'parser.py', x: c0x - 65, y: c0y - 45, radius: 17, color: '#ef4444', isCritical: true, seedX: 14, seedY: 18, community: 0 },
+      { id: 'mutator.py', label: 'mutator.py', x: c0x - 65, y: c0y + 45, radius: 16, color: '#3b82f6', seedX: 20, seedY: 26, community: 0 },
+      { id: 'state.py', label: 'state.py', x: c0x + 5, y: c0y + 68, radius: 15, color: '#3b82f6', seedX: 28, seedY: 34, community: 0 },
+      { id: 'js_mutator.py', label: 'js_mutator.py', x: c0x + 5, y: c0y - 68, radius: 15, color: '#3b82f6', seedX: 36, seedY: 42, community: 0 }
+    ];
+
+    // Authentic Community 1: Graph ML (Top-Right, #a855f7)
+    const c1x = cx + 25;
+    const c1y = cy - 75;
+    const hub1 = {
+      id: 'ml_hub',
+      label: 'ml',
+      type: 'folder',
+      radius: 30,
       color: '#facc15',
       x: c1x,
       y: c1y,
       vx: 0,
       vy: 0,
-      seedX: 15,
-      seedY: 25,
+      seedX: 44,
+      seedY: 52,
       isHub: true,
-      clusterId: 1
+      community: 1
     };
+    const c1Nodes = [
+      { id: 'analyzer.py', label: 'analyzer.py', x: c1x - 60, y: c1y - 35, radius: 17, color: '#a855f7', isLaserEndpoint: true, seedX: 48, seedY: 56, community: 1 },
+      { id: 'layout.py', label: 'layout.py', x: c1x + 60, y: c1y - 35, radius: 16, color: '#a855f7', seedX: 58, seedY: 64, community: 1 },
+      { id: 'modularity.py', label: 'modularity.py', x: c1x + 65, y: c1y + 35, radius: 16, color: '#a855f7', seedX: 68, seedY: 72, community: 1 },
+      { id: 'tensor_model.py', label: 'tensor_model.py', x: c1x - 55, y: c1y + 35, radius: 15, color: '#a855f7', seedX: 76, seedY: 82, community: 1 }
+    ];
 
-    // Yellow Hub 2 (Cluster 2: Runtime & Storage)
+    // Authentic Community 2: Services & AI (Bottom-Right, #22c55e)
+    const c2x = cx + 155;
+    const c2y = cy + 42;
     const hub2 = {
-      id: 'c2_hub',
-      label: 'runtime',
+      id: 'services_hub',
+      label: 'services',
       type: 'folder',
-      radius: 46,
+      radius: 30,
       color: '#facc15',
       x: c2x,
       y: c2y,
       vx: 0,
       vy: 0,
-      seedX: 35,
-      seedY: 45,
+      seedX: 84,
+      seedY: 92,
       isHub: true,
-      clusterId: 2
+      community: 2
     };
-
-    // Purple Cluster 1 Nodes
-    const cluster1Nodes = [
-      { id: 'c1_1', x: c1x - 70, y: c1y - 65, radius: 21, color: '#a855f7', seedX: 11, seedY: 13, clusterId: 1 },
-      { id: 'c1_2', x: c1x - 85, y: c1y + 60, radius: 20, color: '#a855f7', seedX: 17, seedY: 19, clusterId: 1 },
-      { id: 'c1_3', x: c1x - 45, y: c1y + 85, radius: 19, color: '#a855f7', seedX: 23, seedY: 29, clusterId: 1 },
-      { id: 'c1_4', x: c1x - 30, y: c1y - 85, radius: 20, color: '#a855f7', seedX: 31, seedY: 37, clusterId: 1 },
-      { id: 'c1_5', x: c1x - 110, y: c1y - 15, radius: 19, color: '#a855f7', seedX: 41, seedY: 43, clusterId: 1 },
-      { id: 'c1_6', x: c1x + 35, y: c1y - 75, radius: 19, color: '#a855f7', seedX: 47, seedY: 53, clusterId: 1 },
-      { id: 'c1_7', x: c1x + 40, y: c1y + 70, radius: 20, color: '#a855f7', seedX: 59, seedY: 61, clusterId: 1 }
+    const c2Nodes = [
+      { id: 'websocket_router.py', label: 'websocket_router.py', x: c2x - 65, y: c2y - 20, radius: 17, color: '#00f0ff', isLaserEndpoint: true, seedX: 88, seedY: 96, community: 2 },
+      { id: 'ai_service.py', label: 'ai_service.py', x: c2x + 60, y: c2y - 28, radius: 16, color: '#22c55e', seedX: 98, seedY: 104, community: 2 },
+      { id: 'terminal_service.py', label: 'terminal_service.py', x: c2x + 55, y: c2y + 48, radius: 15, color: '#22c55e', seedX: 108, seedY: 114, community: 2 },
+      { id: 'file_service.py', label: 'file_service.py', x: c2x - 15, y: c2y + 65, radius: 15, color: '#22c55e', seedX: 118, seedY: 124, community: 2 }
     ];
 
-    // Azure Blue Cluster 2 Nodes
-    const cluster2Nodes = [
-      { id: 'c2_1', x: c2x + 70, y: c2y - 65, radius: 21, color: '#38bdf8', seedX: 67, seedY: 71, clusterId: 2 },
-      { id: 'c2_2', x: c2x + 85, y: c2y + 60, radius: 20, color: '#38bdf8', seedX: 73, seedY: 79, clusterId: 2 },
-      { id: 'c2_3', x: c2x + 45, y: c2y + 85, radius: 19, color: '#38bdf8', seedX: 83, seedY: 89, clusterId: 2 },
-      { id: 'c2_4', x: c2x + 30, y: c2y - 85, radius: 20, color: '#38bdf8', seedX: 97, seedY: 101, clusterId: 2 },
-      { id: 'c2_5', x: c2x + 110, y: c2y - 15, radius: 19, color: '#38bdf8', seedX: 103, seedY: 107, clusterId: 2 },
-      { id: 'c2_6', x: c2x - 35, y: c2y - 75, radius: 19, color: '#38bdf8', seedX: 109, seedY: 113, clusterId: 2 },
-      { id: 'c2_7', x: c2x - 40, y: c2y + 70, radius: 20, color: '#38bdf8', seedX: 127, seedY: 131, clusterId: 2 }
+    // Authentic Graph Links (Intra-Community + Cross-Community Conduits)
+    const links = [
+      // Community 0 Intra Links
+      { source: 'core_hub', target: 'parser.py' },
+      { source: 'core_hub', target: 'mutator.py' },
+      { source: 'core_hub', target: 'state.py' },
+      { source: 'core_hub', target: 'js_mutator.py' },
+      { source: 'parser.py', target: 'mutator.py' },
+      { source: 'mutator.py', target: 'state.py' },
+
+      // Community 1 Intra Links
+      { source: 'ml_hub', target: 'analyzer.py' },
+      { source: 'ml_hub', target: 'layout.py' },
+      { source: 'ml_hub', target: 'modularity.py' },
+      { source: 'ml_hub', target: 'tensor_model.py' },
+      { source: 'analyzer.py', target: 'modularity.py' },
+      { source: 'layout.py', target: 'tensor_model.py' },
+
+      // Community 2 Intra Links
+      { source: 'services_hub', target: 'websocket_router.py' },
+      { source: 'services_hub', target: 'ai_service.py' },
+      { source: 'services_hub', target: 'terminal_service.py' },
+      { source: 'services_hub', target: 'file_service.py' },
+      { source: 'ai_service.py', target: 'terminal_service.py' },
+      { source: 'websocket_router.py', target: 'file_service.py' },
+
+      // Cross-Community Laser Bridge (websocket_router.py <-> analyzer.py)
+      { source: 'websocket_router.py', target: 'analyzer.py', isLaserBridge: true },
+
+      // Cross-Community Conduits
+      { source: 'analyzer.py', target: 'parser.py', isConduit: true, color: '#a855f7' },
+      { source: 'ai_service.py', target: 'mutator.py', isConduit: true, color: '#22c55e' }
     ];
 
-    // 2 Cross-Cluster Bridge Nodes (Different Colors: Amber & Coral)
-    const bridgeNodes = [
-      { id: 'br_amber', x: cx, y: cy - 60, radius: 22, color: '#f59e0b', seedX: 137, seedY: 139, isBridge: true },
-      { id: 'br_coral', x: cx, y: cy + 60, radius: 22, color: '#f43f5e', seedX: 149, seedY: 151, isBridge: true }
-    ];
-
-    // Intra-cluster links & Cross-cluster conduits
-    const clusterLinks = [
-      // Cluster 1 Links
-      { source: 'c1_hub', target: 'c1_1' },
-      { source: 'c1_hub', target: 'c1_2' },
-      { source: 'c1_hub', target: 'c1_3' },
-      { source: 'c1_hub', target: 'c1_4' },
-      { source: 'c1_hub', target: 'c1_5' },
-      { source: 'c1_hub', target: 'c1_6' },
-      { source: 'c1_hub', target: 'c1_7' },
-      { source: 'c1_1', target: 'c1_4' },
-      { source: 'c1_2', target: 'c1_3' },
-
-      // Cluster 2 Links
-      { source: 'c2_hub', target: 'c2_1' },
-      { source: 'c2_hub', target: 'c2_2' },
-      { source: 'c2_hub', target: 'c2_3' },
-      { source: 'c2_hub', target: 'c2_4' },
-      { source: 'c2_hub', target: 'c2_5' },
-      { source: 'c2_hub', target: 'c2_6' },
-      { source: 'c2_hub', target: 'c2_7' },
-      { source: 'c2_1', target: 'c2_4' },
-      { source: 'c2_2', target: 'c2_3' },
-
-      // Cross-Cluster Bridge Conduits
-      { source: 'c1_6', target: 'br_amber', isBridge: true },
-      { source: 'br_amber', target: 'c2_6', isBridge: true },
-      { source: 'c1_7', target: 'br_coral', isBridge: true },
-      { source: 'br_coral', target: 'c2_7', isBridge: true }
-    ];
-
-    const allNodes = [hub1, hub2, ...cluster1Nodes, ...cluster2Nodes, ...bridgeNodes];
+    const allNodes = [hub0, ...c0Nodes, hub1, ...c1Nodes, hub2, ...c2Nodes];
     const nodeLookup = new Map();
     allNodes.forEach(n => nodeLookup.set(n.id, n));
 
-    clusterLinks.forEach(l => {
+    links.forEach(l => {
       const s = nodeLookup.get(l.source);
       const t = nodeLookup.get(l.target);
       if (s && t) {
@@ -1612,7 +1795,7 @@ function ClusterDetectionBox() {
     });
 
     nodesRef.current = allNodes;
-    linksRef.current = clusterLinks;
+    linksRef.current = links;
     startTimeRef.current = performance.now();
   }, []);
 
@@ -1662,56 +1845,55 @@ function ClusterDetectionBox() {
       const nodeMap = new Map();
       nodes.forEach(n => nodeMap.set(n.id, n));
 
-      const cx = width * 0.48;
-      const cy = height * 0.50;
+      // 1. DYNAMIC LOUVAIN COMMUNITY CONVEX HULLS (Calculated live via polygonHull!)
+      COMMUNITIES.forEach(comm => {
+        const commNodes = nodes.filter(n => n.community === comm.id);
+        if (commNodes.length >= 3) {
+          const pts = [];
+          const pad = 52;
+          commNodes.forEach(n => {
+            pts.push([n.x - pad, n.y - pad]);
+            pts.push([n.x + pad, n.y - pad]);
+            pts.push([n.x - pad, n.y + pad]);
+            pts.push([n.x + pad, n.y + pad]);
+          });
 
-      // 1. DYNAMIC CLUSTER CENTROIDS (The cluster gradient dynamically moves with the balls!)
-      const c1Nodes = nodes.filter(n => n.clusterId === 1 || n.id === 'c1_hub');
-      const c2Nodes = nodes.filter(n => n.clusterId === 2 || n.id === 'c2_hub');
+          const hull = polygonHull(pts);
+          if (hull && hull.length >= 3) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(hull[0][0], hull[0][1]);
+            for (let i = 1; i < hull.length; i++) {
+              ctx.lineTo(hull[i][0], hull[i][1]);
+            }
+            ctx.closePath();
+            ctx.fillStyle = comm.fill;
+            ctx.fill();
 
-      let sum1X = 0, sum1Y = 0;
-      c1Nodes.forEach(n => { sum1X += n.x; sum1Y += n.y; });
-      const c1x = c1Nodes.length > 0 ? (sum1X / c1Nodes.length) : (cx - 135);
-      const c1y = c1Nodes.length > 0 ? (sum1Y / c1Nodes.length) : cy;
+            // Rounded thick border for organic nebula shape
+            ctx.lineWidth = 68;
+            ctx.lineJoin = 'round';
+            ctx.strokeStyle = comm.stroke;
+            ctx.stroke();
+            ctx.restore();
+          }
 
-      let sum2X = 0, sum2Y = 0;
-      c2Nodes.forEach(n => { sum2X += n.x; sum2Y += n.y; });
-      const c2x = c2Nodes.length > 0 ? (sum2X / c2Nodes.length) : (cx + 135);
-      const c2y = c2Nodes.length > 0 ? (sum2Y / c2Nodes.length) : cy;
+          // Community Centroid Label
+          let sumX = 0, sumY = 0;
+          commNodes.forEach(n => { sumX += n.x; sumY += n.y; });
+          const cX = sumX / commNodes.length;
+          const cY = sumY / commNodes.length;
 
-      // 2. HUGE GRADIENT BACKDROPS for Each Cluster (Follows the cluster live!)
-      // Cluster 1: Huge Smooth Purple Radial Gradient
-      const grad1 = ctx.createRadialGradient(c1x, c1y, 15, c1x, c1y, 175);
-      grad1.addColorStop(0, 'rgba(168, 85, 247, 0.24)');
-      grad1.addColorStop(0.55, 'rgba(168, 85, 247, 0.09)');
-      grad1.addColorStop(1, 'rgba(168, 85, 247, 0)');
-      ctx.fillStyle = grad1;
-      ctx.beginPath();
-      ctx.arc(c1x, c1y, 175, 0, Math.PI * 2);
-      ctx.fill();
+          ctx.save();
+          ctx.font = '600 10.5px ui-monospace, SFMono-Regular, Menlo, monospace';
+          ctx.fillStyle = comm.color;
+          ctx.textAlign = 'center';
+          ctx.fillText(comm.name, cX, cY - 58);
+          ctx.restore();
+        }
+      });
 
-      // Cluster 2: Huge Smooth Azure Blue Radial Gradient
-      const grad2 = ctx.createRadialGradient(c2x, c2y, 15, c2x, c2y, 175);
-      grad2.addColorStop(0, 'rgba(56, 189, 248, 0.24)');
-      grad2.addColorStop(0.55, 'rgba(56, 189, 248, 0.09)');
-      grad2.addColorStop(1, 'rgba(56, 189, 248, 0)');
-      ctx.fillStyle = grad2;
-      ctx.beginPath();
-      ctx.arc(c2x, c2y, 175, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Cluster Subsystem Descriptors in 3-4 Words (Subtle in-canvas labels)
-      ctx.save();
-      ctx.font = '600 10.5px ui-monospace, SFMono-Regular, Menlo, monospace';
-      ctx.fillStyle = 'rgba(192, 132, 252, 0.85)';
-      ctx.textAlign = 'center';
-      ctx.fillText('Parser & Compiler Domain', c1x, c1y - 62);
-
-      ctx.fillStyle = 'rgba(56, 189, 248, 0.85)';
-      ctx.fillText('Runtime & Storage Domain', c2x, c2y - 62);
-      ctx.restore();
-
-      // 3. Elastic Spring Physics & Micro-Drift
+      // 2. Elastic Spring Physics & Micro-Drift
       links.forEach(l => {
         const s = nodeMap.get(l.source);
         const t = nodeMap.get(l.target);
@@ -1721,7 +1903,7 @@ function ClusterDetectionBox() {
         const dist = Math.hypot(dx, dy) || 1;
         const rest = l.restDist || 75;
         const delta = dist - rest;
-        const k = l.isBridge ? 0.015 : 0.035;
+        const k = l.isLaserBridge ? 0.012 : (l.isConduit ? 0.015 : 0.035);
         const fx = (dx / dist) * delta * k;
         const fy = (dy / dist) * delta * k;
 
@@ -1731,40 +1913,128 @@ function ClusterDetectionBox() {
 
       nodes.forEach(node => {
         if (draggedNodeRef.current?.id === node.id) return;
-        node.vx += Math.sin(now * 0.0011 + (node.seedX || 0)) * 0.012;
-        node.vy += Math.cos(now * 0.0009 + (node.seedY || 0)) * 0.012;
+        node.vx += Math.sin(now * 0.0011 + (node.seedX || 0)) * 0.010;
+        node.vy += Math.cos(now * 0.0009 + (node.seedY || 0)) * 0.010;
         node.vx *= 0.86;
         node.vy *= 0.86;
         node.x += node.vx;
         node.y += node.vy;
       });
 
-      // 4. Draw Links
+      // 3. Draw Links & Cross-Community Conduits
       links.forEach(l => {
         const s = nodeMap.get(l.source);
         const t = nodeMap.get(l.target);
         if (!s || !t) return;
-        ctx.beginPath();
-        ctx.moveTo(s.x, s.y);
-        ctx.lineTo(t.x, t.y);
-        ctx.strokeStyle = l.isBridge ? 'rgba(255, 255, 255, 0.25)' : 'rgba(255, 255, 255, 0.14)';
-        ctx.lineWidth = l.isBridge ? 1.8 : 1.2;
-        if (l.isBridge) {
+
+        if (l.isLaserBridge) {
+          // Cyan laser bridge with streaming photons
+          ctx.save();
+          ctx.beginPath();
+          ctx.moveTo(s.x, s.y);
+          ctx.lineTo(t.x, t.y);
+          ctx.strokeStyle = 'rgba(0, 240, 255, 0.20)';
+          ctx.lineWidth = 6;
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(s.x, s.y);
+          ctx.lineTo(t.x, t.y);
+          ctx.strokeStyle = '#00f0ff';
+          ctx.lineWidth = 2.0;
+          ctx.stroke();
+
+          // Traveling photons
+          const p1 = (now * 0.00075) % 1;
+          const p2 = ((now * 0.00075) + 0.5) % 1;
+          [p1, p2].forEach(p => {
+            const px = s.x + (t.x - s.x) * p;
+            const py = s.y + (t.y - s.y) * p;
+            ctx.beginPath();
+            ctx.arc(px, py, 3, 0, Math.PI * 2);
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(px, py, 6, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(0, 240, 255, 0.40)';
+            ctx.fill();
+          });
+          ctx.restore();
+        } else if (l.isConduit) {
+          // Dashed Cross-Community Conduit
+          ctx.save();
+          ctx.beginPath();
+          ctx.moveTo(s.x, s.y);
+          ctx.lineTo(t.x, t.y);
+          ctx.strokeStyle = l.color ? `${l.color}66` : 'rgba(255, 255, 255, 0.25)';
+          ctx.lineWidth = 1.4;
           ctx.setLineDash([4, 4]);
+          ctx.stroke();
+          ctx.restore();
         } else {
-          ctx.setLineDash([]);
+          // Intra-Community Links
+          ctx.save();
+          ctx.beginPath();
+          ctx.moveTo(s.x, s.y);
+          ctx.lineTo(t.x, t.y);
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+          ctx.lineWidth = 1.2;
+          ctx.stroke();
+          ctx.restore();
         }
-        ctx.stroke();
-        ctx.setLineDash([]);
       });
 
-      // 5. Draw Nodes (Pure solid discs - NO text on balls, NO double borders)
+      // 4. Draw Nodes (Hubs + Authentic Files)
       nodes.forEach(node => {
         ctx.save();
-        ctx.beginPath();
-        ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
-        ctx.fillStyle = node.color;
-        ctx.fill();
+        if (node.isHub) {
+          // Hub disc
+          ctx.beginPath();
+          ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+          ctx.fillStyle = node.color;
+          ctx.fill();
+
+          // Subtle hub halo
+          ctx.beginPath();
+          ctx.arc(node.x, node.y, node.radius + 3, 0, Math.PI * 2);
+          ctx.strokeStyle = 'rgba(250, 204, 21, 0.35)';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+
+          // Hub label
+          ctx.font = '700 10.5px ui-monospace, SFMono-Regular, Menlo, monospace';
+          ctx.fillStyle = '#090b10';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(node.label, node.x, node.y);
+        } else {
+          // File disc
+          ctx.beginPath();
+          ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+          ctx.fillStyle = node.color;
+          ctx.fill();
+
+          if (node.isCritical) {
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, node.radius + 3, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(239, 68, 68, 0.40)';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+          } else if (node.isLaserEndpoint) {
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, node.radius + 3, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(0, 240, 255, 0.45)';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+          }
+
+          // File label below node
+          ctx.font = '500 9px ui-monospace, SFMono-Regular, Menlo, monospace';
+          ctx.fillStyle = 'rgba(241, 245, 249, 0.85)';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'top';
+          ctx.fillText(node.label, node.x, node.y + node.radius + 6);
+        }
         ctx.restore();
       });
 
@@ -1801,7 +2071,7 @@ function ClusterDetectionBox() {
     const nodes = nodesRef.current;
     for (let i = nodes.length - 1; i >= 0; i--) {
       const node = nodes[i];
-      if (Math.hypot(node.x - mx, node.y - my) <= node.radius + 8) {
+      if (Math.hypot(node.x - mx, node.y - my) <= node.radius + 10) {
         draggedNodeRef.current = node;
         isDraggingRef.current = true;
         break;
@@ -1826,12 +2096,12 @@ function ClusterDetectionBox() {
       dragged.vx = 0;
       dragged.vy = 0;
 
-      // When moving the cluster hub (or any member), shift cluster nodes together so the entire cluster moves!
+      // When dragging a hub, smoothly translate all community child nodes together!
       if (dragged.isHub) {
-        const clusterId = dragged.clusterId;
+        const commId = dragged.community;
         const nodes = nodesRef.current;
         nodes.forEach(n => {
-          if (n.clusterId === clusterId && n.id !== dragged.id) {
+          if (n.community === commId && n.id !== dragged.id) {
             n.x += dx;
             n.y += dy;
             n.vx = 0;
@@ -1858,9 +2128,11 @@ function ClusterDetectionBox() {
               Cluster Detection
             </span>
             <div className="flex items-center gap-1.5 font-mono text-[11px]">
-              <span className="text-slate-500">modularity</span>
+              <span className="text-slate-500">backend</span>
               <span className="text-slate-600">/</span>
-              <span className="text-slate-300">louvain</span>
+              <span className="text-slate-500">ml</span>
+              <span className="text-slate-600">/</span>
+              <span className="text-slate-300">modularity.py</span>
             </div>
           </div>
 
@@ -1874,6 +2146,9 @@ function ClusterDetectionBox() {
               onMouseLeave={handleMouseUp}
               className="w-full h-full block touch-none cursor-grab active:cursor-grabbing"
             />
+            <div className="absolute bottom-2.5 right-3 pointer-events-none text-[10px] font-mono text-slate-500/70 select-none">
+              drag hubs or nodes to reshape nebulae
+            </div>
           </div>
 
           {/* Bottom Tray */}
@@ -1901,10 +2176,18 @@ function ClusterDetectionBox() {
             </div>
 
             <div className="flex-1 p-2.5 font-mono text-[11px] text-slate-300 flex items-center">
-              <div className="flex items-center gap-1.5">
-                <span className="text-slate-500">PS C:\Neuron\clusters&gt;</span>
-                <span className="w-1.5 h-3 bg-[#38bdf8] animate-pulse inline-block" />
-              </div>
+              {activeTab === 'powershell' ? (
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="text-slate-500">PS C:\Neuron\clusters&gt;</span>
+                  <span className="text-emerald-400 text-[10.5px]">[Neuron ML] Louvain Modularity: 3 community nebulae detected (Q=0.742)</span>
+                  <span className="w-1.5 h-3 bg-[#38bdf8] animate-pulse inline-block" />
+                </div>
+              ) : (
+                <div className="flex flex-col text-[10px] text-slate-400 space-y-0.5">
+                  <span className="text-slate-300">[INFO] Louvain partitioning converged in 3 iterations (Q = 0.742).</span>
+                  <span className="text-slate-500">3 community clusters identified across 15 active nodes.</span>
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -211,7 +211,7 @@ const easeOutBack = (x) => {
   return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2);
 };
 
-// Official Neuron Codebase Graph Specification
+// Official Neuron Codebase Graph Specification (Authentic Files & Louvain Modularity)
 const NEURON_GRAPH_DATA = {
   nodes: [
     // --- Root Folders (Tier 0) ---
@@ -219,18 +219,15 @@ const NEURON_GRAPH_DATA = {
     { id: 'frontend', label: 'frontend', nodeType: 'folder', tier: 0, community: 3 },
 
     // --- Backend Subfolders ---
+    { id: 'backend/api', label: 'api', parentId: 'backend', nodeType: 'folder', tier: 0, community: 0 },
     { id: 'backend/core', label: 'core', parentId: 'backend', nodeType: 'folder', tier: 0, community: 0 },
     { id: 'backend/ml', label: 'ml', parentId: 'backend', nodeType: 'folder', tier: 0, community: 1 },
-    { id: 'backend/ai', label: 'ai', parentId: 'backend', nodeType: 'folder', tier: 0, community: 2 },
-    { id: 'backend/api', label: 'api', parentId: 'backend', nodeType: 'folder', tier: 0, community: 0 },
     { id: 'backend/services', label: 'services', parentId: 'backend', nodeType: 'folder', tier: 0, community: 2 },
 
     // --- Frontend Subfolders ---
-    { id: 'frontend/canvas', label: 'canvas', parentId: 'frontend', nodeType: 'folder', tier: 0, community: 3 },
-    { id: 'frontend/layout', label: 'layout', parentId: 'frontend', nodeType: 'folder', tier: 0, community: 4 },
-    { id: 'frontend/ai', label: 'ai', parentId: 'frontend', nodeType: 'folder', tier: 0, community: 2 },
-    { id: 'frontend/hooks', label: 'hooks', parentId: 'frontend', nodeType: 'folder', tier: 0, community: 5 },
-    { id: 'frontend/config', label: 'config', parentId: 'frontend', nodeType: 'folder', tier: 0, community: 5 },
+    { id: 'frontend/src', label: 'src', parentId: 'frontend', nodeType: 'folder', tier: 0, community: 3 },
+    { id: 'frontend/src/components', label: 'components', parentId: 'frontend/src', nodeType: 'folder', tier: 0, community: 4 },
+    { id: 'frontend/src/hooks', label: 'hooks', parentId: 'frontend/src', nodeType: 'folder', tier: 0, community: 5 },
 
     // --- Community 0: Backend Core & API (Files) ---
     { id: 'backend/core/parser.py', label: 'parser.py', parentId: 'backend/core', nodeType: 'file', tier: 1, community: 0, risk: 'high' },
@@ -238,41 +235,29 @@ const NEURON_GRAPH_DATA = {
     { id: 'backend/core/state.py', label: 'state.py', parentId: 'backend/core', nodeType: 'file', tier: 1, community: 0 },
     { id: 'backend/core/js_mutator.py', label: 'js_mutator.py', parentId: 'backend/core', nodeType: 'file', tier: 1, community: 0 },
     { id: 'backend/api/websocket_router.py', label: 'websocket_router.py', parentId: 'backend/api', nodeType: 'file', tier: 1, community: 0 },
+    { id: 'backend/main.py', label: 'main.py', parentId: 'backend', nodeType: 'file', tier: 1, community: 0 },
 
     // --- Community 1: ML Analyzer & Layout (Files) ---
     { id: 'backend/ml/analyzer.py', label: 'analyzer.py', parentId: 'backend/ml', nodeType: 'file', tier: 1, community: 1, risk: 'high' },
-    { id: 'backend/ml/layout.py', label: 'layout.py', parentId: 'backend/ml', nodeType: 'file', tier: 1, community: 1 },
-    { id: 'backend/ml/modularity.py', label: 'modularity.py', parentId: 'backend/ml', nodeType: 'file', tier: 1, community: 1 },
 
-    // --- Community 2: AI Supervisor & Microservices (Files) ---
-    { id: 'backend/ai/agent_supervisor.py', label: 'agent_supervisor.py', parentId: 'backend/ai', nodeType: 'file', tier: 1, community: 2 },
-    { id: 'backend/ai/csp_guard.py', label: 'csp_guard.py', parentId: 'backend/ai', nodeType: 'file', tier: 1, community: 2 },
-    { id: 'backend/ai/vector_search.py', label: 'vector_search.py', parentId: 'backend/ai', nodeType: 'file', tier: 1, community: 2 },
+    // --- Community 2: Services & AI (Files) ---
     { id: 'backend/services/ai_service.py', label: 'ai_service.py', parentId: 'backend/services', nodeType: 'file', tier: 1, community: 2 },
-    { id: 'backend/services/file_service.py', label: 'file_service.py', parentId: 'backend/services', nodeType: 'file', tier: 1, community: 2 },
     { id: 'backend/services/terminal_service.py', label: 'terminal_service.py', parentId: 'backend/services', nodeType: 'file', tier: 1, community: 2 },
-    { id: 'frontend/ai/AiChatView.jsx', label: 'AiChatView.jsx', parentId: 'frontend/ai', nodeType: 'file', tier: 1, community: 2 },
 
-    // --- Community 3: Spatial Graphics Engine (Files) ---
-    { id: 'frontend/canvas/PixiSpatialEngine.jsx', label: 'PixiSpatialEngine.jsx', parentId: 'frontend/canvas', nodeType: 'file', tier: 1, community: 3, risk: 'high' },
-    { id: 'frontend/canvas/SpatialMinimap.jsx', label: 'SpatialMinimap.jsx', parentId: 'frontend/canvas', nodeType: 'file', tier: 1, community: 3 },
-    { id: 'frontend/canvas/ViewportManager.js', label: 'ViewportManager.js', parentId: 'frontend/canvas', nodeType: 'file', tier: 1, community: 3 },
-    { id: 'frontend/canvas/NebulaMesh.js', label: 'NebulaMesh.js', parentId: 'frontend/canvas', nodeType: 'file', tier: 1, community: 3 },
+    // --- Community 3: Frontend Application Core (Files) ---
+    { id: 'frontend/src/App.jsx', label: 'App.jsx', parentId: 'frontend/src', nodeType: 'file', tier: 1, community: 3, risk: 'high' },
+    { id: 'frontend/src/main.jsx', label: 'main.jsx', parentId: 'frontend/src', nodeType: 'file', tier: 1, community: 3 },
+    { id: 'frontend/package.json', label: 'package.json', parentId: 'frontend', nodeType: 'file', tier: 1, community: 3 },
+    { id: 'README.md', label: 'README.md', nodeType: 'file', tier: 1, community: 3 },
 
-    // --- Community 4: IDE Layout & Workspace UI (Files) ---
-    { id: 'frontend/layout/TopBar.jsx', label: 'TopBar.jsx', parentId: 'frontend/layout', nodeType: 'file', tier: 1, community: 4 },
-    { id: 'frontend/layout/Sidebar.jsx', label: 'Sidebar.jsx', parentId: 'frontend/layout', nodeType: 'file', tier: 1, community: 4 },
-    { id: 'frontend/layout/StatusBar.jsx', label: 'StatusBar.jsx', parentId: 'frontend/layout', nodeType: 'file', tier: 1, community: 4 },
-    { id: 'frontend/layout/CodeEditor.jsx', label: 'CodeEditor.jsx', parentId: 'frontend/layout', nodeType: 'file', tier: 1, community: 4 },
-    { id: 'frontend/layout/TerminalPanel.jsx', label: 'TerminalPanel.jsx', parentId: 'frontend/layout', nodeType: 'file', tier: 1, community: 4 },
-    { id: 'frontend/layout/ThemeSelector.jsx', label: 'ThemeSelector.jsx', parentId: 'frontend/layout', nodeType: 'file', tier: 1, community: 4 },
+    // --- Community 4: UI Layout Components (Files) ---
+    { id: 'frontend/src/components/CodeEditor.jsx', label: 'CodeEditor.jsx', parentId: 'frontend/src/components', nodeType: 'file', tier: 1, community: 4 },
+    { id: 'frontend/src/components/TerminalPanel.jsx', label: 'TerminalPanel.jsx', parentId: 'frontend/src/components', nodeType: 'file', tier: 1, community: 4 },
+    { id: 'frontend/src/components/TopBar.jsx', label: 'TopBar.jsx', parentId: 'frontend/src/components', nodeType: 'file', tier: 1, community: 4 },
 
-    // --- Community 5: Hooks & Configuration (Files) ---
-    { id: 'frontend/hooks/usePhysicsEngine.js', label: 'usePhysicsEngine.js', parentId: 'frontend/hooks', nodeType: 'file', tier: 1, community: 5, risk: 'medium' },
-    { id: 'frontend/hooks/useWorkspace.js', label: 'useWorkspace.js', parentId: 'frontend/hooks', nodeType: 'file', tier: 1, community: 5 },
-    { id: 'frontend/hooks/useCompiler.js', label: 'useCompiler.js', parentId: 'frontend/hooks', nodeType: 'file', tier: 1, community: 5 },
-    { id: 'frontend/config/engineConfig.js', label: 'engineConfig.js', parentId: 'frontend/config', nodeType: 'file', tier: 1, community: 5 },
-    { id: 'frontend/config/themeConfig.js', label: 'themeConfig.js', parentId: 'frontend/config', nodeType: 'file', tier: 1, community: 5 },
+    // --- Community 5: Reactive Hooks & State (Files) ---
+    { id: 'frontend/src/hooks/usePhysicsEngine.js', label: 'usePhysicsEngine.js', parentId: 'frontend/src/hooks', nodeType: 'file', tier: 1, community: 5, risk: 'medium' },
+    { id: 'frontend/src/hooks/useWorkspace.js', label: 'useWorkspace.js', parentId: 'frontend/src/hooks', nodeType: 'file', tier: 1, community: 5 },
 
     // --- Orbiting Functions (Tier 2 Moons) ---
     { id: 'parser.py::parse_ast()', label: 'def parse_ast()', parentId: 'backend/core/parser.py', nodeType: 'function', tier: 2, community: 0 },
@@ -284,30 +269,29 @@ const NEURON_GRAPH_DATA = {
     { id: 'analyzer.py::analyze_graph_ml()', label: 'def analyze_graph_ml()', parentId: 'backend/ml/analyzer.py', nodeType: 'function', tier: 2, community: 1 },
     { id: 'analyzer.py::compute_shannon_entropy()', label: 'def compute_shannon_entropy()', parentId: 'backend/ml/analyzer.py', nodeType: 'function', tier: 2, community: 1 },
     { id: 'analyzer.py::detect_communities()', label: 'def detect_communities()', parentId: 'backend/ml/analyzer.py', nodeType: 'function', tier: 2, community: 1 },
-    { id: 'agent_supervisor.py::supervise_step()', label: 'def supervise_step()', parentId: 'backend/ai/agent_supervisor.py', nodeType: 'function', tier: 2, community: 2 },
-    { id: 'agent_supervisor.py::evaluate_csp()', label: 'def evaluate_csp()', parentId: 'backend/ai/agent_supervisor.py', nodeType: 'function', tier: 2, community: 2 },
-    { id: 'AiChatView.jsx::sendMessage()', label: 'function sendMessage()', parentId: 'frontend/ai/AiChatView.jsx', nodeType: 'function', tier: 2, community: 2 },
-    { id: 'PixiSpatialEngine.jsx::initWebGPU()', label: 'function initWebGPU()', parentId: 'frontend/canvas/PixiSpatialEngine.jsx', nodeType: 'function', tier: 2, community: 3 },
-    { id: 'PixiSpatialEngine.jsx::renderTick()', label: 'function renderTick()', parentId: 'frontend/canvas/PixiSpatialEngine.jsx', nodeType: 'function', tier: 2, community: 3 },
-    { id: 'PixiSpatialEngine.jsx::renderNebula()', label: 'function renderNebula()', parentId: 'frontend/canvas/PixiSpatialEngine.jsx', nodeType: 'function', tier: 2, community: 3 },
-    { id: 'CodeEditor.jsx::handleEditorChange()', label: 'function handleEditorChange()', parentId: 'frontend/layout/CodeEditor.jsx', nodeType: 'function', tier: 2, community: 4 },
-    { id: 'usePhysicsEngine.js::usePhysicsEngine()', label: 'function usePhysicsEngine()', parentId: 'frontend/hooks/usePhysicsEngine.js', nodeType: 'function', tier: 2, community: 5 },
-    { id: 'usePhysicsEngine.js::emitNextNode()', label: 'function emitNextNode()', parentId: 'frontend/hooks/usePhysicsEngine.js', nodeType: 'function', tier: 2, community: 5 },
-    { id: 'useWorkspace.js::syncNodeMove()', label: 'function syncNodeMove()', parentId: 'frontend/hooks/useWorkspace.js', nodeType: 'function', tier: 2, community: 5 }
+    { id: 'ai_service.py::supervise_step()', label: 'def supervise_step()', parentId: 'backend/services/ai_service.py', nodeType: 'function', tier: 2, community: 2 },
+    { id: 'ai_service.py::evaluate_csp()', label: 'def evaluate_csp()', parentId: 'backend/services/ai_service.py', nodeType: 'function', tier: 2, community: 2 },
+    { id: 'CodeEditor.jsx::handleEditorChange()', label: 'function handleEditorChange()', parentId: 'frontend/src/components/CodeEditor.jsx', nodeType: 'function', tier: 2, community: 4 },
+    { id: 'TerminalPanel.jsx::runCommand()', label: 'function runCommand()', parentId: 'frontend/src/components/TerminalPanel.jsx', nodeType: 'function', tier: 2, community: 4 },
+    { id: 'usePhysicsEngine.js::usePhysicsEngine()', label: 'function usePhysicsEngine()', parentId: 'frontend/src/hooks/usePhysicsEngine.js', nodeType: 'function', tier: 2, community: 5 },
+    { id: 'usePhysicsEngine.js::emitNextNode()', label: 'function emitNextNode()', parentId: 'frontend/src/hooks/usePhysicsEngine.js', nodeType: 'function', tier: 2, community: 5 },
+    { id: 'useWorkspace.js::syncNodeMove()', label: 'function syncNodeMove()', parentId: 'frontend/src/hooks/useWorkspace.js', nodeType: 'function', tier: 2, community: 5 },
+    { id: 'App.jsx::initWorkspace()', label: 'function initWorkspace()', parentId: 'frontend/src/App.jsx', nodeType: 'function', tier: 2, community: 3 }
   ],
   edges: [
     // Subfolder hierarchy
+    { id: 'e-b-api', source: 'backend', target: 'backend/api', type: 'hierarchy' },
     { id: 'e-b-core', source: 'backend', target: 'backend/core', type: 'hierarchy' },
     { id: 'e-b-ml', source: 'backend', target: 'backend/ml', type: 'hierarchy' },
-    { id: 'e-b-ai', source: 'backend', target: 'backend/ai', type: 'hierarchy' },
-    { id: 'e-b-api', source: 'backend', target: 'backend/api', type: 'hierarchy' },
     { id: 'e-b-srv', source: 'backend', target: 'backend/services', type: 'hierarchy' },
+    { id: 'e-b-main', source: 'backend', target: 'backend/main.py', type: 'hierarchy' },
 
-    { id: 'e-f-can', source: 'frontend', target: 'frontend/canvas', type: 'hierarchy' },
-    { id: 'e-f-lay', source: 'frontend', target: 'frontend/layout', type: 'hierarchy' },
-    { id: 'e-f-ai', source: 'frontend', target: 'frontend/ai', type: 'hierarchy' },
-    { id: 'e-f-hk', source: 'frontend', target: 'frontend/hooks', type: 'hierarchy' },
-    { id: 'e-f-cfg', source: 'frontend', target: 'frontend/config', type: 'hierarchy' },
+    { id: 'e-f-src', source: 'frontend', target: 'frontend/src', type: 'hierarchy' },
+    { id: 'e-f-cmp', source: 'frontend/src', target: 'frontend/src/components', type: 'hierarchy' },
+    { id: 'e-f-hk', source: 'frontend/src', target: 'frontend/src/hooks', type: 'hierarchy' },
+    { id: 'e-f-app', source: 'frontend/src', target: 'frontend/src/App.jsx', type: 'hierarchy' },
+    { id: 'e-f-main', source: 'frontend/src', target: 'frontend/src/main.jsx', type: 'hierarchy' },
+    { id: 'e-f-pkg', source: 'frontend', target: 'frontend/package.json', type: 'hierarchy' },
 
     // Files hierarchy
     { id: 'e-p-parse', source: 'backend/core', target: 'backend/core/parser.py', type: 'hierarchy' },
@@ -315,36 +299,15 @@ const NEURON_GRAPH_DATA = {
     { id: 'e-p-state', source: 'backend/core', target: 'backend/core/state.py', type: 'hierarchy' },
     { id: 'e-p-jsm', source: 'backend/core', target: 'backend/core/js_mutator.py', type: 'hierarchy' },
     { id: 'e-p-ws', source: 'backend/api', target: 'backend/api/websocket_router.py', type: 'hierarchy' },
-
     { id: 'e-p-an', source: 'backend/ml', target: 'backend/ml/analyzer.py', type: 'hierarchy' },
-    { id: 'e-p-laym', source: 'backend/ml', target: 'backend/ml/layout.py', type: 'hierarchy' },
-    { id: 'e-p-mod', source: 'backend/ml', target: 'backend/ml/modularity.py', type: 'hierarchy' },
-
-    { id: 'e-p-sup', source: 'backend/ai', target: 'backend/ai/agent_supervisor.py', type: 'hierarchy' },
-    { id: 'e-p-csp', source: 'backend/ai', target: 'backend/ai/csp_guard.py', type: 'hierarchy' },
-    { id: 'e-p-vec', source: 'backend/ai', target: 'backend/ai/vector_search.py', type: 'hierarchy' },
     { id: 'e-p-ais', source: 'backend/services', target: 'backend/services/ai_service.py', type: 'hierarchy' },
-    { id: 'e-p-fls', source: 'backend/services', target: 'backend/services/file_service.py', type: 'hierarchy' },
     { id: 'e-p-tms', source: 'backend/services', target: 'backend/services/terminal_service.py', type: 'hierarchy' },
-    { id: 'e-p-aiv', source: 'frontend/ai', target: 'frontend/ai/AiChatView.jsx', type: 'hierarchy' },
 
-    { id: 'e-p-pix', source: 'frontend/canvas', target: 'frontend/canvas/PixiSpatialEngine.jsx', type: 'hierarchy' },
-    { id: 'e-p-smm', source: 'frontend/canvas', target: 'frontend/canvas/SpatialMinimap.jsx', type: 'hierarchy' },
-    { id: 'e-p-vpm', source: 'frontend/canvas', target: 'frontend/canvas/ViewportManager.js', type: 'hierarchy' },
-    { id: 'e-p-nbm', source: 'frontend/canvas', target: 'frontend/canvas/NebulaMesh.js', type: 'hierarchy' },
-
-    { id: 'e-p-top', source: 'frontend/layout', target: 'frontend/layout/TopBar.jsx', type: 'hierarchy' },
-    { id: 'e-p-sd', source: 'frontend/layout', target: 'frontend/layout/Sidebar.jsx', type: 'hierarchy' },
-    { id: 'e-p-st', source: 'frontend/layout', target: 'frontend/layout/StatusBar.jsx', type: 'hierarchy' },
-    { id: 'e-p-ce', source: 'frontend/layout', target: 'frontend/layout/CodeEditor.jsx', type: 'hierarchy' },
-    { id: 'e-p-tp', source: 'frontend/layout', target: 'frontend/layout/TerminalPanel.jsx', type: 'hierarchy' },
-    { id: 'e-p-ts', source: 'frontend/layout', target: 'frontend/layout/ThemeSelector.jsx', type: 'hierarchy' },
-
-    { id: 'e-p-ph', source: 'frontend/hooks', target: 'frontend/hooks/usePhysicsEngine.js', type: 'hierarchy' },
-    { id: 'e-p-wsy', source: 'frontend/hooks', target: 'frontend/hooks/useWorkspace.js', type: 'hierarchy' },
-    { id: 'e-p-cmp', source: 'frontend/hooks', target: 'frontend/hooks/useCompiler.js', type: 'hierarchy' },
-    { id: 'e-p-ec', source: 'frontend/config', target: 'frontend/config/engineConfig.js', type: 'hierarchy' },
-    { id: 'e-p-tc', source: 'frontend/config', target: 'frontend/config/themeConfig.js', type: 'hierarchy' },
+    { id: 'e-p-ce', source: 'frontend/src/components', target: 'frontend/src/components/CodeEditor.jsx', type: 'hierarchy' },
+    { id: 'e-p-tp', source: 'frontend/src/components', target: 'frontend/src/components/TerminalPanel.jsx', type: 'hierarchy' },
+    { id: 'e-p-top', source: 'frontend/src/components', target: 'frontend/src/components/TopBar.jsx', type: 'hierarchy' },
+    { id: 'e-p-ph', source: 'frontend/src/hooks', target: 'frontend/src/hooks/usePhysicsEngine.js', type: 'hierarchy' },
+    { id: 'e-p-wsy', source: 'frontend/src/hooks', target: 'frontend/src/hooks/useWorkspace.js', type: 'hierarchy' },
 
     // Functions hierarchy (File to Moon Functions)
     { id: 'e-f1', source: 'backend/core/parser.py', target: 'parser.py::parse_ast()', type: 'hierarchy' },
@@ -356,29 +319,27 @@ const NEURON_GRAPH_DATA = {
     { id: 'e-f7', source: 'backend/ml/analyzer.py', target: 'analyzer.py::analyze_graph_ml()', type: 'hierarchy' },
     { id: 'e-f8', source: 'backend/ml/analyzer.py', target: 'analyzer.py::compute_shannon_entropy()', type: 'hierarchy' },
     { id: 'e-f9', source: 'backend/ml/analyzer.py', target: 'analyzer.py::detect_communities()', type: 'hierarchy' },
-    { id: 'e-f10', source: 'backend/ai/agent_supervisor.py', target: 'agent_supervisor.py::supervise_step()', type: 'hierarchy' },
-    { id: 'e-f11', source: 'backend/ai/agent_supervisor.py', target: 'agent_supervisor.py::evaluate_csp()', type: 'hierarchy' },
-    { id: 'e-f12', source: 'frontend/ai/AiChatView.jsx', target: 'AiChatView.jsx::sendMessage()', type: 'hierarchy' },
-    { id: 'e-f13', source: 'frontend/canvas/PixiSpatialEngine.jsx', target: 'PixiSpatialEngine.jsx::initWebGPU()', type: 'hierarchy' },
-    { id: 'e-f14', source: 'frontend/canvas/PixiSpatialEngine.jsx', target: 'PixiSpatialEngine.jsx::renderTick()', type: 'hierarchy' },
-    { id: 'e-f15', source: 'frontend/canvas/PixiSpatialEngine.jsx', target: 'PixiSpatialEngine.jsx::renderNebula()', type: 'hierarchy' },
-    { id: 'e-f16', source: 'frontend/layout/CodeEditor.jsx', target: 'CodeEditor.jsx::handleEditorChange()', type: 'hierarchy' },
-    { id: 'e-f17', source: 'frontend/hooks/usePhysicsEngine.js', target: 'usePhysicsEngine.js::usePhysicsEngine()', type: 'hierarchy' },
-    { id: 'e-f18', source: 'frontend/hooks/usePhysicsEngine.js', target: 'usePhysicsEngine.js::emitNextNode()', type: 'hierarchy' },
-    { id: 'e-f19', source: 'frontend/hooks/useWorkspace.js', target: 'useWorkspace.js::syncNodeMove()', type: 'hierarchy' },
+    { id: 'e-f10', source: 'backend/services/ai_service.py', target: 'ai_service.py::supervise_step()', type: 'hierarchy' },
+    { id: 'e-f11', source: 'backend/services/ai_service.py', target: 'ai_service.py::evaluate_csp()', type: 'hierarchy' },
+    { id: 'e-f12', source: 'frontend/src/components/CodeEditor.jsx', target: 'CodeEditor.jsx::handleEditorChange()', type: 'hierarchy' },
+    { id: 'e-f13', source: 'frontend/src/components/TerminalPanel.jsx', target: 'TerminalPanel.jsx::runCommand()', type: 'hierarchy' },
+    { id: 'e-f14', source: 'frontend/src/hooks/usePhysicsEngine.js', target: 'usePhysicsEngine.js::usePhysicsEngine()', type: 'hierarchy' },
+    { id: 'e-f15', source: 'frontend/src/hooks/usePhysicsEngine.js', target: 'usePhysicsEngine.js::emitNextNode()', type: 'hierarchy' },
+    { id: 'e-f16', source: 'frontend/src/hooks/useWorkspace.js', target: 'useWorkspace.js::syncNodeMove()', type: 'hierarchy' },
+    { id: 'e-f17', source: 'frontend/src/App.jsx', target: 'App.jsx::initWorkspace()', type: 'hierarchy' },
 
     // Neural Call Edges (Purple Conduits)
     { id: 'call-1', source: 'backend/api/websocket_router.py', target: 'backend/ml/analyzer.py', type: 'call' },
     { id: 'call-2', source: 'backend/ml/analyzer.py', target: 'backend/core/parser.py', type: 'call' },
-    { id: 'call-3', source: 'backend/ai/agent_supervisor.py', target: 'backend/core/mutator.py', type: 'call' },
-    { id: 'call-4', source: 'frontend/canvas/PixiSpatialEngine.jsx', target: 'frontend/hooks/usePhysicsEngine.js', type: 'call' },
-    { id: 'call-5', source: 'frontend/hooks/usePhysicsEngine.js', target: 'frontend/config/engineConfig.js', type: 'call' },
-    { id: 'call-6', source: 'frontend/layout/CodeEditor.jsx', target: 'backend/core/parser.py', type: 'call' },
+    { id: 'call-3', source: 'backend/services/ai_service.py', target: 'backend/core/mutator.py', type: 'call' },
+    { id: 'call-4', source: 'frontend/src/App.jsx', target: 'frontend/src/components/CodeEditor.jsx', type: 'call' },
+    { id: 'call-5', source: 'frontend/src/components/CodeEditor.jsx', target: 'frontend/src/hooks/useWorkspace.js', type: 'call' },
+    { id: 'call-6', source: 'frontend/src/hooks/usePhysicsEngine.js', target: 'frontend/src/hooks/useWorkspace.js', type: 'call' },
 
     // Cross-Stack Laser Bridges (Cyan High-Speed Conduits with Dual Traveling Photons)
-    { id: 'bridge-1', source: 'frontend/hooks/useWorkspace.js', target: 'backend/api/websocket_router.py', type: 'network_bridge' },
-    { id: 'bridge-2', source: 'frontend/ai/AiChatView.jsx', target: 'backend/services/ai_service.py', type: 'network_bridge' },
-    { id: 'bridge-3', source: 'frontend/layout/TerminalPanel.jsx', target: 'backend/services/terminal_service.py', type: 'network_bridge' }
+    { id: 'bridge-1', source: 'frontend/src/hooks/useWorkspace.js', target: 'backend/api/websocket_router.py', type: 'network_bridge' },
+    { id: 'bridge-2', source: 'frontend/src/components/TerminalPanel.jsx', target: 'backend/services/terminal_service.py', type: 'network_bridge' },
+    { id: 'bridge-3', source: 'frontend/src/App.jsx', target: 'backend/services/ai_service.py', type: 'network_bridge' }
   ]
 };
 
@@ -414,17 +375,14 @@ export default function NeuronHeroEngine() {
   const [openFolders, setOpenFolders] = useState({
     neuron: true,
     backend: true,
-    backendCore: false,
-    backendMl: false,
-    backendAi: false,
     backendApi: false,
+    backendCore: true,
+    backendMl: false,
     backendServices: false,
     frontend: true,
-    frontendCanvas: true,
-    frontendLayout: false,
-    frontendAi: false,
-    frontendHooks: false,
-    frontendConfig: false
+    frontendSrc: true,
+    frontendComponents: true,
+    frontendHooks: false
   });
 
   const [showLabels, setShowLabels] = useState(true);
@@ -1728,6 +1686,24 @@ export default function NeuronHeroEngine() {
                 </div>
                 {openFolders.backend && (
                   <div className="pl-6 space-y-0.5">
+                    {/* api */}
+                    <div 
+                      onClick={() => setOpenFolders(p => ({ ...p, backendApi: !p.backendApi }))}
+                      className="px-2 py-0.5 flex items-center gap-1.5 hover:bg-white/[0.04] cursor-pointer"
+                    >
+                      {openFolders.backendApi ? <ChevronDown size={11} className="text-slate-500 shrink-0" /> : <ChevronRight size={11} className="text-slate-500 shrink-0" />}
+                      <Folder size={12} style={{ color: activeTheme.folderIcon }} className="shrink-0" />
+                      <span className="truncate">api</span>
+                    </div>
+                    {openFolders.backendApi && (
+                      <div className="pl-4 space-y-0.5">
+                        <div onClick={() => setActiveDocTab('spatial')} className="px-2 py-0.5 flex items-center gap-1.5 text-slate-400 hover:bg-white/[0.04] cursor-pointer rounded">
+                          <FileCode2 size={12} className="text-blue-400" />
+                          <span className="truncate">websocket_router.py</span>
+                        </div>
+                      </div>
+                    )}
+
                     {/* core */}
                     <div 
                       onClick={() => setOpenFolders(p => ({ ...p, backendCore: !p.backendCore }))}
@@ -1746,9 +1722,13 @@ export default function NeuronHeroEngine() {
                           </div>
                           <span className="text-[10px] text-rose-500 font-bold pr-1">!</span>
                         </div>
-                        <div className="px-2 py-0.5 flex items-center gap-1.5 text-slate-400 hover:bg-white/[0.04] cursor-pointer rounded">
+                        <div onClick={() => setActiveDocTab('parser')} className="px-2 py-0.5 flex items-center gap-1.5 text-slate-400 hover:bg-white/[0.04] cursor-pointer rounded">
                           <FileCode2 size={12} className="text-slate-500" />
                           <span className="truncate">mutator.py</span>
+                        </div>
+                        <div onClick={() => setActiveDocTab('parser')} className="px-2 py-0.5 flex items-center gap-1.5 text-slate-400 hover:bg-white/[0.04] cursor-pointer rounded">
+                          <FileCode2 size={12} className="text-slate-500" />
+                          <span className="truncate">state.py</span>
                         </div>
                       </div>
                     )}
@@ -1764,7 +1744,7 @@ export default function NeuronHeroEngine() {
                     </div>
                     {openFolders.backendMl && (
                       <div className="pl-4 space-y-0.5">
-                        <div className="px-2 py-0.5 flex items-center justify-between hover:bg-white/[0.04] cursor-pointer rounded">
+                        <div onClick={() => setActiveDocTab('analyzer')} className="px-2 py-0.5 flex items-center justify-between hover:bg-white/[0.04] cursor-pointer rounded">
                           <div className="flex items-center gap-1.5 truncate">
                             <FileCode2 size={12} className="text-purple-400" />
                             <span className="truncate text-slate-300">analyzer.py</span>
@@ -1773,6 +1753,33 @@ export default function NeuronHeroEngine() {
                         </div>
                       </div>
                     )}
+
+                    {/* services */}
+                    <div 
+                      onClick={() => setOpenFolders(p => ({ ...p, backendServices: !p.backendServices }))}
+                      className="px-2 py-0.5 flex items-center gap-1.5 hover:bg-white/[0.04] cursor-pointer"
+                    >
+                      {openFolders.backendServices ? <ChevronDown size={11} className="text-slate-500 shrink-0" /> : <ChevronRight size={11} className="text-slate-500 shrink-0" />}
+                      <Folder size={12} style={{ color: activeTheme.folderIcon }} className="shrink-0" />
+                      <span className="truncate">services</span>
+                    </div>
+                    {openFolders.backendServices && (
+                      <div className="pl-4 space-y-0.5">
+                        <div className="px-2 py-0.5 flex items-center gap-1.5 text-slate-400 hover:bg-white/[0.04] cursor-pointer rounded">
+                          <FileCode2 size={12} className="text-emerald-400" />
+                          <span className="truncate">ai_service.py</span>
+                        </div>
+                        <div className="px-2 py-0.5 flex items-center gap-1.5 text-slate-400 hover:bg-white/[0.04] cursor-pointer rounded">
+                          <FileCode2 size={12} className="text-emerald-400" />
+                          <span className="truncate">terminal_service.py</span>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="px-2 py-0.5 flex items-center gap-1.5 text-slate-400 hover:bg-white/[0.04] cursor-pointer rounded">
+                      <FileCode2 size={12} className="text-slate-500" />
+                      <span className="truncate">main.py</span>
+                    </div>
                   </div>
                 )}
 
@@ -1787,49 +1794,97 @@ export default function NeuronHeroEngine() {
                 </div>
                 {openFolders.frontend && (
                   <div className="pl-6 space-y-0.5">
-                    {/* canvas */}
+                    {/* src */}
                     <div 
-                      onClick={() => setOpenFolders(p => ({ ...p, frontendCanvas: !p.frontendCanvas }))}
+                      onClick={() => setOpenFolders(p => ({ ...p, frontendSrc: !p.frontendSrc }))}
                       className="px-2 py-0.5 flex items-center gap-1.5 hover:bg-white/[0.04] cursor-pointer"
                     >
-                      {openFolders.frontendCanvas ? <ChevronDown size={11} className="text-slate-500 shrink-0" /> : <ChevronRight size={11} className="text-slate-500 shrink-0" />}
+                      {openFolders.frontendSrc ? <ChevronDown size={11} className="text-slate-500 shrink-0" /> : <ChevronRight size={11} className="text-slate-500 shrink-0" />}
                       <Folder size={12} style={{ color: activeTheme.folderIcon }} className="shrink-0" />
-                      <span className="truncate">canvas</span>
+                      <span className="truncate">src</span>
                     </div>
-                    {openFolders.frontendCanvas && (
+                    {openFolders.frontendSrc && (
                       <div className="pl-4 space-y-0.5">
+                        {/* components */}
                         <div 
-                          onClick={() => setActiveDocTab('spatial')}
-                          className={`px-2 py-0.5 flex items-center justify-between cursor-pointer rounded ${activeDocTab === 'spatial' ? 'bg-blue-600/20 text-blue-400 font-medium' : 'hover:bg-white/[0.04] text-slate-300'}`}
+                          onClick={() => setOpenFolders(p => ({ ...p, frontendComponents: !p.frontendComponents }))}
+                          className="px-2 py-0.5 flex items-center gap-1.5 hover:bg-white/[0.04] cursor-pointer"
+                        >
+                          {openFolders.frontendComponents ? <ChevronDown size={11} className="text-slate-500 shrink-0" /> : <ChevronRight size={11} className="text-slate-500 shrink-0" />}
+                          <Folder size={12} style={{ color: activeTheme.folderIcon }} className="shrink-0" />
+                          <span className="truncate">components</span>
+                        </div>
+                        {openFolders.frontendComponents && (
+                          <div className="pl-4 space-y-0.5">
+                            <div className="px-2 py-0.5 flex items-center gap-1.5 text-slate-400 hover:bg-white/[0.04] cursor-pointer rounded">
+                              <FileCode2 size={12} className="text-yellow-400" />
+                              <span className="truncate">CodeEditor.jsx</span>
+                            </div>
+                            <div className="px-2 py-0.5 flex items-center gap-1.5 text-slate-400 hover:bg-white/[0.04] cursor-pointer rounded">
+                              <FileCode2 size={12} className="text-yellow-400" />
+                              <span className="truncate">TerminalPanel.jsx</span>
+                            </div>
+                            <div className="px-2 py-0.5 flex items-center gap-1.5 text-slate-400 hover:bg-white/[0.04] cursor-pointer rounded">
+                              <FileCode2 size={12} className="text-yellow-400" />
+                              <span className="truncate">TopBar.jsx</span>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* hooks */}
+                        <div 
+                          onClick={() => setOpenFolders(p => ({ ...p, frontendHooks: !p.frontendHooks }))}
+                          className="px-2 py-0.5 flex items-center gap-1.5 hover:bg-white/[0.04] cursor-pointer"
+                        >
+                          {openFolders.frontendHooks ? <ChevronDown size={11} className="text-slate-500 shrink-0" /> : <ChevronRight size={11} className="text-slate-500 shrink-0" />}
+                          <Folder size={12} style={{ color: activeTheme.folderIcon }} className="shrink-0" />
+                          <span className="truncate">hooks</span>
+                        </div>
+                        {openFolders.frontendHooks && (
+                          <div className="pl-4 space-y-0.5">
+                            <div className="px-2 py-0.5 flex items-center gap-1.5 text-slate-400 hover:bg-white/[0.04] cursor-pointer rounded">
+                              <FileCode2 size={12} className="text-orange-400" />
+                              <span className="truncate">usePhysicsEngine.js</span>
+                            </div>
+                            <div className="px-2 py-0.5 flex items-center gap-1.5 text-slate-400 hover:bg-white/[0.04] cursor-pointer rounded">
+                              <FileCode2 size={12} className="text-orange-400" />
+                              <span className="truncate">useWorkspace.js</span>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* App.jsx */}
+                        <div 
+                          onClick={() => setActiveDocTab('app')}
+                          className={`px-2 py-0.5 flex items-center justify-between cursor-pointer rounded ${activeDocTab === 'app' ? 'bg-blue-600/20 text-blue-400 font-medium' : 'hover:bg-white/[0.04] text-slate-300'}`}
                         >
                           <div className="flex items-center gap-1.5 truncate">
-                            <FileCode2 size={12} className={activeDocTab === 'spatial' ? 'text-blue-400' : 'text-pink-400'} />
-                            <span className="truncate">PixiSpatialEngine.jsx</span>
+                            <FileCode2 size={12} className={activeDocTab === 'app' ? 'text-blue-400' : 'text-pink-400'} />
+                            <span className="truncate">App.jsx</span>
                           </div>
                           <span className="text-[10px] text-emerald-500 font-bold pr-1">Live</span>
+                        </div>
+
+                        {/* main.jsx */}
+                        <div className="px-2 py-0.5 flex items-center gap-1.5 text-slate-400 hover:bg-white/[0.04] cursor-pointer rounded">
+                          <FileCode2 size={12} className="text-pink-400" />
+                          <span className="truncate">main.jsx</span>
                         </div>
                       </div>
                     )}
 
-                    {/* hooks */}
-                    <div 
-                      onClick={() => setOpenFolders(p => ({ ...p, frontendHooks: !p.frontendHooks }))}
-                      className="px-2 py-0.5 flex items-center gap-1.5 hover:bg-white/[0.04] cursor-pointer"
-                    >
-                      {openFolders.frontendHooks ? <ChevronDown size={11} className="text-slate-500 shrink-0" /> : <ChevronRight size={11} className="text-slate-500 shrink-0" />}
-                      <Folder size={12} style={{ color: activeTheme.folderIcon }} className="shrink-0" />
-                      <span className="truncate">hooks</span>
+                    <div className="px-2 py-0.5 flex items-center gap-1.5 text-slate-400 hover:bg-white/[0.04] cursor-pointer rounded">
+                      <FileCode2 size={12} className="text-slate-500" />
+                      <span className="truncate">package.json</span>
                     </div>
-                    {openFolders.frontendHooks && (
-                      <div className="pl-4 space-y-0.5">
-                        <div className="px-2 py-0.5 flex items-center gap-1.5 text-slate-400 hover:bg-white/[0.04] cursor-pointer rounded">
-                          <FileCode2 size={12} className="text-orange-400" />
-                          <span className="truncate">usePhysicsEngine.js</span>
-                        </div>
-                      </div>
-                    )}
                   </div>
                 )}
+
+                {/* README.md */}
+                <div className="px-4 py-0.5 flex items-center gap-1.5 text-slate-400 hover:bg-white/[0.04] cursor-pointer rounded">
+                  <FileCode2 size={12} className="text-slate-500 shrink-0" />
+                  <span className="truncate">README.md</span>
+                </div>
               </div>
             )}
           </div>
@@ -1881,6 +1936,40 @@ export default function NeuronHeroEngine() {
               >
                 <FileCode2 size={13} style={{ color: activeDocTab === 'parser' ? activeTheme.accent : undefined }} />
                 <span>parser.py</span>
+              </button>
+
+              {/* App.jsx Tab */}
+              <button
+                onClick={() => setActiveDocTab('app')}
+                className={`h-full px-3 flex items-center gap-2 text-[11px] font-mono font-medium border-r transition-colors cursor-pointer ${
+                  activeDocTab === 'app' ? 'font-semibold border-t-2' : 'hover:text-white'
+                }`}
+                style={{
+                  backgroundColor: activeDocTab === 'app' ? activeTheme.background : activeTheme.secondary,
+                  borderColor: activeTheme.border,
+                  borderTopColor: activeDocTab === 'app' ? activeTheme.accent : 'transparent',
+                  color: activeDocTab === 'app' ? activeTheme.textBright : activeTheme.textSecondary
+                }}
+              >
+                <FileCode2 size={13} style={{ color: activeDocTab === 'app' ? activeTheme.accent : undefined }} />
+                <span>App.jsx</span>
+              </button>
+
+              {/* analyzer.py Tab */}
+              <button
+                onClick={() => setActiveDocTab('analyzer')}
+                className={`h-full px-3 flex items-center gap-2 text-[11px] font-mono font-medium border-r transition-colors cursor-pointer ${
+                  activeDocTab === 'analyzer' ? 'font-semibold border-t-2' : 'hover:text-white'
+                }`}
+                style={{
+                  backgroundColor: activeDocTab === 'analyzer' ? activeTheme.background : activeTheme.secondary,
+                  borderColor: activeTheme.border,
+                  borderTopColor: activeDocTab === 'analyzer' ? activeTheme.accent : 'transparent',
+                  color: activeDocTab === 'analyzer' ? activeTheme.textBright : activeTheme.textSecondary
+                }}
+              >
+                <FileCode2 size={13} style={{ color: activeDocTab === 'analyzer' ? activeTheme.accent : undefined }} />
+                <span>analyzer.py</span>
               </button>
             </div>
 
@@ -2012,6 +2101,69 @@ export default function NeuronHeroEngine() {
                   </div>
                 )}
               </>
+            ) : activeDocTab === 'app' ? (
+              /* Code Editor View for App.jsx */
+              <div 
+                className="w-full h-full p-4 overflow-y-auto font-mono text-xs select-text"
+                style={{
+                  backgroundColor: activeTheme.background,
+                  color: activeTheme.textPrimary
+                }}
+              >
+                <div className="space-y-1 leading-relaxed">
+                  <p className="text-slate-500">// frontend/src/App.jsx - Spatial IDE Entry & WebGPU Root</p>
+                  <p><span className="text-purple-400">import</span> React, &#123; useState, useEffect, useRef &#125; <span className="text-purple-400">from</span> <span className="text-emerald-400">'react'</span>;</p>
+                  <p><span className="text-purple-400">import</span> PixiSpatialEngine <span className="text-purple-400">from</span> <span className="text-emerald-400">'./components/canvas/PixiSpatialEngine'</span>;</p>
+                  <p><span className="text-purple-400">import</span> &#123; useWorkspace &#125; <span className="text-purple-400">from</span> <span className="text-emerald-400">'./hooks/useWorkspace'</span>;</p>
+                  <p><span className="text-purple-400">import</span> &#123; usePhysicsEngine &#125; <span className="text-purple-400">from</span> <span className="text-emerald-400">'./hooks/usePhysicsEngine'</span>;</p>
+                  <br />
+                  <p><span className="text-blue-400">export default function</span> <span className="text-amber-400">NeuronApp</span>() &#123;</p>
+                  <p className="pl-4 text-slate-300">const &#123; workspace, activeGraph, syncRefactor &#125; = <span className="text-blue-400">useWorkspace</span>();</p>
+                  <p className="pl-4 text-slate-300">const &#123; physicsWorld, emitNode &#125; = <span className="text-blue-400">usePhysicsEngine</span>();</p>
+                  <br />
+                  <p className="pl-4"><span className="text-blue-400">useEffect</span>(() =&gt; &#123;</p>
+                  <p className="pl-8 text-slate-400">console.log(<span className="text-emerald-400">'[Neuron] Spatial IDE initialized with WebGPU physics acceleration.'</span>);</p>
+                  <p className="pl-4 text-slate-300">&#125;, []);</p>
+                  <br />
+                  <p className="pl-4 text-purple-400">return (</p>
+                  <p className="pl-8 text-slate-300">&lt;<span className="text-blue-400">div</span> <span className="text-amber-300">className</span>=<span className="text-emerald-400">"neuron-spatial-ide flex h-screen w-screen"</span>&gt;</p>
+                  <p className="pl-12 text-slate-300">&lt;<span className="text-blue-400">PixiSpatialEngine</span> <span className="text-amber-300">graph</span>=&#123;activeGraph&#125; /&gt;</p>
+                  <p className="pl-8 text-slate-300">&lt;/<span className="text-blue-400">div</span>&gt;</p>
+                  <p className="pl-4 text-purple-400">);</p>
+                  <p className="text-slate-300">&#125;</p>
+                </div>
+              </div>
+            ) : activeDocTab === 'analyzer' ? (
+              /* Code Editor View for analyzer.py */
+              <div 
+                className="w-full h-full p-4 overflow-y-auto font-mono text-xs select-text"
+                style={{
+                  backgroundColor: activeTheme.background,
+                  color: activeTheme.textPrimary
+                }}
+              >
+                <div className="space-y-1 leading-relaxed">
+                  <p className="text-slate-500"># backend/ml/analyzer.py - Louvain Modularity & Centrality</p>
+                  <p><span className="text-purple-400">import</span> networkx <span className="text-purple-400">as</span> nx</p>
+                  <p><span className="text-purple-400">from</span> networkx.algorithms.community <span className="text-purple-400">import</span> louvain_communities</p>
+                  <p><span className="text-purple-400">import</span> numpy <span className="text-purple-400">as</span> np</p>
+                  <br />
+                  <p><span className="text-blue-400">def</span> <span className="text-amber-400">analyze_graph_ml</span>(nodes: list, edges: list) -&gt; dict:</p>
+                  <p className="pl-4 text-slate-300">G = nx.Graph()</p>
+                  <p className="pl-4 text-slate-300">DiG = nx.DiGraph()</p>
+                  <p className="pl-4 text-slate-500"># Build dual graph topology with semantic edge weights</p>
+                  <p className="pl-4"><span className="text-purple-400">for</span> e <span className="text-purple-400">in</span> edges:</p>
+                  <p className="pl-8 text-slate-300">w = 60.0 <span className="text-purple-400">if</span> e.get(<span className="text-emerald-400">"type"</span>) == <span className="text-emerald-400">"network_bridge"</span> <span className="text-purple-400">else</span> 40.0</p>
+                  <p className="pl-8 text-slate-300">G.add_edge(e[<span className="text-emerald-400">"source"</span>], e[<span className="text-emerald-400">"target"</span>], weight=w)</p>
+                  <p className="pl-8 text-slate-300">DiG.add_edge(e[<span className="text-emerald-400">"source"</span>], e[<span className="text-emerald-400">"target"</span>], weight=w)</p>
+                  <br />
+                  <p className="pl-4 text-slate-500"># Adaptive Louvain Modularity Clustering</p>
+                  <p className="pl-4 text-slate-300">communities = louvain_communities(G, weight=<span className="text-emerald-400">'weight'</span>, resolution=1.05, seed=42)</p>
+                  <p className="pl-4 text-slate-300">pagerank = nx.pagerank(DiG, alpha=0.85, weight=<span className="text-emerald-400">'weight'</span>)</p>
+                  <p className="pl-4 text-slate-300">betweenness = nx.betweenness_centrality(G, weight=<span className="text-emerald-400">'weight'</span>)</p>
+                  <p className="pl-4 text-purple-400">return &#123;<span className="text-emerald-400">"communities"</span>: communities, <span className="text-emerald-400">"pagerank"</span>: pagerank&#125;</p>
+                </div>
+              </div>
             ) : (
               /* Code Editor View for parser.py */
               <div 
