@@ -85,7 +85,7 @@ export default function Home() {
             {/* Utilitarian CTA Button */}
             <div id="download-hero" className="flex flex-col items-center gap-3 w-full max-w-md pointer-events-auto">
               <a 
-                href="/Neuron-Setup.exe"
+                href="https://github.com/UnityNimit/Neuron/releases/download/v1.0.0/Neuron_1.0.0_x64-setup.exe"
                 download="Neuron-Setup.exe"
                 className="h-8 px-4 rounded-lg bg-white text-black font-semibold text-xs hover:bg-slate-100 transition-all inline-flex items-center justify-center cursor-pointer active:scale-[0.98] shadow-sm"
               >
@@ -160,7 +160,7 @@ export default function Home() {
               />
               <div className="flex items-center justify-center">
                 <a 
-                  href="/Neuron-Setup.exe"
+                  href="https://github.com/UnityNimit/Neuron/releases/download/v1.0.0/Neuron_1.0.0_x64-setup.exe"
                   download="Neuron-Setup.exe"
                   className="h-8 px-4 rounded-lg bg-white text-black font-semibold text-xs hover:bg-slate-100 transition-all inline-flex items-center justify-center cursor-pointer active:scale-[0.98] shadow-sm"
                 >

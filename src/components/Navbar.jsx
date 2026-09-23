@@ -120,7 +120,7 @@ export default function Navbar() {
           </a>
           
           <a 
-            href="/Neuron-Setup.exe"
+            href="https://github.com/UnityNimit/Neuron/releases/download/v1.0.0/Neuron_1.0.0_x64-setup.exe"
             download="Neuron-Setup.exe"
             className="h-8 px-3 sm:px-4 rounded-lg bg-white text-black text-xs font-semibold hover:bg-slate-100 header-download-glow inline-flex items-center justify-center cursor-pointer transition-all active:scale-[0.98]"
           >
@@ -131,7 +131,7 @@ export default function Navbar() {
         {/* Mobile-only Menu Button (< 520px) */}
         <div className="min-[520px]:hidden flex items-center gap-2">
           <a 
-            href="/Neuron-Setup.exe"
+            href="https://github.com/UnityNimit/Neuron/releases/download/v1.0.0/Neuron_1.0.0_x64-setup.exe"
             download="Neuron-Setup.exe"
             className="h-7 px-2.5 rounded-md bg-white text-black text-xs font-semibold header-download-glow inline-flex items-center justify-center"
           >

@@ -33,7 +33,7 @@ export default function Downloads() {
           </div>
 
           <a
-            href="/Neuron-Setup.exe"
+            href="https://github.com/UnityNimit/Neuron/releases/download/v1.0.0/Neuron_1.0.0_x64-setup.exe"
             download="Neuron-Setup.exe"
             className="h-8 px-4 rounded-lg bg-white text-black font-semibold text-xs hover:bg-slate-100 transition-all inline-flex items-center justify-center self-start sm:self-auto cursor-pointer active:scale-[0.98] shadow-sm"
           >
