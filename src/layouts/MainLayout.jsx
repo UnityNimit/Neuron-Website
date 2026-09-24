@@ -1,21 +1,33 @@
 import Navbar from '../components/Navbar';
 import { DocsSearchProvider } from '../context/DocsSearchContext';
+import { ThemeProvider } from '../context/ThemeContext';
+import { LanguageProvider } from '../context/LanguageContext';
 
 export default function MainLayout({ children }) {
   return (
-    <DocsSearchProvider>
-      <div className="min-h-screen bg-[#050505] text-[#EDEDED] font-sans relative flex flex-col">
-        {/* Global Background Grid Accent */}
-        <div className="fixed inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none z-0" />
+    <ThemeProvider>
+      <LanguageProvider>
+        <DocsSearchProvider>
+          <div className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans relative flex flex-col transition-colors duration-200">
+            {/* Global Background Grid Accent */}
+            <div 
+              className="fixed inset-0 pointer-events-none z-0 opacity-80"
+              style={{
+                backgroundImage: 'linear-gradient(to right, var(--grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px)',
+                backgroundSize: '32px 32px'
+              }}
+            />
 
-        {/* Navigation */}
-        <Navbar />
+            {/* Navigation */}
+            <Navbar />
 
-        {/* Content Container */}
-        <div className="relative z-10 flex-1 flex flex-col">
-          {children}
-        </div>
-      </div>
-    </DocsSearchProvider>
+            {/* Content Container */}
+            <div className="relative z-10 flex-1 flex flex-col">
+              {children}
+            </div>
+          </div>
+        </DocsSearchProvider>
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }

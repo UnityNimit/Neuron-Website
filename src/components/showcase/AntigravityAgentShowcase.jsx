@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Sparkles, ChevronDown, ChevronRight, Check, Copy } from 'lucide-react';
 import { ScrollWriteHeading } from '../ScrollReveal';
+import { useLanguage } from '../../context/LanguageContext';
 
 const INITIAL_MESSAGES = [
   {
@@ -28,6 +29,7 @@ const DOWNLOAD_FULL_TEXT = "To interact with your codebase, download Neuron";
 const PREFIX = "To interact with your codebase, ";
 
 export default function AntigravityAgentShowcase() {
+  const { t } = useLanguage();
   const [messages, setMessages] = useState(INITIAL_MESSAGES);
   const [inputValue, setInputValue] = useState('');
   const [isTypingAnimation, setIsTypingAnimation] = useState(false);
@@ -263,9 +265,9 @@ export default function AntigravityAgentShowcase() {
         {/* LEFT COLUMN: Simplified AI integration copy */}
         <div className="lg:col-span-5 text-left flex flex-col justify-center">
           <ScrollWriteHeading
-            text="Integrate AI with your codebase"
+            text={t('showcase.agentTitle', 'Integrate AI with your codebase')}
             as="h2"
-            className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white mb-2 leading-snug"
+            className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[var(--text-primary)] mb-2 leading-snug"
           />
         </div>
 

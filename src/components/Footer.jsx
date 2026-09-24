@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { X, ShieldCheck, FileText, Lock, Database } from 'lucide-react';
 import ThemeLangControls from './ThemeLangControls';
+import { useLanguage } from '../context/LanguageContext';
 
 const GithubIcon = ({ size = 14 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
@@ -39,56 +40,9 @@ const InstagramIcon = ({ size = 14 }) => (
   </svg>
 );
 
-const LEGAL_DOCS = {
-  tos: {
-    title: 'Terms of Service',
-    icon: FileText,
-    content: `By downloading, installing, or browsing Neuron, you agree to comply with and be bound by these Terms of Service. Neuron is distributed as a completely open-source desktop software under the permissive MIT License.
-
-1. Permissive License Grant: Subject to the MIT License, you are granted full permission to run, inspect, modify, fork, and distribute Neuron without license fees or subscription paywalls.
-2. "As Is" Warranty Disclaimer: The software and website are provided on an "as is" and "as available" basis without warranties of any kind, whether express, statutory, or implied.
-3. User Workstations: You retain 100% ownership and control over all code repositories, abstract syntax trees, and computational resources executed locally through Neuron.`
-  },
-  aup: {
-    title: 'Acceptable Use Policy',
-    icon: ShieldCheck,
-    content: `Neuron is engineered exclusively for developers, researchers, and engineers building graph machine learning and spatial software architectures.
-
-1. Ethical Code Analysis: You may not use Neuron or its local AST parser engines to reverse-engineer, inject malware into, or exploit vulnerable third-party codebases without explicit authorization.
-2. Network Integrity: Local IPC sockets (127.0.0.1) must not be bridged into public unauthenticated networks or utilized for denial-of-service simulations.
-3. Open-Source Respect: Redistribution of Neuron modifications must retain existing copyright notices and MIT license declarations.`
-  },
-  privacy: {
-    title: 'Privacy Policy',
-    icon: Lock,
-    content: `At Neuron, privacy is not merely a policy—it is our core architectural invariant. Neuron operates on an uncompromising local-first execution model.
-
-1. Zero Telemetry: We do not log, track, store, or transmit your keystrokes, opened projects, terminal sessions, or file paths.
-2. Zero Cloud Code Ingestion: Abstract syntax tree parsing, D3 force-directed relaxation, and vector embeddings execute 100% on your workstation's CPU and GPU.
-3. No Third-Party Trackers: Our marketing website contains zero tracking pixels, intrusive analytics scripts, or data-broker conduits.`
-  },
-  data: {
-    title: 'Data Use',
-    icon: Database,
-    content: `Understanding how your codebase data is processed by the Neuron engine:
-
-1. In-Memory AST Buffers: Source files are parsed via local Tree-Sitter daemons into transient memory buffers. When you close a project, AST partitions are cleanly freed.
-2. Local SQLite Caches: Topological cluster partitions and project metadata are saved in a local SQLite file within your user profile directory. No data leaves your machine.
-3. Bring Your Own Key (BYOK): External LLM completions occur only when you connect an API key or point to local inference engines (e.g. Ollama). All transmissions go directly from your machine to your chosen provider.`
-  },
-  security: {
-    title: 'Security',
-    icon: ShieldCheck,
-    content: `Neuron enforces rigorous security baselines across desktop native wrappers and local IPC daemons.
-
-1. Loopback Origin Validation: All daemon IPC channels bind strictly to 127.0.0.1 with unique session handshake tokens, preventing unauthorized browser tab access.
-2. Sandboxed Subprocesses: Native language servers and terminal sessions run strictly under your local operating system user permissions without administrative elevation.
-3. Vulnerability Reporting: We take security reports seriously. Please direct responsible disclosure inquiries directly to neuron.spatial.ide@gmail.com.`
-  }
-};
-
 export default function Footer({ className = "mt-4 sm:mt-6" }) {
   const [activeLegal, setActiveLegal] = useState(null);
+  const { t } = useLanguage();
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
@@ -96,12 +50,60 @@ export default function Footer({ className = "mt-4 sm:mt-6" }) {
     document.body.scrollTop = 0;
   };
 
+  const LEGAL_DOCS = {
+    tos: {
+      title: t('footer.tos', 'Terms of Service'),
+      icon: FileText,
+      content: `By downloading, installing, or browsing Neuron, you agree to comply with and be bound by these Terms of Service. Neuron is distributed as a completely open-source desktop software under the permissive MIT License.
+
+1. Permissive License Grant: Subject to the MIT License, you are granted full permission to run, inspect, modify, fork, and distribute Neuron without license fees or subscription paywalls.
+2. "As Is" Warranty Disclaimer: The software and website are provided on an "as is" and "as available" basis without warranties of any kind, whether express, statutory, or implied.
+3. User Workstations: You retain 100% ownership and control over all code repositories, abstract syntax trees, and computational resources executed locally through Neuron.`
+    },
+    aup: {
+      title: t('footer.aup', 'Acceptable Use Policy'),
+      icon: ShieldCheck,
+      content: `Neuron is engineered exclusively for developers, researchers, and engineers building graph machine learning and spatial software architectures.
+
+1. Ethical Code Analysis: You may not use Neuron or its local AST parser engines to reverse-engineer, inject malware into, or exploit vulnerable third-party codebases without explicit authorization.
+2. Network Integrity: Local IPC sockets (127.0.0.1) must not be bridged into public unauthenticated networks or utilized for denial-of-service simulations.
+3. Open-Source Respect: Redistribution of Neuron modifications must retain existing copyright notices and MIT license declarations.`
+    },
+    privacy: {
+      title: t('footer.privacy', 'Privacy Policy'),
+      icon: Lock,
+      content: `At Neuron, privacy is not merely a policy—it is our core architectural invariant. Neuron operates on an uncompromising local-first execution model.
+
+1. Zero Telemetry: We do not log, track, store, or transmit your keystrokes, opened projects, terminal sessions, or file paths.
+2. Zero Cloud Code Ingestion: Abstract syntax tree parsing, D3 force-directed relaxation, and vector embeddings execute 100% on your workstation's CPU and GPU.
+3. No Third-Party Trackers: Our marketing website contains zero tracking pixels, intrusive analytics scripts, or data-broker conduits.`
+    },
+    data: {
+      title: t('footer.data', 'Data Use'),
+      icon: Database,
+      content: `Understanding how your codebase data is processed by the Neuron engine:
+
+1. In-Memory AST Buffers: Source files are parsed via local Tree-Sitter daemons into transient memory buffers. When you close a project, AST partitions are cleanly freed.
+2. Local SQLite Caches: Topological cluster partitions and project metadata are saved in a local SQLite file within your user profile directory. No data leaves your machine.
+3. Bring Your Own Key (BYOK): External LLM completions occur only when you connect an API key or point to local inference engines (e.g. Ollama). All transmissions go directly from your machine to your chosen provider.`
+    },
+    security: {
+      title: t('footer.security', 'Security'),
+      icon: ShieldCheck,
+      content: `Neuron enforces rigorous security baselines across desktop native wrappers and local IPC daemons.
+
+1. Loopback Origin Validation: All daemon IPC channels bind strictly to 127.0.0.1 with unique session handshake tokens, preventing unauthorized browser tab access.
+2. Sandboxed Subprocesses: Native language servers and terminal sessions run strictly under your local operating system user permissions without administrative elevation.
+3. Vulnerability Reporting: We take security reports seriously. Please direct responsible disclosure inquiries directly to neuron.spatial.ide@gmail.com.`
+    }
+  };
+
   const openLegalModal = (key) => {
     setActiveLegal(LEGAL_DOCS[key] || null);
   };
 
   return (
-    <footer className={`border-t border-white/[0.08] bg-[#050505] pt-10 pb-8 px-6 sm:px-10 md:px-16 w-full text-xs font-sans relative z-10 text-slate-400 ${className}`}>
+    <footer className={`border-t border-[var(--border-subtle)] bg-[var(--bg-footer)] pt-10 pb-8 px-6 sm:px-10 md:px-16 w-full text-xs font-sans relative z-10 text-[var(--text-muted)] transition-colors duration-200 ${className}`}>
       
       {/* Top Grid: Brand, Navigation, Legal, Socials */}
       <div className="w-full flex flex-col lg:flex-row justify-between items-start gap-10">
@@ -110,10 +112,10 @@ export default function Footer({ className = "mt-4 sm:mt-6" }) {
         <div className="flex flex-col gap-3 max-w-sm">
           <Link to="/" onClick={scrollToTop} className="flex items-center gap-2.5 cursor-pointer">
             <img src="/logo.png" alt="Neuron" className="h-6 w-6 object-contain" />
-            <span className="font-semibold text-white tracking-wide text-sm">Neuron</span>
+            <span className="font-semibold text-[var(--text-primary)] tracking-wide text-sm">Neuron</span>
           </Link>
-          <p className="text-slate-400 text-xs leading-relaxed">
-            The high-performance 2D spatial development environment and graph topological IDE. Built from the ground up for developers navigating massive codebases.
+          <p className="text-[var(--text-secondary)] text-xs leading-relaxed">
+            {t('footer.brandDesc', 'The high-performance 2D spatial development environment and graph topological IDE. Built from the ground up for developers navigating massive codebases.')}
           </p>
         </div>
 
@@ -122,67 +124,67 @@ export default function Footer({ className = "mt-4 sm:mt-6" }) {
           
           {/* Navigation */}
           <div className="flex flex-col gap-2.5">
-            <div className="text-[11px] uppercase tracking-wider text-slate-300 font-semibold mb-1">
-              Navigation
+            <div className="text-[11px] uppercase tracking-wider text-[var(--text-primary)] font-semibold mb-1">
+              {t('footer.navigation', 'Navigation')}
             </div>
-            <Link to="/docs" onClick={scrollToTop} className="text-slate-400 hover:text-white transition-colors cursor-pointer">
-              Documentation
+            <Link to="/docs" onClick={scrollToTop} className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer">
+              {t('nav.docs', 'Documentation')}
             </Link>
-            <Link to="/versions" onClick={scrollToTop} className="text-slate-400 hover:text-white transition-colors cursor-pointer">
-              Versions
+            <Link to="/versions" onClick={scrollToTop} className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer">
+              {t('nav.versions', 'Versions')}
             </Link>
-            <Link to="/help" onClick={scrollToTop} className="text-slate-400 hover:text-white transition-colors cursor-pointer">
-              Help & Queries
+            <Link to="/help" onClick={scrollToTop} className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer">
+              {t('nav.help', 'Help')}
             </Link>
           </div>
 
-          {/* Legal Section (Requested in bottom bar / footer) */}
+          {/* Legal Section */}
           <div className="flex flex-col gap-2.5">
-            <div className="text-[11px] uppercase tracking-wider text-slate-300 font-semibold mb-1">
-              Legal
+            <div className="text-[11px] uppercase tracking-wider text-[var(--text-primary)] font-semibold mb-1">
+              {t('footer.legal', 'Legal')}
             </div>
             <button
               onClick={() => openLegalModal('tos')}
-              className="text-left text-slate-400 hover:text-white transition-colors cursor-pointer"
+              className="text-left text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
             >
-              Terms of Service
+              {t('footer.tos', 'Terms of Service')}
             </button>
             <button
               onClick={() => openLegalModal('aup')}
-              className="text-left text-slate-400 hover:text-white transition-colors cursor-pointer"
+              className="text-left text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
             >
-              Acceptable Use Policy
+              {t('footer.aup', 'Acceptable Use Policy')}
             </button>
             <button
               onClick={() => openLegalModal('privacy')}
-              className="text-left text-slate-400 hover:text-white transition-colors cursor-pointer"
+              className="text-left text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
             >
-              Privacy Policy
+              {t('footer.privacy', 'Privacy Policy')}
             </button>
             <button
               onClick={() => openLegalModal('data')}
-              className="text-left text-slate-400 hover:text-white transition-colors cursor-pointer"
+              className="text-left text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
             >
-              Data Use
+              {t('footer.data', 'Data Use')}
             </button>
             <button
               onClick={() => openLegalModal('security')}
-              className="text-left text-slate-400 hover:text-white transition-colors cursor-pointer"
+              className="text-left text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
             >
-              Security
+              {t('footer.security', 'Security')}
             </button>
           </div>
 
           {/* Socials & Community */}
           <div className="flex flex-col gap-2.5">
-            <div className="text-[11px] uppercase tracking-wider text-slate-300 font-semibold mb-1">
-              Socials
+            <div className="text-[11px] uppercase tracking-wider text-[var(--text-primary)] font-semibold mb-1">
+              {t('footer.socials', 'Socials')}
             </div>
             <a
               href="https://www.linkedin.com/in/neuron-spatial-ide"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-slate-400 hover:text-white transition-colors flex items-center gap-2"
+              className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors flex items-center gap-2"
             >
               <LinkedInIcon size={14} />
               <span>LinkedIn</span>
@@ -191,7 +193,7 @@ export default function Footer({ className = "mt-4 sm:mt-6" }) {
               href="https://x.com/SpatialIDE"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-slate-400 hover:text-white transition-colors flex items-center gap-2"
+              className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors flex items-center gap-2"
             >
               <XIcon size={13} />
               <span>X (Twitter)</span>
@@ -200,7 +202,7 @@ export default function Footer({ className = "mt-4 sm:mt-6" }) {
               href="https://www.reddit.com/user/Neuron_Spatial_IDE/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-slate-400 hover:text-white transition-colors flex items-center gap-2"
+              className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors flex items-center gap-2"
             >
               <RedditIcon size={14} />
               <span>Reddit</span>
@@ -209,7 +211,7 @@ export default function Footer({ className = "mt-4 sm:mt-6" }) {
               href="https://www.youtube.com/@Neuron-Spatial-IDE"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-slate-400 hover:text-white transition-colors flex items-center gap-2"
+              className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors flex items-center gap-2"
             >
               <YouTubeIcon size={14} />
               <span>YouTube</span>
@@ -218,7 +220,7 @@ export default function Footer({ className = "mt-4 sm:mt-6" }) {
               href="https://www.instagram.com/neuron_spatial_ide"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-slate-400 hover:text-white transition-colors flex items-center gap-2"
+              className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors flex items-center gap-2"
             >
               <InstagramIcon size={14} />
               <span>Instagram</span>
@@ -227,7 +229,7 @@ export default function Footer({ className = "mt-4 sm:mt-6" }) {
               href="https://github.com/UnityNimit/Neuron"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-slate-400 hover:text-white transition-colors flex items-center gap-2"
+              className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors flex items-center gap-2"
             >
               <GithubIcon size={14} />
               <span>GitHub</span>
@@ -239,16 +241,18 @@ export default function Footer({ className = "mt-4 sm:mt-6" }) {
       </div>
 
       {/* Bottom Bar: Professional Open-Source Note & Interactive Theme/Language Controls */}
-      <div className="mt-10 pt-6 border-t border-white/[0.08] flex flex-col lg:flex-row items-center justify-between gap-6">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 text-[11px] text-slate-500 text-center sm:text-left">
-          <span className="font-semibold text-slate-400">© 2026 Neuron.</span>
-          <span className="hidden sm:inline text-white/20">•</span>
-          <span className="text-slate-400">
-            A complete open-source project released under the MIT License. Developed for the global software engineering community.
+      <div className="mt-10 pt-6 border-t border-[var(--border-subtle)] flex flex-col lg:flex-row items-center justify-between gap-6">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 text-[11px] text-[var(--text-muted)] text-center sm:text-left">
+          <span className="font-semibold text-[var(--text-primary)]">
+            {t('footer.copyrightYear', '© 2026 Neuron.')}
+          </span>
+          <span className="hidden sm:inline text-[var(--text-muted)]">•</span>
+          <span className="text-[var(--text-secondary)]">
+            {t('footer.openSourceNote', 'A complete open-source project released under the MIT License. Developed for the global software engineering community.')}
           </span>
         </div>
 
-        {/* Exact Pixel-Perfect Theme & Language Controls */}
+        {/* Pixel-Perfect Theme & Language Controls */}
         <div className="shrink-0">
           <ThemeLangControls />
         </div>
@@ -256,21 +260,27 @@ export default function Footer({ className = "mt-4 sm:mt-6" }) {
 
       {/* Interactive Legal Document Modal */}
       {activeLegal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 animate-fadeIn">
-          <div className="bg-[#0e0f13] border border-white/[0.12] rounded-2xl w-full max-w-xl max-h-[85vh] overflow-hidden flex flex-col shadow-2xl">
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 animate-fadeIn">
+          <div 
+            className="border rounded-2xl w-full max-w-xl max-h-[85vh] overflow-hidden flex flex-col shadow-2xl transition-colors duration-200"
+            style={{
+              backgroundColor: 'var(--modal-bg)',
+              borderColor: 'var(--border-subtle)'
+            }}
+          >
             {/* Modal Header */}
-            <div className="p-5 border-b border-white/[0.08] flex items-center justify-between">
+            <div className="p-5 border-b border-[var(--border-subtle)] flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-lg bg-[#60A5FA]/10 border border-[#60A5FA]/20 flex items-center justify-center text-[#60A5FA]">
                   <activeLegal.icon size={16} />
                 </div>
-                <h3 className="text-base font-semibold text-white tracking-tight">
+                <h3 className="text-base font-semibold text-[var(--text-primary)] tracking-tight">
                   {activeLegal.title}
                 </h3>
               </div>
               <button
                 onClick={() => setActiveLegal(null)}
-                className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-white/[0.06] transition-colors cursor-pointer"
+                className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded-lg hover:bg-[var(--border-subtle)] transition-colors cursor-pointer"
                 aria-label="Close dialog"
               >
                 <X size={18} />
@@ -278,18 +288,20 @@ export default function Footer({ className = "mt-4 sm:mt-6" }) {
             </div>
 
             {/* Modal Content */}
-            <div className="p-6 overflow-y-auto text-slate-300 text-xs sm:text-sm leading-relaxed whitespace-pre-line space-y-4">
+            <div className="p-6 overflow-y-auto text-[var(--text-secondary)] text-xs sm:text-sm leading-relaxed whitespace-pre-line space-y-4">
               {activeLegal.content}
             </div>
 
             {/* Modal Footer */}
-            <div className="p-4 border-t border-white/[0.08] bg-[#090a0d] flex items-center justify-between">
-              <span className="text-[11px] text-slate-500">Neuron Open Source Governance</span>
+            <div className="p-4 border-t border-[var(--border-subtle)] bg-[var(--bg-surface)] flex items-center justify-between">
+              <span className="text-[11px] text-[var(--text-muted)]">
+                {t('footer.legalGovernance', 'Neuron Open Source Governance')}
+              </span>
               <button
                 onClick={() => setActiveLegal(null)}
-                className="h-7 px-4 rounded-lg bg-white text-black font-semibold text-xs hover:bg-slate-200 transition-colors cursor-pointer"
+                className="h-7 px-4 rounded-lg bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] font-semibold text-xs hover:opacity-90 transition-colors cursor-pointer"
               >
-                Done
+                {t('footer.doneBtn', 'Done')}
               </button>
             </div>
           </div>

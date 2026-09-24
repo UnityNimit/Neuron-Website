@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Terminal, ShieldAlert, CheckCircle2 } from 'lucide-react';
 import { ScrollWriteHeading } from '../ScrollReveal';
 import { polygonHull } from '../../utils/polygonHull';
+import { useLanguage } from '../../context/LanguageContext';
 
 // =========================================================================
 // NEURON FEATURE SHOWCASE: 3 DEDICATED LEFT/RIGHT INTERACTIVE SECTIONS
@@ -29,6 +30,7 @@ function HotspotDetectionBox() {
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
   const animFrameRef = useRef(null);
+  const { t } = useLanguage();
 
   const nodesRef = useRef([]);
   const draggedNodeRef = useRef(null);
@@ -364,24 +366,27 @@ function HotspotDetectionBox() {
       {/* Left Column: Single Heading (matching chatbot layout) */}
       <div className="lg:col-span-5 flex flex-col justify-center select-none text-left">
         <ScrollWriteHeading
-          text="Critical Hotspot Detection"
+          text={t('showcase.hotspotTitle', 'Critical Hotspot Detection')}
           as="h2"
-          className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white font-sans leading-tight"
+          className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[var(--text-primary)] font-sans leading-tight"
         />
+        <p className="text-sm sm:text-base text-[var(--text-secondary)] font-sans mt-2 tracking-normal">
+          {t('showcase.hotspotDesc', 'Real-time architectural complexity identification')}
+        </p>
       </div>
 
       {/* Right Column: Interactive Box (as big as chatbot box: h-[460px] sm:h-[480px]) */}
       <div className="lg:col-span-7 w-full">
-        <div className="w-full bg-[#08090c] border border-white/[0.08] rounded-xl overflow-hidden shadow-2xl flex flex-col h-[460px] sm:h-[480px] relative font-sans text-left">
+        <div className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl overflow-hidden shadow-2xl flex flex-col h-[460px] sm:h-[480px] relative font-sans text-left">
           {/* Header */}
-          <div className="h-9 bg-[#0e1017] border-b border-white/[0.08] px-4 flex items-center justify-between text-xs text-slate-400 select-none shrink-0">
-            <span className="text-slate-300 font-mono text-[11px] font-medium">
-              Critical Hotspot Detection
+          <div className="h-9 bg-[var(--bg-card)] border-b border-[var(--border-subtle)] px-4 flex items-center justify-between text-xs text-[var(--text-secondary)] select-none shrink-0">
+            <span className="text-[var(--text-primary)] font-mono text-[11px] font-medium">
+              {t('showcase.hotspotTitle', 'Critical Hotspot Detection')}
             </span>
             <div className="flex items-center gap-1.5 font-mono text-[11px]">
-              <span className="text-slate-500">core</span>
-              <span className="text-slate-600">/</span>
-              <span className="text-slate-300">parser.py</span>
+              <span className="text-[var(--text-muted)]">core</span>
+              <span className="text-[var(--text-muted)]">/</span>
+              <span className="text-[var(--text-primary)]">parser.py</span>
             </div>
           </div>
 
@@ -398,8 +403,8 @@ function HotspotDetectionBox() {
           </div>
 
           {/* Bottom Tray */}
-          <div className="h-20 bg-[#090b10] border-t border-white/[0.08] flex flex-col shrink-0 select-none">
-            <div className="h-6 bg-[#0c0e14] border-b border-white/[0.06] px-3 flex items-center justify-between text-[10px] font-mono text-slate-400">
+          <div className="h-20 bg-[var(--bg-card)] border-t border-[var(--border-subtle)] flex flex-col shrink-0 select-none">
+            <div className="h-6 bg-[var(--bg-surface)] border-b border-[var(--border-subtle)] px-3 flex items-center justify-between text-[10px] font-mono text-[var(--text-secondary)]">
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setActiveTab('OUTPUT')}
@@ -445,6 +450,7 @@ function InteractiveCouplingBox() {
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
   const animFrameRef = useRef(null);
+  const { t } = useLanguage();
 
   const nodesRef = useRef([]);
   const linksRef = useRef([]);
@@ -951,16 +957,16 @@ function InteractiveCouplingBox() {
     <div ref={containerRef} className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
       {/* Box on Left on desktop (order-2 on mobile, lg:order-1 on desktop) */}
       <div className="lg:col-span-7 w-full order-2 lg:order-1">
-        <div className="w-full bg-[#08090c] border border-white/[0.08] rounded-xl overflow-hidden shadow-2xl flex flex-col h-[460px] sm:h-[480px] relative font-sans text-left">
+        <div className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl overflow-hidden shadow-2xl flex flex-col h-[460px] sm:h-[480px] relative font-sans text-left">
           {/* Header */}
-          <div className="h-9 bg-[#0e1017] border-b border-white/[0.08] px-4 flex items-center justify-between text-xs text-slate-400 select-none shrink-0">
-            <span className="text-slate-300 font-mono text-[11px] font-medium">
-              Interactive Coupling
+          <div className="h-9 bg-[var(--bg-card)] border-b border-[var(--border-subtle)] px-4 flex items-center justify-between text-xs text-[var(--text-secondary)] select-none shrink-0">
+            <span className="text-[var(--text-primary)] font-mono text-[11px] font-medium">
+              {t('showcase.couplingTitle', 'Interactive Coupling')}
             </span>
             <div className="flex items-center gap-1.5 font-mono text-[11px]">
-              <span className="text-slate-500">topology</span>
-              <span className="text-slate-600">/</span>
-              <span className="text-slate-300">laser_conduits</span>
+              <span className="text-[var(--text-muted)]">topology</span>
+              <span className="text-[var(--text-muted)]">/</span>
+              <span className="text-[var(--text-primary)]">laser_conduits</span>
             </div>
           </div>
 
@@ -984,8 +990,8 @@ function InteractiveCouplingBox() {
           </div>
 
           {/* Bottom Tray */}
-          <div className="h-20 bg-[#090b10] border-t border-white/[0.08] flex flex-col shrink-0 select-none">
-            <div className="h-6 bg-[#0c0e14] border-b border-white/[0.06] px-3 flex items-center justify-between text-[10px] font-mono text-slate-400">
+          <div className="h-20 bg-[var(--bg-card)] border-t border-[var(--border-subtle)] flex flex-col shrink-0 select-none">
+            <div className="h-6 bg-[var(--bg-surface)] border-b border-[var(--border-subtle)] px-3 flex items-center justify-between text-[10px] font-mono text-[var(--text-secondary)]">
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setActiveTab('OUTPUT')}
@@ -1021,10 +1027,13 @@ function InteractiveCouplingBox() {
       {/* Heading on Right on desktop (order-1 on mobile, lg:order-2 on desktop) */}
       <div className="lg:col-span-5 flex flex-col justify-center select-none text-left order-1 lg:order-2">
         <ScrollWriteHeading
-          text="Interactive Coupling"
+          text={t('showcase.couplingTitle', 'Interactive Coupling')}
           as="h2"
-          className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white font-sans leading-tight"
+          className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[var(--text-primary)] font-sans leading-tight"
         />
+        <p className="text-sm sm:text-base text-[var(--text-secondary)] font-sans mt-2 tracking-normal">
+          {t('showcase.couplingDesc', 'Visual drag-and-drop structural cross-linking')}
+        </p>
       </div>
     </div>
   );
@@ -1161,6 +1170,7 @@ function DeepCodeInspectionBox() {
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
   const animFrameRef = useRef(null);
+  const { t } = useLanguage();
 
   const focusedIdRef = useRef('parser');
   const userClickedRef = useRef(false);
@@ -1522,30 +1532,30 @@ function DeepCodeInspectionBox() {
 
   return (
     <div ref={containerRef} className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
-      {/* Left Column: Heading with AI Summary */}
+      {/* Left Column: Heading */}
       <div className="lg:col-span-5 flex flex-col justify-center select-none text-left">
         <ScrollWriteHeading
-          text="Deep Code Inspection"
+          text={t('showcase.inspectionTitle', 'Deep Code Inspection')}
           as="h2"
-          className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white font-sans leading-tight"
+          className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[var(--text-primary)] font-sans leading-tight"
         />
-        <p className="text-sm sm:text-base text-slate-400 font-sans mt-2 tracking-normal">
-          Interactive AST Topology & ML Telemetry
+        <p className="text-sm sm:text-base text-[var(--text-secondary)] font-sans mt-2 tracking-normal">
+          {t('showcase.inspectionDesc', 'High-precision AST symbol analysis')}
         </p>
       </div>
 
       {/* Right Column: Interactive Box */}
       <div className="lg:col-span-7 w-full">
-        <div className="w-full bg-[#08090c] border border-white/[0.08] rounded-xl overflow-hidden shadow-2xl flex flex-col h-[460px] sm:h-[480px] relative font-sans text-left">
+        <div className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl overflow-hidden shadow-2xl flex flex-col h-[460px] sm:h-[480px] relative font-sans text-left">
           {/* Header */}
-          <div className="h-9 bg-[#0e1017] border-b border-white/[0.08] px-4 flex items-center justify-between text-xs text-slate-400 select-none shrink-0">
-            <span className="text-slate-300 font-mono text-[11px] font-medium">
-              Deep Code Inspection: ML Telemetry
+          <div className="h-9 bg-[var(--bg-card)] border-b border-[var(--border-subtle)] px-4 flex items-center justify-between text-xs text-[var(--text-secondary)] select-none shrink-0">
+            <span className="text-[var(--text-primary)] font-mono text-[11px] font-medium">
+              {t('showcase.inspectionTitle', 'Deep Code Inspection')}
             </span>
             <div className="flex items-center gap-1.5 font-mono text-[11px]">
-              <span className="text-slate-500">core</span>
-              <span className="text-slate-600">/</span>
-              <span className="text-slate-300">{activeFile}</span>
+              <span className="text-[var(--text-muted)]">core</span>
+              <span className="text-[var(--text-muted)]">/</span>
+              <span className="text-[var(--text-primary)]">{activeFile}</span>
             </div>
           </div>
 
@@ -1565,8 +1575,8 @@ function DeepCodeInspectionBox() {
           </div>
 
           {/* Bottom Tray */}
-          <div className="h-20 bg-[#090b10] border-t border-white/[0.08] flex flex-col shrink-0 select-none">
-            <div className="h-6 bg-[#0c0e14] border-b border-white/[0.06] px-3 flex items-center justify-between text-[10px] font-mono text-slate-400">
+          <div className="h-20 bg-[var(--bg-card)] border-t border-[var(--border-subtle)] flex flex-col shrink-0 select-none">
+            <div className="h-6 bg-[var(--bg-surface)] border-b border-[var(--border-subtle)] px-3 flex items-center justify-between text-[10px] font-mono text-[var(--text-secondary)]">
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setActiveTab('OUTPUT')}
@@ -1610,6 +1620,7 @@ function ClusterDetectionBox() {
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
   const animFrameRef = useRef(null);
+  const { t } = useLanguage();
 
   const nodesRef = useRef([]);
   const linksRef = useRef([]);
@@ -2121,18 +2132,18 @@ function ClusterDetectionBox() {
     <div ref={containerRef} className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
       {/* Box on Left on desktop (order-2 on mobile, lg:order-1 on desktop) */}
       <div className="lg:col-span-7 w-full order-2 lg:order-1">
-        <div className="w-full bg-[#08090c] border border-white/[0.08] rounded-xl overflow-hidden shadow-2xl flex flex-col h-[460px] sm:h-[480px] relative font-sans text-left">
+        <div className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl overflow-hidden shadow-2xl flex flex-col h-[460px] sm:h-[480px] relative font-sans text-left">
           {/* Header */}
-          <div className="h-9 bg-[#0e1017] border-b border-white/[0.08] px-4 flex items-center justify-between text-xs text-slate-400 select-none shrink-0">
-            <span className="text-slate-300 font-mono text-[11px] font-medium">
-              Cluster Detection
+          <div className="h-9 bg-[var(--bg-card)] border-b border-[var(--border-subtle)] px-4 flex items-center justify-between text-xs text-[var(--text-secondary)] select-none shrink-0">
+            <span className="text-[var(--text-primary)] font-mono text-[11px] font-medium">
+              {t('showcase.clusterTitle', 'Cluster Detection')}
             </span>
             <div className="flex items-center gap-1.5 font-mono text-[11px]">
-              <span className="text-slate-500">backend</span>
-              <span className="text-slate-600">/</span>
-              <span className="text-slate-500">ml</span>
-              <span className="text-slate-600">/</span>
-              <span className="text-slate-300">modularity.py</span>
+              <span className="text-[var(--text-muted)]">backend</span>
+              <span className="text-[var(--text-muted)]">/</span>
+              <span className="text-[var(--text-muted)]">ml</span>
+              <span className="text-[var(--text-muted)]">/</span>
+              <span className="text-[var(--text-primary)]">modularity.py</span>
             </div>
           </div>
 
@@ -2152,8 +2163,8 @@ function ClusterDetectionBox() {
           </div>
 
           {/* Bottom Tray */}
-          <div className="h-20 bg-[#090b10] border-t border-white/[0.08] flex flex-col shrink-0 select-none">
-            <div className="h-6 bg-[#0c0e14] border-b border-white/[0.06] px-3 flex items-center justify-between text-[10px] font-mono text-slate-400">
+          <div className="h-20 bg-[var(--bg-card)] border-t border-[var(--border-subtle)] flex flex-col shrink-0 select-none">
+            <div className="h-6 bg-[var(--bg-surface)] border-b border-[var(--border-subtle)] px-3 flex items-center justify-between text-[10px] font-mono text-[var(--text-secondary)]">
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setActiveTab('OUTPUT')}
@@ -2195,12 +2206,13 @@ function ClusterDetectionBox() {
 
       {/* Heading on Right on desktop (order-1 on mobile, lg:order-2 on desktop) */}
       <div className="lg:col-span-5 flex flex-col justify-center select-none text-left order-1 lg:order-2">
-        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white font-sans leading-tight">
-          Cluster Detection
-        </h2>
-        {/* 3-4 word description explaining what this cluster is (no full paragraph) */}
-        <p className="text-sm sm:text-base text-slate-400 font-sans mt-2 tracking-normal">
-          Automated Architectural Community Discovery
+        <ScrollWriteHeading
+          text={t('showcase.clusterTitle', 'Cluster Detection')}
+          as="h2"
+          className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[var(--text-primary)] font-sans leading-tight"
+        />
+        <p className="text-sm sm:text-base text-[var(--text-secondary)] font-sans mt-2 tracking-normal">
+          {t('showcase.clusterDesc', 'Automated Architectural Community Discovery')}
         </p>
       </div>
     </div>

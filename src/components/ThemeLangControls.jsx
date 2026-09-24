@@ -1,18 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
 import { Monitor, Sun, Moon, Globe, ChevronDown, Check } from 'lucide-react';
-
-const LANGUAGES = [
-  { code: 'en', label: 'English' },
-  { code: 'de', label: 'Deutsch' },
-  { code: 'es', label: 'Español' },
-  { code: 'fr', label: 'Français' },
-  { code: 'ja', label: '日本語' },
-  { code: 'zh', label: '简体中文' }
-];
+import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function ThemeLangControls({ className = '' }) {
-  const [theme, setTheme] = useState('system');
-  const [lang, setLang] = useState('English');
+  const { theme, setTheme, isDark } = useTheme();
+  const { language, setLanguage, languages, currentLanguageObj, t } = useLanguage();
   const [isLangOpen, setIsLangOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -27,63 +20,63 @@ export default function ThemeLangControls({ className = '' }) {
     return () => document.removeEventListener('pointerdown', handleClickOutside);
   }, []);
 
-  const handleThemeChange = (newTheme) => {
-    setTheme(newTheme);
-    // Persist or apply theme attribute for system/light/dark
-    if (newTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-      document.documentElement.classList.remove('light');
-    } else if (newTheme === 'light') {
-      document.documentElement.classList.add('light');
-      document.documentElement.classList.remove('dark');
-    } else {
-      document.documentElement.classList.remove('light');
-      document.documentElement.classList.add('dark');
-    }
-  };
-
   return (
     <div className={`flex items-center gap-2.5 font-sans select-none relative ${className}`}>
       {/* 1. Theme Selector Pill (Exact pixel match to design reference) */}
-      <div className="bg-[#18191d] border border-white/[0.08] p-0.5 rounded-full flex items-center shadow-inner">
+      <div 
+        className="border p-0.5 rounded-full flex items-center shadow-inner transition-colors duration-200"
+        style={{
+          backgroundColor: 'var(--pill-bg)',
+          borderColor: 'var(--pill-border)'
+        }}
+      >
         <button
           type="button"
-          onClick={() => handleThemeChange('system')}
-          title="System theme"
+          onClick={() => setTheme('system')}
+          title={t('nav.system', 'System theme')}
           className={`p-1.5 rounded-full transition-all cursor-pointer ${
             theme === 'system'
-              ? 'bg-[#2b2d35] text-white shadow-sm'
-              : 'text-slate-400 hover:text-white'
+              ? 'shadow-sm text-[var(--text-primary)]'
+              : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
           }`}
-          aria-label="System theme"
+          style={{
+            backgroundColor: theme === 'system' ? 'var(--pill-btn-active)' : 'transparent'
+          }}
+          aria-label={t('nav.system', 'System theme')}
         >
           <Monitor size={14} className="stroke-[2]" />
         </button>
 
         <button
           type="button"
-          onClick={() => handleThemeChange('light')}
-          title="Light theme"
+          onClick={() => setTheme('light')}
+          title={t('nav.light', 'Light theme')}
           className={`p-1.5 rounded-full transition-all cursor-pointer ${
             theme === 'light'
-              ? 'bg-[#2b2d35] text-white shadow-sm'
-              : 'text-slate-400 hover:text-white'
+              ? 'shadow-sm text-amber-500'
+              : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
           }`}
-          aria-label="Light theme"
+          style={{
+            backgroundColor: theme === 'light' ? 'var(--pill-btn-active)' : 'transparent'
+          }}
+          aria-label={t('nav.light', 'Light theme')}
         >
           <Sun size={14} className="stroke-[2]" />
         </button>
 
         <button
           type="button"
-          onClick={() => handleThemeChange('dark')}
-          title="Dark theme"
+          onClick={() => setTheme('dark')}
+          title={t('nav.dark', 'Dark theme')}
           className={`p-1.5 rounded-full transition-all cursor-pointer ${
             theme === 'dark'
-              ? 'bg-[#2b2d35] text-white shadow-sm'
-              : 'text-slate-400 hover:text-white'
+              ? 'shadow-sm text-[var(--accent-color)]'
+              : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
           }`}
-          aria-label="Dark theme"
+          style={{
+            backgroundColor: theme === 'dark' ? 'var(--pill-btn-active)' : 'transparent'
+          }}
+          aria-label={t('nav.dark', 'Dark theme')}
         >
           <Moon size={14} className="stroke-[2]" />
         </button>
@@ -94,40 +87,53 @@ export default function ThemeLangControls({ className = '' }) {
         <button
           type="button"
           onClick={() => setIsLangOpen(!isLangOpen)}
-          className="bg-[#18191d] border border-white/[0.08] hover:border-white/[0.14] px-3 py-1.5 rounded-full flex items-center gap-2 text-xs font-medium text-slate-200 hover:text-white transition-all cursor-pointer shadow-inner"
+          className="border px-3 py-1.5 rounded-full flex items-center gap-2 text-xs font-medium transition-all cursor-pointer shadow-inner"
+          style={{
+            backgroundColor: 'var(--pill-bg)',
+            borderColor: 'var(--pill-border)',
+            color: 'var(--text-primary)'
+          }}
           aria-haspopup="true"
           aria-expanded={isLangOpen}
         >
           <Globe size={14} className="text-[#60A5FA]" />
-          <span>{lang}</span>
+          <span>{currentLanguageObj.label}</span>
           <ChevronDown
             size={12}
-            className={`text-slate-400 transition-transform duration-200 ${
-              isLangOpen ? 'rotate-180 text-white' : ''
+            className={`transition-transform duration-200 ${
+              isLangOpen ? 'rotate-180 text-[var(--text-primary)]' : 'text-[var(--text-muted)]'
             }`}
           />
         </button>
 
         {/* Dropdown Menu (Floats upward from footer) */}
         {isLangOpen && (
-          <div className="absolute bottom-full right-0 mb-2 w-36 bg-[#111216] border border-white/[0.12] rounded-xl py-1.5 shadow-2xl z-50 animate-fadeIn font-sans">
-            <div className="text-[10px] uppercase font-semibold tracking-wider text-slate-500 px-3 py-1">
-              Select Language
+          <div 
+            className="absolute bottom-full right-0 mb-2 w-36 border rounded-xl py-1.5 shadow-2xl z-50 animate-fadeIn font-sans"
+            style={{
+              backgroundColor: 'var(--bg-surface)',
+              borderColor: 'var(--border-subtle)',
+              color: 'var(--text-primary)',
+              boxShadow: 'var(--shadow-card)'
+            }}
+          >
+            <div className="text-[10px] uppercase font-semibold tracking-wider text-[var(--text-muted)] px-3 py-1">
+              {t('footer.selectLanguage', 'Select Language')}
             </div>
-            {LANGUAGES.map((l) => {
-              const isSelected = lang === l.label;
+            {languages.map((l) => {
+              const isSelected = language === l.code;
               return (
                 <button
                   key={l.code}
                   type="button"
                   onClick={() => {
-                    setLang(l.label);
+                    setLanguage(l.code);
                     setIsLangOpen(false);
                   }}
                   className={`w-full px-3 py-1.5 text-xs text-left flex items-center justify-between transition-colors cursor-pointer ${
                     isSelected
-                      ? 'text-white font-medium bg-white/[0.08]'
-                      : 'text-slate-300 hover:text-white hover:bg-white/[0.04]'
+                      ? 'font-medium bg-[var(--border-subtle)] text-[var(--text-primary)]'
+                      : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--border-subtle)]'
                   }`}
                 >
                   <span>{l.label}</span>

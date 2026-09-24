@@ -4,6 +4,7 @@ import {
 } from 'lucide-react';
 import Footer from '../components/Footer';
 import { useDocsSearch } from '../context/DocsSearchContext';
+import { useLanguage } from '../context/LanguageContext';
 
 // --- COMPREHENSIVE DOCUMENTATION REGISTRY (Inspired by media_1789742450965.png & media_1789742457799.png) ---
 const DOCS_DATA = {
@@ -542,6 +543,7 @@ export default function Docs() {
   const [activeDocId, setActiveDocId] = useState(getInitialDocId);
   const { searchQuery, setSearchQuery } = useDocsSearch();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { t } = useLanguage();
 
   // Sync hash to activeDocId and listen to back/forward navigation
   useEffect(() => {
@@ -590,32 +592,32 @@ export default function Docs() {
   const nextDocId = currentIndex < ALL_DOC_IDS.length - 1 ? ALL_DOC_IDS[currentIndex + 1] : null;
 
   return (
-    <div className="min-h-screen bg-[#050505] text-[#EDEDED] font-sans relative selection:bg-[#3B82F6]/30 selection:text-white flex flex-col justify-between">
+    <div className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans relative selection:bg-[#3B82F6]/30 selection:text-white flex flex-col justify-between transition-colors duration-200">
       
       {/* Edge-to-edge full-width container with zero outer margin */}
       <div className="w-full flex-1 flex flex-col md:flex-row px-0 pt-14 pb-0">
         
         {/* LEFT SIDEBAR (Desktop - Docked flush to left edge) */}
-        <aside className="w-56 lg:w-64 border-r border-white/[0.08] hidden md:flex flex-col justify-between pt-6 pb-8 px-5 shrink-0 font-sans text-xs">
+        <aside className="w-56 lg:w-64 border-r border-[var(--border-subtle)] hidden md:flex flex-col justify-between pt-6 pb-8 px-5 shrink-0 font-sans text-xs">
           <div>
             {/* Navigation Groups or Empty State */}
             {filteredGroups.length === 0 ? (
-              <div className="py-8 px-2 text-center text-slate-500 text-xs space-y-2">
-                <p className="text-slate-300 font-medium">No results found for &ldquo;{searchQuery}&rdquo;</p>
-                <p className="text-[11px] text-slate-500 leading-relaxed">Try keywords like GPU, Tree-Sitter, shortcuts, or Ollama.</p>
+              <div className="py-8 px-2 text-center text-[var(--text-muted)] text-xs space-y-2">
+                <p className="text-[var(--text-primary)] font-medium">No results found for &ldquo;{searchQuery}&rdquo;</p>
+                <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">Try keywords like GPU, Tree-Sitter, shortcuts, or Ollama.</p>
                 <button
                   type="button"
                   onClick={() => setSearchQuery('')}
                   className="mt-2 inline-block text-[11px] text-[#60A5FA] hover:underline cursor-pointer"
                 >
-                  Clear search
+                  {t('nav.searchClear', 'Clear search')}
                 </button>
               </div>
             ) : (
               <div className="space-y-5">
                 {filteredGroups.map(group => (
                   <div key={group.category} className="space-y-1">
-                    <div className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold px-2 mb-1">
+                    <div className="text-[11px] uppercase tracking-wider text-[var(--text-muted)] font-semibold px-2 mb-1">
                       {group.category}
                     </div>
                     <div className="space-y-0.5">
@@ -627,8 +629,8 @@ export default function Docs() {
                             onClick={() => selectDoc(item.id)}
                             className={`w-full text-left px-2.5 py-1.5 rounded-md text-xs transition-colors cursor-pointer flex items-center justify-between ${
                               isActive
-                                ? 'text-white font-semibold'
-                                : 'text-slate-400 hover:text-slate-200'
+                                ? 'text-[var(--text-primary)] font-semibold bg-[var(--border-subtle)]'
+                                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                             }`}
                           >
                             <span>{item.label}</span>
@@ -644,23 +646,22 @@ export default function Docs() {
         </aside>
 
         {/* Mobile Header / Drawer Toggle */}
-        <div className="md:hidden w-full py-2.5 px-4 border-b border-white/[0.08] flex items-center justify-between mb-2">
-          <div className="text-xs text-slate-400 flex items-center gap-2 truncate pr-2">
+        <div className="md:hidden w-full py-2.5 px-4 border-b border-[var(--border-subtle)] flex items-center justify-between mb-2">
+          <div className="text-xs text-[var(--text-muted)] flex items-center gap-2 truncate pr-2">
             <span>Docs</span>
             <span>/</span>
             <span className="text-[#60A5FA] font-medium truncate">{activeDoc.title}</span>
           </div>
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="p-1.5 text-slate-300 hover:text-white cursor-pointer shrink-0"
+            className="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer shrink-0"
             aria-label="Toggle docs navigation"
           >
             {isMobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
         </div>
-
         {/* Split Screen / Mobile Horizontal Doc Tabs */}
-        <div className="md:hidden w-full overflow-x-auto flex items-center gap-1.5 px-4 pb-2 mb-4 scrollbar-none border-b border-white/[0.06]">
+        <div className="md:hidden w-full overflow-x-auto flex items-center gap-1.5 px-4 pb-2 mb-4 scrollbar-none border-b border-[var(--border-subtle)]">
           {ALL_DOC_IDS.map(id => {
             const doc = DOCS_DATA[id];
             if (!doc) return null;
@@ -671,8 +672,8 @@ export default function Docs() {
                 onClick={() => selectDoc(id)}
                 className={`px-2.5 py-1 rounded-md text-xs whitespace-nowrap cursor-pointer transition-colors shrink-0 ${
                   isActive
-                    ? 'text-white font-medium bg-white/[0.08]'
-                    : 'text-slate-400 hover:text-slate-200 bg-white/[0.02]'
+                    ? 'text-[var(--text-primary)] font-medium bg-[var(--border-subtle)]'
+                    : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-[var(--border-subtle)]/40'
                 }`}
               >
                 {doc.title}
@@ -683,35 +684,35 @@ export default function Docs() {
 
         {/* Mobile Drawer with Search */}
         {isMobileMenuOpen && (
-          <div className="md:hidden fixed inset-0 top-14 bg-[#050505] z-40 p-6 overflow-y-auto">
+          <div className="md:hidden fixed inset-0 top-14 bg-[var(--bg-app)] z-40 p-6 overflow-y-auto">
             {/* Mobile Search Box */}
             <div className="mb-6 relative">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search docs (e.g. GPU, Tree-Sitter)..."
-                className="w-full bg-[#0d0e12] border border-white/[0.12] focus:border-[#60A5FA]/50 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none transition-colors"
+                className="w-full bg-[var(--input-bg)] border border-[var(--input-border)] focus:border-[#60A5FA]/50 rounded-lg pl-9 pr-3 py-2 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none transition-colors"
               />
             </div>
 
             {filteredGroups.length === 0 ? (
-              <div className="py-6 px-2 text-center text-slate-500 text-xs space-y-2">
-                <p className="text-slate-300 font-medium">No results found for &ldquo;{searchQuery}&rdquo;</p>
+              <div className="py-6 px-2 text-center text-[var(--text-muted)] text-xs space-y-2">
+                <p className="text-[var(--text-primary)] font-medium">No results found for &ldquo;{searchQuery}&rdquo;</p>
                 <button
                   type="button"
                   onClick={() => setSearchQuery('')}
                   className="mt-2 text-xs text-[#60A5FA] hover:underline cursor-pointer"
                 >
-                  Clear search
+                  {t('nav.searchClear', 'Clear search')}
                 </button>
               </div>
             ) : (
               <div className="space-y-6">
                 {filteredGroups.map(group => (
                   <div key={group.category} className="space-y-1">
-                    <div className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold mb-2">
+                    <div className="text-[11px] uppercase tracking-wider text-[var(--text-muted)] font-semibold mb-2">
                       {group.category}
                     </div>
                     <div className="space-y-1 pl-2">
@@ -723,7 +724,7 @@ export default function Docs() {
                             setIsMobileMenuOpen(false);
                           }}
                           className={`w-full text-left py-1.5 text-sm ${
-                            activeDocId === item.id ? 'text-white font-semibold' : 'text-slate-400'
+                            activeDocId === item.id ? 'text-[var(--text-primary)] font-semibold' : 'text-[var(--text-secondary)]'
                           }`}
                         >
                           {item.label}
@@ -741,17 +742,17 @@ export default function Docs() {
         <main className="flex-1 px-6 sm:px-10 md:px-14 lg:px-18 pt-6 pb-12 min-h-[calc(100vh-12rem)] flex flex-col justify-between">
           <div>
             {/* Category Tag */}
-            <div className="text-xs text-slate-500 mb-1.5 font-medium uppercase tracking-wider">
+            <div className="text-xs text-[var(--text-muted)] mb-1.5 font-medium uppercase tracking-wider">
               {activeDoc.category}
             </div>
 
             {/* Large Title */}
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white mb-4 leading-tight">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[var(--text-primary)] mb-4 leading-tight">
               {activeDoc.title}
             </h1>
 
             {/* Subtitle / Intro Paragraph */}
-            <p className="text-slate-400 text-sm sm:text-base leading-relaxed mb-8 font-normal">
+            <p className="text-[var(--text-secondary)] text-sm sm:text-base leading-relaxed mb-8 font-normal">
               {activeDoc.subtitle}
             </p>
 
@@ -759,20 +760,20 @@ export default function Docs() {
             <div className="space-y-10">
               {activeDoc.sections.map(sec => (
                 <section key={sec.id} id={sec.id} className="scroll-mt-24">
-                  <h2 className="text-lg sm:text-xl font-semibold tracking-tight text-white mb-2">
+                  <h2 className="text-lg sm:text-xl font-semibold tracking-tight text-[var(--text-primary)] mb-2">
                     {sec.title}
                   </h2>
-                  <p className="text-slate-400 text-xs sm:text-sm leading-relaxed mb-4 font-normal">
+                  <p className="text-[var(--text-secondary)] text-xs sm:text-sm leading-relaxed mb-4 font-normal">
                     {sec.desc}
                   </p>
 
                   {/* Pointwise Specification */}
                   <ul className="space-y-2.5 pl-1">
                     {sec.points.map((pt, pIdx) => (
-                      <li key={pIdx} className="flex items-start text-xs sm:text-sm leading-relaxed text-slate-300">
+                      <li key={pIdx} className="flex items-start text-xs sm:text-sm leading-relaxed text-[var(--text-secondary)]">
                         <span className="text-[#60A5FA] mr-2 select-none">•</span>
                         <div>
-                          <strong className="text-white font-medium mr-1.5">{pt.label}:</strong>
+                          <strong className="text-[var(--text-primary)] font-medium mr-1.5">{pt.label}:</strong>
                           <span>{pt.text}</span>
                         </div>
                       </li>
@@ -784,11 +785,11 @@ export default function Docs() {
           </div>
 
           {/* Bottom Pagination */}
-          <div className="mt-12 pt-6 border-t border-white/[0.08] flex items-center justify-between text-xs">
+          <div className="mt-12 pt-6 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs">
             {prevDocId ? (
               <button
                 onClick={() => selectDoc(prevDocId)}
-                className="flex items-center gap-1.5 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
               >
                 <ChevronLeft size={14} />
                 <span>{DOCS_DATA[prevDocId]?.title}</span>

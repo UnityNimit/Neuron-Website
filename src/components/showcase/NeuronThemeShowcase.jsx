@@ -4,6 +4,7 @@ import {
   Folder, FileCode2, ChevronDown, Minus, Square, X, Bell
 } from 'lucide-react';
 import { ScrollWriteHeading } from '../ScrollReveal';
+import { useLanguage } from '../../context/LanguageContext';
 
 // The 5 official themes directly from frontend/src/config/themeConfig.js
 const THEMES = [
@@ -123,6 +124,7 @@ function ShowcaseActivityIcon({ activeTheme, icon: Icon, size = 16 }) {
 }
 
 export default function NeuronThemeShowcase() {
+  const { t } = useLanguage();
   const [activeThemeIndex, setActiveThemeIndex] = useState(0); // Starts on Sakura Rose matching screenshot
   const [userInterrupted, setUserInterrupted] = useState(false);
   const timerRef = useRef(null);
@@ -481,9 +483,9 @@ export default function NeuronThemeShowcase() {
         {/* RIGHT COLUMN: Simple theme presentation */}
         <div className="lg:col-span-5 order-1 lg:order-2 text-left flex flex-col justify-center">
           <ScrollWriteHeading
-            text="Customizable themes"
+            text={t('showcase.themeTitle', 'Customizable themes')}
             as="h2"
-            className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white mb-2 leading-snug"
+            className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[var(--text-primary)] mb-2 leading-snug"
           />
         </div>
 

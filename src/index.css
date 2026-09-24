@@ -5,6 +5,67 @@
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
+/* ========================================================================= */
+/* THEME SYSTEM: DARK (DEFAULT) AND LIGHT VARIABLE DEFINITIONS              */
+/* ========================================================================= */
+:root, html.dark {
+  --bg-app: #050505;
+  --bg-surface: #08090c;
+  --bg-card: #0b0c10;
+  --bg-card-hover: #12141a;
+  --bg-header: rgba(5, 5, 5, 0.90);
+  --bg-footer: #050505;
+  --text-primary: #ededed;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(255, 255, 255, 0.16);
+  --border-strong: rgba(255, 255, 255, 0.22);
+  --grid-line: rgba(128, 128, 128, 0.04);
+  --btn-primary-bg: #ffffff;
+  --btn-primary-text: #050505;
+  --btn-primary-hover: #e2e8f0;
+  --input-bg: #0d0e12;
+  --input-border: rgba(255, 255, 255, 0.08);
+  --input-focus-border: #60a5fa;
+  --accent-color: #60a5fa;
+  --modal-bg: #0e0f13;
+  --pill-bg: #18191d;
+  --pill-btn-active: #2b2d35;
+  --pill-border: rgba(255, 255, 255, 0.08);
+  --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+  color-scheme: dark;
+}
+
+html.light {
+  --bg-app: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f1f5f9;
+  --bg-header: rgba(248, 250, 252, 0.92);
+  --bg-footer: #f1f5f9;
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --border-hover: rgba(0, 0, 0, 0.16);
+  --border-strong: rgba(0, 0, 0, 0.22);
+  --grid-line: rgba(0, 0, 0, 0.04);
+  --btn-primary-bg: #0f172a;
+  --btn-primary-text: #ffffff;
+  --btn-primary-hover: #1e293b;
+  --input-bg: #ffffff;
+  --input-border: rgba(0, 0, 0, 0.12);
+  --input-focus-border: #3b82f6;
+  --accent-color: #2563eb;
+  --modal-bg: #ffffff;
+  --pill-bg: #e2e8f0;
+  --pill-btn-active: #ffffff;
+  --pill-border: rgba(0, 0, 0, 0.10);
+  --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.06);
+  color-scheme: light;
+}
+
 /* Hide native scrollbar across Chrome, Safari, Edge, Firefox while preserving smooth scrolling */
 * {
   scrollbar-width: none;
@@ -23,7 +84,15 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Super cool minimal scroll arrow animation (Pure arrow, no circle boundary) */
+body {
+  margin: 0;
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Minimal scroll arrow animation */
 @keyframes scrollArrowGlide {
   0% {
     opacity: 0.35;
@@ -57,13 +126,6 @@ html {
 
 .animate-docs-search {
   animation: docsSearchFadeIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-body {
-  margin: 0;
-  background-color: #050505;
-  color: #EDEDED;
-  font-family: var(--font-sans);
 }
 
 /* Glowing download button in header */
