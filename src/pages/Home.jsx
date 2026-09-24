@@ -120,25 +120,19 @@ export default function Home() {
               {/* Mac: Greyed out Coming Soon */}
               <button
                 disabled
-                title={t('hero.comingSoon', 'Coming Soon')}
-                className="h-8 px-3.5 rounded-lg bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-muted)] opacity-60 font-medium text-xs inline-flex items-center justify-center gap-1.5 cursor-not-allowed select-none transition-all shrink-0"
+                className="h-8 px-3.5 rounded-lg bg-slate-800 text-slate-400 font-medium text-xs inline-flex items-center justify-center gap-1.5 cursor-not-allowed select-none transition-all shrink-0"
               >
                 <span>{t('hero.downloadMac', 'Download for Mac')}</span>
-                <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-[var(--border-subtle)] text-[var(--text-muted)] leading-none">
-                  {t('hero.comingSoon', 'Coming Soon')}
-                </span>
+                
               </button>
 
               {/* Linux: Greyed out Coming Soon */}
               <button
                 disabled
-                title={t('hero.comingSoon', 'Coming Soon')}
-                className="h-8 px-3.5 rounded-lg bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-muted)] opacity-60 font-medium text-xs inline-flex items-center justify-center gap-1.5 cursor-not-allowed select-none transition-all shrink-0"
+                className="h-8 px-3.5 rounded-lg bg-slate-800 text-slate-400 font-medium text-xs inline-flex items-center justify-center gap-1.5 cursor-not-allowed select-none transition-all shrink-0"
               >
                 <span>{t('hero.downloadLinux', 'Download for Linux')}</span>
-                <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-[var(--border-subtle)] text-[var(--text-muted)] leading-none">
-                  {t('hero.comingSoon', 'Coming Soon')}
-                </span>
+                
               </button>
             </div>
           </div>
@@ -231,25 +225,19 @@ export default function Home() {
                 {/* Mac: Greyed out Coming Soon */}
                 <button
                   disabled
-                  title={t('hero.comingSoon', 'Coming Soon')}
-                  className="h-8 px-3.5 rounded-lg bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-muted)] opacity-60 font-medium text-xs inline-flex items-center justify-center gap-1.5 cursor-not-allowed select-none transition-all shrink-0"
+                className="h-8 px-3.5 rounded-lg bg-slate-800 text-slate-400 font-medium text-xs inline-flex items-center justify-center gap-1.5 cursor-not-allowed select-none transition-all shrink-0"
                 >
                   <span>{t('hero.downloadMac', 'Download for Mac')}</span>
-                  <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-[var(--border-subtle)] text-[var(--text-muted)] leading-none">
-                    {t('hero.comingSoon', 'Coming Soon')}
-                  </span>
+                  
                 </button>
 
                 {/* Linux: Greyed out Coming Soon */}
                 <button
                   disabled
-                  title={t('hero.comingSoon', 'Coming Soon')}
-                  className="h-8 px-3.5 rounded-lg bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-muted)] opacity-60 font-medium text-xs inline-flex items-center justify-center gap-1.5 cursor-not-allowed select-none transition-all shrink-0"
+                className="h-8 px-3.5 rounded-lg bg-slate-800 text-slate-400 font-medium text-xs inline-flex items-center justify-center gap-1.5 cursor-not-allowed select-none transition-all shrink-0"
                 >
                   <span>{t('hero.downloadLinux', 'Download for Linux')}</span>
-                  <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-[var(--border-subtle)] text-[var(--text-muted)] leading-none">
-                    {t('hero.comingSoon', 'Coming Soon')}
-                  </span>
+                  
                 </button>
               </div>
             </section>
