@@ -56,7 +56,7 @@ export function LanguageProvider({ children }) {
       }
     }
 
-    if (found && typeof current === 'string') {
+    if (found && current !== undefined && current !== null) {
       return current;
     }
 
@@ -72,7 +72,7 @@ export function LanguageProvider({ children }) {
       }
     }
 
-    if (enFound && typeof enFallback === 'string') {
+    if (enFound && enFallback !== undefined && enFallback !== null) {
       return enFallback;
     }
 
