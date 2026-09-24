@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
 import PixelBlast from '../components/PixelBlast';
 import ScrambledText from '../components/ScrambledText';
@@ -13,6 +14,17 @@ import { useTheme } from '../context/ThemeContext';
 export default function Home() {
   const { t } = useLanguage();
   const { isDark } = useTheme();
+  const [scrollOpacity, setScrollOpacity] = useState(1);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const y = window.scrollY;
+      const op = Math.max(0, 1 - y / 160);
+      setScrollOpacity(op);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const scrollToDemo = () => {
     const demoEl = document.getElementById('demo-viewport');
@@ -94,24 +106,60 @@ export default function Home() {
               </ScrambledText>
             </div>
 
-            {/* Utilitarian CTA Button */}
-            <div id="download-hero" className="flex flex-col items-center gap-3 w-full max-w-md pointer-events-auto">
+            {/* Utilitarian CTA Buttons - 3 Side-by-Side (Windows, Mac, Linux) */}
+            <div id="download-hero" className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 w-full max-w-2xl pointer-events-auto">
+              {/* Windows: Active */}
               <a 
                 href="https://github.com/UnityNimit/Neuron/releases/download/v1.0.0/Neuron_1.0.0_x64-setup.exe"
                 download="Neuron-Setup.exe"
-                className="h-8 px-4 rounded-lg bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] font-semibold text-xs hover:opacity-90 transition-all inline-flex items-center justify-center cursor-pointer active:scale-[0.98] shadow-sm"
+                className="h-8 px-4 rounded-lg bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] font-semibold text-xs hover:opacity-90 transition-all inline-flex items-center justify-center cursor-pointer active:scale-[0.98] shadow-sm shrink-0"
               >
                 <span>{t('hero.downloadWindows', 'Download for Windows')}</span>
               </a>
+
+              {/* Mac: Greyed out Coming Soon */}
+              <button
+                disabled
+                title={t('hero.comingSoon', 'Coming Soon')}
+                className="h-8 px-3.5 rounded-lg bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-muted)] opacity-60 font-medium text-xs inline-flex items-center justify-center gap-1.5 cursor-not-allowed select-none transition-all shrink-0"
+              >
+                <span>{t('hero.downloadMac', 'Download for Mac')}</span>
+                <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-[var(--border-subtle)] text-[var(--text-muted)] leading-none">
+                  {t('hero.comingSoon', 'Coming Soon')}
+                </span>
+              </button>
+
+              {/* Linux: Greyed out Coming Soon */}
+              <button
+                disabled
+                title={t('hero.comingSoon', 'Coming Soon')}
+                className="h-8 px-3.5 rounded-lg bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-muted)] opacity-60 font-medium text-xs inline-flex items-center justify-center gap-1.5 cursor-not-allowed select-none transition-all shrink-0"
+              >
+                <span>{t('hero.downloadLinux', 'Download for Linux')}</span>
+                <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-[var(--border-subtle)] text-[var(--text-muted)] leading-none">
+                  {t('hero.comingSoon', 'Coming Soon')}
+                </span>
+              </button>
             </div>
           </div>
 
-          {/* Super Cool Minimalist Scroll Indicator (Pure arrow, no circle boundary) */}
-          <div className="w-full flex flex-col items-center justify-center pb-8 pointer-events-auto shrink-0 select-none">
+          {/* Super Cool Minimalist Scroll Indicator with text & fade-away animation */}
+          <div 
+            style={{ 
+              opacity: scrollOpacity,
+              transform: `translateY(${(1 - scrollOpacity) * 16}px)`,
+              pointerEvents: scrollOpacity <= 0.05 ? 'none' : 'auto',
+              transition: 'opacity 0.15s ease-out, transform 0.15s ease-out'
+            }}
+            className="w-full flex flex-col items-center justify-center pb-8 shrink-0 select-none"
+          >
+            <span className="text-[11px] font-mono tracking-widest uppercase text-[var(--text-muted)] mb-2 transition-colors">
+              {t('hero.scrollFuture', 'Scroll into the future of IDEs')}
+            </span>
             <button
               onClick={scrollToDemo}
-              className="group flex flex-col items-center cursor-pointer focus:outline-none p-2 transition-transform duration-300 hover:translate-y-1"
-              aria-label={t('hero.scrollExplore', 'Scroll down to explore Neuron')}
+              className="group flex flex-col items-center cursor-pointer focus:outline-none p-1.5 transition-transform duration-300 hover:translate-y-1"
+              aria-label={t('hero.scrollFuture', 'Scroll into the future of IDEs')}
             >
               <div className="animate-scroll-arrow flex flex-col items-center text-[var(--text-muted)] group-hover:text-[var(--text-primary)] transition-colors">
                 <ChevronDown 
@@ -170,14 +218,39 @@ export default function Home() {
                 style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', lineHeight: 1.05 }}
                 className="font-black tracking-tighter text-[var(--text-primary)] mb-6 select-none"
               />
-              <div className="flex items-center justify-center">
+              <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 max-w-2xl mx-auto">
+                {/* Windows: Active */}
                 <a 
                   href="https://github.com/UnityNimit/Neuron/releases/download/v1.0.0/Neuron_1.0.0_x64-setup.exe"
                   download="Neuron-Setup.exe"
-                  className="h-8 px-4 rounded-lg bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] font-semibold text-xs hover:opacity-90 transition-all inline-flex items-center justify-center cursor-pointer active:scale-[0.98] shadow-sm"
+                  className="h-8 px-4 rounded-lg bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] font-semibold text-xs hover:opacity-90 transition-all inline-flex items-center justify-center cursor-pointer active:scale-[0.98] shadow-sm shrink-0"
                 >
                   <span>{t('hero.downloadWindows', 'Download for Windows')}</span>
                 </a>
+
+                {/* Mac: Greyed out Coming Soon */}
+                <button
+                  disabled
+                  title={t('hero.comingSoon', 'Coming Soon')}
+                  className="h-8 px-3.5 rounded-lg bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-muted)] opacity-60 font-medium text-xs inline-flex items-center justify-center gap-1.5 cursor-not-allowed select-none transition-all shrink-0"
+                >
+                  <span>{t('hero.downloadMac', 'Download for Mac')}</span>
+                  <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-[var(--border-subtle)] text-[var(--text-muted)] leading-none">
+                    {t('hero.comingSoon', 'Coming Soon')}
+                  </span>
+                </button>
+
+                {/* Linux: Greyed out Coming Soon */}
+                <button
+                  disabled
+                  title={t('hero.comingSoon', 'Coming Soon')}
+                  className="h-8 px-3.5 rounded-lg bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-muted)] opacity-60 font-medium text-xs inline-flex items-center justify-center gap-1.5 cursor-not-allowed select-none transition-all shrink-0"
+                >
+                  <span>{t('hero.downloadLinux', 'Download for Linux')}</span>
+                  <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-[var(--border-subtle)] text-[var(--text-muted)] leading-none">
+                    {t('hero.comingSoon', 'Coming Soon')}
+                  </span>
+                </button>
               </div>
             </section>
           </ScrollReveal>

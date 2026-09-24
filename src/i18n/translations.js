@@ -30,7 +30,11 @@ export const translations = {
     hero: {
       spatialIde: 'THE SPATIAL IDE',
       downloadWindows: 'Download for Windows',
-      scrollExplore: 'Scroll down to explore Neuron'
+      downloadMac: 'Download for Mac',
+      downloadLinux: 'Download for Linux',
+      comingSoon: 'Coming Soon',
+      scrollExplore: 'Scroll down to explore Neuron',
+      scrollFuture: 'Scroll into the future of IDEs'
     },
     showcase: {
       hotspotTitle: 'Critical Hotspot Detection',
@@ -54,7 +58,14 @@ export const translations = {
       desc: 'Release history and downloads for Neuron. All versions run locally on your workstation.',
       latestRelease: 'v1.0.0 Beta Release',
       releaseDate: 'September 2026',
-      downloadWindows: 'Download for Windows'
+      downloadWindows: 'Download for Windows',
+      downloadMac: 'Download for Mac',
+      downloadLinux: 'Download for Linux',
+      comingSoon: 'Coming Soon',
+      whatsChanged: "What's Changed",
+      viewOnGithub: 'View on GitHub',
+      syncStatus: 'Synced with GitHub Releases',
+      noReleases: 'No public releases found.'
     },
     help: {
       title: 'Help & Queries',
@@ -145,7 +156,11 @@ export const translations = {
     hero: {
       spatialIde: 'DIE RÄUMLICHE IDE',
       downloadWindows: 'Für Windows herunterladen',
-      scrollExplore: 'Nach unten scrollen, um Neuron zu erkunden'
+      downloadMac: 'Für Mac herunterladen',
+      downloadLinux: 'Für Linux herunterladen',
+      comingSoon: 'Demnächst',
+      scrollExplore: 'Nach unten scrollen, um Neuron zu erkunden',
+      scrollFuture: 'Scrollen Sie in die Zukunft der IDEs'
     },
     showcase: {
       hotspotTitle: 'Kritische Hotspot-Erkennung',
@@ -169,7 +184,14 @@ export const translations = {
       desc: 'Versionsverlauf und Downloads für Neuron. Alle Versionen laufen lokal auf Ihrer Workstation.',
       latestRelease: 'v1.0.0 Beta-Release',
       releaseDate: 'September 2026',
-      downloadWindows: 'Für Windows herunterladen'
+      downloadWindows: 'Für Windows herunterladen',
+      downloadMac: 'Für Mac herunterladen',
+      downloadLinux: 'Für Linux herunterladen',
+      comingSoon: 'Demnächst',
+      whatsChanged: 'Was ist neu',
+      viewOnGithub: 'Auf GitHub ansehen',
+      syncStatus: 'Mit GitHub Releases synchronisiert',
+      noReleases: 'Keine öffentlichen Releases gefunden.'
     },
     help: {
       title: 'Hilfe & Anfragen',
@@ -260,7 +282,11 @@ export const translations = {
     hero: {
       spatialIde: 'EL IDE ESPACIAL',
       downloadWindows: 'Descargar para Windows',
-      scrollExplore: 'Desplázate hacia abajo para explorar Neuron'
+      downloadMac: 'Descargar para Mac',
+      downloadLinux: 'Descargar para Linux',
+      comingSoon: 'Próximamente',
+      scrollExplore: 'Desplázate hacia abajo para explorar Neuron',
+      scrollFuture: 'Desplázate hacia el futuro de los IDE'
     },
     showcase: {
       hotspotTitle: 'Detección Crítica de Puntos Calientes',
@@ -284,7 +310,14 @@ export const translations = {
       desc: 'Historial de versiones y descargas de Neuron. Todas las versiones se ejecutan localmente en tu estación de trabajo.',
       latestRelease: 'v1.0.0 Versión Beta',
       releaseDate: 'Septiembre de 2026',
-      downloadWindows: 'Descargar para Windows'
+      downloadWindows: 'Descargar para Windows',
+      downloadMac: 'Descargar para Mac',
+      downloadLinux: 'Descargar para Linux',
+      comingSoon: 'Próximamente',
+      whatsChanged: 'Cambios en esta versión',
+      viewOnGithub: 'Ver en GitHub',
+      syncStatus: 'Sincronizado con GitHub Releases',
+      noReleases: 'No se encontraron versiones públicas.'
     },
     help: {
       title: 'Ayuda y Consultas',
@@ -375,7 +408,11 @@ export const translations = {
     hero: {
       spatialIde: "L'IDE SPATIAL",
       downloadWindows: 'Télécharger pour Windows',
-      scrollExplore: 'Faites défiler pour explorer Neuron'
+      downloadMac: 'Télécharger pour Mac',
+      downloadLinux: 'Télécharger pour Linux',
+      comingSoon: 'Bientôt disponible',
+      scrollExplore: 'Faites défiler pour explorer Neuron',
+      scrollFuture: "Faites défiler vers l'avenir des IDE"
     },
     showcase: {
       hotspotTitle: 'Détection Critique des Points Chauds',
@@ -399,7 +436,14 @@ export const translations = {
       desc: "Historique des versions et téléchargements pour Neuron. Toutes les versions s'exécutent localement sur votre poste de travail.",
       latestRelease: 'v1.0.0 Version Bêta',
       releaseDate: 'Septembre 2026',
-      downloadWindows: 'Télécharger pour Windows'
+      downloadWindows: 'Télécharger pour Windows',
+      downloadMac: 'Télécharger pour Mac',
+      downloadLinux: 'Télécharger pour Linux',
+      comingSoon: 'Bientôt disponible',
+      whatsChanged: 'Changements apportés',
+      viewOnGithub: 'Voir sur GitHub',
+      syncStatus: 'Synchronisé avec GitHub Releases',
+      noReleases: 'Aucune version publique trouvée.'
     },
     help: {
       title: 'Aide & Questions',
@@ -490,7 +534,11 @@ export const translations = {
     hero: {
       spatialIde: '空間型統合開発環境',
       downloadWindows: 'Windows向けにダウンロード',
-      scrollExplore: '下にスクロールしてNeuronを探索'
+      downloadMac: 'Mac向けにダウンロード',
+      downloadLinux: 'Linux向けにダウンロード',
+      comingSoon: '近日公開',
+      scrollExplore: '下にスクロールしてNeuronを探索',
+      scrollFuture: 'IDEの未来へとスクロール'
     },
     showcase: {
       hotspotTitle: 'クリティカルホットスポット検出',
@@ -514,7 +562,14 @@ export const translations = {
       desc: 'Neuronのリリース履歴とダウンロード。すべてのバージョンはお使いのワークステーションでローカルに実行されます。',
       latestRelease: 'v1.0.0 ベータリリース',
       releaseDate: '2026年9月',
-      downloadWindows: 'Windows向けにダウンロード'
+      downloadWindows: 'Windows向けにダウンロード',
+      downloadMac: 'Mac向けにダウンロード',
+      downloadLinux: 'Linux向けにダウンロード',
+      comingSoon: '近日公開',
+      whatsChanged: '変更内容',
+      viewOnGithub: 'GitHubで表示',
+      syncStatus: 'GitHub Releasesと同期済み',
+      noReleases: '公開リリースが見つかりませんでした。'
     },
     help: {
       title: 'ヘルプと質問',
@@ -605,7 +660,11 @@ export const translations = {
     hero: {
       spatialIde: '空间集成开发环境',
       downloadWindows: '下载 Windows 版',
-      scrollExplore: '向下滚动以探索 Neuron'
+      downloadMac: '下载 Mac 版',
+      downloadLinux: '下载 Linux 版',
+      comingSoon: '敬请期待',
+      scrollExplore: '向下滚动以探索 Neuron',
+      scrollFuture: '滚动进入IDE的未来'
     },
     showcase: {
       hotspotTitle: '关键热点检测',
@@ -629,7 +688,14 @@ export const translations = {
       desc: 'Neuron 的发布历史与下载。所有版本均在本地工作站独立运行。',
       latestRelease: 'v1.0.0 测试版发布',
       releaseDate: '2026年9月',
-      downloadWindows: '下载 Windows 版'
+      downloadWindows: '下载 Windows 版',
+      downloadMac: '下载 Mac 版',
+      downloadLinux: '下载 Linux 版',
+      comingSoon: '敬请期待',
+      whatsChanged: '更新详情',
+      viewOnGithub: '在 GitHub 上查看',
+      syncStatus: '已与 GitHub Releases 同步',
+      noReleases: '未找到公开发布版本。'
     },
     help: {
       title: '帮助与咨询',
