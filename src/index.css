@@ -38,31 +38,31 @@
 }
 
 html.light {
-  --bg-app: #f8fafc;
-  --bg-surface: #ffffff;
-  --bg-card: #ffffff;
-  --bg-card-hover: #f1f5f9;
-  --bg-header: rgba(248, 250, 252, 0.92);
-  --bg-footer: #f1f5f9;
+  --bg-app: #eaedf0;
+  --bg-surface: #f4f6f8;
+  --bg-card: #f0f3f6;
+  --bg-card-hover: #e2e6eb;
+  --bg-header: rgba(234, 237, 240, 0.90);
+  --bg-footer: #e1e5e9;
   --text-primary: #0f172a;
-  --text-secondary: #334155;
+  --text-secondary: #475569;
   --text-muted: #64748b;
   --border-subtle: rgba(0, 0, 0, 0.08);
   --border-hover: rgba(0, 0, 0, 0.16);
-  --border-strong: rgba(0, 0, 0, 0.22);
+  --border-strong: rgba(0, 0, 0, 0.24);
   --grid-line: rgba(0, 0, 0, 0.04);
   --btn-primary-bg: #0f172a;
   --btn-primary-text: #ffffff;
   --btn-primary-hover: #1e293b;
-  --input-bg: #ffffff;
+  --input-bg: #f8fafc;
   --input-border: rgba(0, 0, 0, 0.12);
-  --input-focus-border: #3b82f6;
-  --accent-color: #2563eb;
-  --modal-bg: #ffffff;
-  --pill-bg: #e2e8f0;
+  --input-focus-border: #2563eb;
+  --accent-color: #1d4ed8;
+  --modal-bg: #f4f6f8;
+  --pill-bg: #dbe0e6;
   --pill-btn-active: #ffffff;
   --pill-border: rgba(0, 0, 0, 0.10);
-  --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.06);
+  --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.07);
   color-scheme: light;
 }
 

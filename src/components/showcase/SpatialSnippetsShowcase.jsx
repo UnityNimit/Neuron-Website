@@ -377,16 +377,16 @@ function HotspotDetectionBox() {
 
       {/* Right Column: Interactive Box (as big as chatbot box: h-[460px] sm:h-[480px]) */}
       <div className="lg:col-span-7 w-full">
-        <div className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl overflow-hidden shadow-2xl flex flex-col h-[460px] sm:h-[480px] relative font-sans text-left">
+        <div className="w-full bg-[#08090c] border border-white/[0.08] rounded-xl overflow-hidden shadow-2xl flex flex-col h-[460px] sm:h-[480px] relative font-sans text-left">
           {/* Header */}
-          <div className="h-9 bg-[var(--bg-card)] border-b border-[var(--border-subtle)] px-4 flex items-center justify-between text-xs text-[var(--text-secondary)] select-none shrink-0">
-            <span className="text-[var(--text-primary)] font-mono text-[11px] font-medium">
+          <div className="h-9 bg-[#0e1017] border-b border-white/[0.08] px-4 flex items-center justify-between text-xs text-slate-400 select-none shrink-0">
+            <span className="text-slate-300 font-mono text-[11px] font-medium">
               {t('showcase.hotspotTitle', 'Critical Hotspot Detection')}
             </span>
             <div className="flex items-center gap-1.5 font-mono text-[11px]">
-              <span className="text-[var(--text-muted)]">core</span>
-              <span className="text-[var(--text-muted)]">/</span>
-              <span className="text-[var(--text-primary)]">parser.py</span>
+              <span className="text-slate-500">core</span>
+              <span className="text-slate-600">/</span>
+              <span className="text-slate-300">parser.py</span>
             </div>
           </div>
 
@@ -403,8 +403,8 @@ function HotspotDetectionBox() {
           </div>
 
           {/* Bottom Tray */}
-          <div className="h-20 bg-[var(--bg-card)] border-t border-[var(--border-subtle)] flex flex-col shrink-0 select-none">
-            <div className="h-6 bg-[var(--bg-surface)] border-b border-[var(--border-subtle)] px-3 flex items-center justify-between text-[10px] font-mono text-[var(--text-secondary)]">
+          <div className="h-20 bg-[#090b10] border-t border-white/[0.08] flex flex-col shrink-0 select-none">
+            <div className="h-6 bg-[#0c0e14] border-b border-white/[0.06] px-3 flex items-center justify-between text-[10px] font-mono text-slate-400">
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setActiveTab('OUTPUT')}
@@ -957,16 +957,16 @@ function InteractiveCouplingBox() {
     <div ref={containerRef} className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
       {/* Box on Left on desktop (order-2 on mobile, lg:order-1 on desktop) */}
       <div className="lg:col-span-7 w-full order-2 lg:order-1">
-        <div className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl overflow-hidden shadow-2xl flex flex-col h-[460px] sm:h-[480px] relative font-sans text-left">
+        <div className="w-full bg-[#08090c] border border-white/[0.08] rounded-xl overflow-hidden shadow-2xl flex flex-col h-[460px] sm:h-[480px] relative font-sans text-left">
           {/* Header */}
-          <div className="h-9 bg-[var(--bg-card)] border-b border-[var(--border-subtle)] px-4 flex items-center justify-between text-xs text-[var(--text-secondary)] select-none shrink-0">
-            <span className="text-[var(--text-primary)] font-mono text-[11px] font-medium">
+          <div className="h-9 bg-[#0e1017] border-b border-white/[0.08] px-4 flex items-center justify-between text-xs text-slate-400 select-none shrink-0">
+            <span className="text-slate-300 font-mono text-[11px] font-medium">
               {t('showcase.couplingTitle', 'Interactive Coupling')}
             </span>
             <div className="flex items-center gap-1.5 font-mono text-[11px]">
-              <span className="text-[var(--text-muted)]">topology</span>
-              <span className="text-[var(--text-muted)]">/</span>
-              <span className="text-[var(--text-primary)]">laser_conduits</span>
+              <span className="text-slate-500">topology</span>
+              <span className="text-slate-600">/</span>
+              <span className="text-slate-300">laser_conduits</span>
             </div>
           </div>
 
@@ -990,8 +990,8 @@ function InteractiveCouplingBox() {
           </div>
 
           {/* Bottom Tray */}
-          <div className="h-20 bg-[var(--bg-card)] border-t border-[var(--border-subtle)] flex flex-col shrink-0 select-none">
-            <div className="h-6 bg-[var(--bg-surface)] border-b border-[var(--border-subtle)] px-3 flex items-center justify-between text-[10px] font-mono text-[var(--text-secondary)]">
+          <div className="h-20 bg-[#090b10] border-t border-white/[0.08] flex flex-col shrink-0 select-none">
+            <div className="h-6 bg-[#0c0e14] border-b border-white/[0.06] px-3 flex items-center justify-between text-[10px] font-mono text-slate-400">
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setActiveTab('OUTPUT')}
@@ -1546,16 +1546,16 @@ function DeepCodeInspectionBox() {
 
       {/* Right Column: Interactive Box */}
       <div className="lg:col-span-7 w-full">
-        <div className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl overflow-hidden shadow-2xl flex flex-col h-[460px] sm:h-[480px] relative font-sans text-left">
+        <div className="w-full bg-[#08090c] border border-white/[0.08] rounded-xl overflow-hidden shadow-2xl flex flex-col h-[460px] sm:h-[480px] relative font-sans text-left">
           {/* Header */}
-          <div className="h-9 bg-[var(--bg-card)] border-b border-[var(--border-subtle)] px-4 flex items-center justify-between text-xs text-[var(--text-secondary)] select-none shrink-0">
-            <span className="text-[var(--text-primary)] font-mono text-[11px] font-medium">
+          <div className="h-9 bg-[#0e1017] border-b border-white/[0.08] px-4 flex items-center justify-between text-xs text-slate-400 select-none shrink-0">
+            <span className="text-slate-300 font-mono text-[11px] font-medium">
               {t('showcase.inspectionTitle', 'Deep Code Inspection')}
             </span>
             <div className="flex items-center gap-1.5 font-mono text-[11px]">
-              <span className="text-[var(--text-muted)]">core</span>
-              <span className="text-[var(--text-muted)]">/</span>
-              <span className="text-[var(--text-primary)]">{activeFile}</span>
+              <span className="text-slate-500">core</span>
+              <span className="text-slate-600">/</span>
+              <span className="text-slate-300">{activeFile}</span>
             </div>
           </div>
 
@@ -1575,8 +1575,8 @@ function DeepCodeInspectionBox() {
           </div>
 
           {/* Bottom Tray */}
-          <div className="h-20 bg-[var(--bg-card)] border-t border-[var(--border-subtle)] flex flex-col shrink-0 select-none">
-            <div className="h-6 bg-[var(--bg-surface)] border-b border-[var(--border-subtle)] px-3 flex items-center justify-between text-[10px] font-mono text-[var(--text-secondary)]">
+          <div className="h-20 bg-[#090b10] border-t border-white/[0.08] flex flex-col shrink-0 select-none">
+            <div className="h-6 bg-[#0c0e14] border-b border-white/[0.06] px-3 flex items-center justify-between text-[10px] font-mono text-slate-400">
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setActiveTab('OUTPUT')}
@@ -2132,18 +2132,18 @@ function ClusterDetectionBox() {
     <div ref={containerRef} className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
       {/* Box on Left on desktop (order-2 on mobile, lg:order-1 on desktop) */}
       <div className="lg:col-span-7 w-full order-2 lg:order-1">
-        <div className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl overflow-hidden shadow-2xl flex flex-col h-[460px] sm:h-[480px] relative font-sans text-left">
+        <div className="w-full bg-[#08090c] border border-white/[0.08] rounded-xl overflow-hidden shadow-2xl flex flex-col h-[460px] sm:h-[480px] relative font-sans text-left">
           {/* Header */}
-          <div className="h-9 bg-[var(--bg-card)] border-b border-[var(--border-subtle)] px-4 flex items-center justify-between text-xs text-[var(--text-secondary)] select-none shrink-0">
-            <span className="text-[var(--text-primary)] font-mono text-[11px] font-medium">
+          <div className="h-9 bg-[#0e1017] border-b border-white/[0.08] px-4 flex items-center justify-between text-xs text-slate-400 select-none shrink-0">
+            <span className="text-slate-300 font-mono text-[11px] font-medium">
               {t('showcase.clusterTitle', 'Cluster Detection')}
             </span>
             <div className="flex items-center gap-1.5 font-mono text-[11px]">
-              <span className="text-[var(--text-muted)]">backend</span>
-              <span className="text-[var(--text-muted)]">/</span>
-              <span className="text-[var(--text-muted)]">ml</span>
-              <span className="text-[var(--text-muted)]">/</span>
-              <span className="text-[var(--text-primary)]">modularity.py</span>
+              <span className="text-slate-500">backend</span>
+              <span className="text-slate-600">/</span>
+              <span className="text-slate-500">ml</span>
+              <span className="text-slate-600">/</span>
+              <span className="text-slate-300">modularity.py</span>
             </div>
           </div>
 
@@ -2163,8 +2163,8 @@ function ClusterDetectionBox() {
           </div>
 
           {/* Bottom Tray */}
-          <div className="h-20 bg-[var(--bg-card)] border-t border-[var(--border-subtle)] flex flex-col shrink-0 select-none">
-            <div className="h-6 bg-[var(--bg-surface)] border-b border-[var(--border-subtle)] px-3 flex items-center justify-between text-[10px] font-mono text-[var(--text-secondary)]">
+          <div className="h-20 bg-[#090b10] border-t border-white/[0.08] flex flex-col shrink-0 select-none">
+            <div className="h-6 bg-[#0c0e14] border-b border-white/[0.06] px-3 flex items-center justify-between text-[10px] font-mono text-slate-400">
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setActiveTab('OUTPUT')}

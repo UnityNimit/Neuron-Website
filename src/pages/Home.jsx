@@ -26,7 +26,7 @@ export default function Home() {
 
       {/* Interactive WebGL Background */}
       <div 
-        className={`fixed inset-0 z-0 pointer-events-none transition-opacity duration-300 ${isDark ? 'opacity-60 md:opacity-75' : 'opacity-40 md:opacity-50'}`}
+        className={`fixed inset-0 z-0 pointer-events-none transition-opacity duration-300 ${isDark ? 'opacity-60 md:opacity-75' : 'opacity-80 md:opacity-90'}`}
         style={{
           transform: 'translate3d(0, 0, 0)',
           backfaceVisibility: 'hidden',
@@ -40,20 +40,20 @@ export default function Home() {
           style={{
             background: isDark
               ? 'linear-gradient(to bottom, transparent, rgba(5, 5, 5, 0.4) 60%, var(--bg-app) 100%)'
-              : 'linear-gradient(to bottom, transparent, rgba(248, 250, 252, 0.6) 60%, var(--bg-app) 100%)'
+              : 'linear-gradient(to bottom, transparent 35%, rgba(234, 237, 240, 0.45) 70%, var(--bg-app) 100%)'
           }}
         />
         <PixelBlast
           variant="square"
           pixelSize={4}
-          color={isDark ? "#60A5FA" : "#3b82f6"}
+          color={isDark ? "#60A5FA" : "#1d4ed8"}
           patternScale={2}
           patternDensity={1.2}
           pixelSizeJitter={0}
           enableRipples={true}
           rippleSpeed={0.4}
           rippleThickness={0.12}
-          rippleIntensityScale={1.5}
+          rippleIntensityScale={isDark ? 1.5 : 2.2}
           liquid={false}
           speed={0.5}
           edgeFade={0.2}
@@ -84,7 +84,7 @@ export default function Home() {
               </h1>
               <ScrambledText
                 style={{ fontSize: 'clamp(2.25rem, 6vw, 4.5rem)', lineHeight: 1.05 }}
-                className="!m-0 !max-w-none !font-sans font-bold tracking-tighter text-[#60A5FA] mt-1"
+                className="!m-0 !max-w-none !font-sans font-bold tracking-tighter text-black dark:text-[#60A5FA] mt-1"
                 radius={150}
                 duration={1.5}
                 speed={0.4}
