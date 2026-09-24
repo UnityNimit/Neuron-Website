@@ -63,6 +63,7 @@ export const translations = {
       downloadLinux: 'Download for Linux',
       comingSoon: 'Coming Soon',
       whatsChanged: "What's Changed",
+      releaseNotes: 'Release Notes',
       viewOnGithub: 'View on GitHub',
       syncStatus: 'Synced with GitHub Releases',
       noReleases: 'No public releases found.'
@@ -189,6 +190,7 @@ export const translations = {
       downloadLinux: 'Für Linux herunterladen',
       comingSoon: 'Demnächst',
       whatsChanged: 'Was ist neu',
+      releaseNotes: 'Versionshinweise',
       viewOnGithub: 'Auf GitHub ansehen',
       syncStatus: 'Mit GitHub Releases synchronisiert',
       noReleases: 'Keine öffentlichen Releases gefunden.'
@@ -315,6 +317,7 @@ export const translations = {
       downloadLinux: 'Descargar para Linux',
       comingSoon: 'Próximamente',
       whatsChanged: 'Cambios en esta versión',
+      releaseNotes: 'Notas de la Versión',
       viewOnGithub: 'Ver en GitHub',
       syncStatus: 'Sincronizado con GitHub Releases',
       noReleases: 'No se encontraron versiones públicas.'
@@ -441,6 +444,7 @@ export const translations = {
       downloadLinux: 'Télécharger pour Linux',
       comingSoon: 'Bientôt disponible',
       whatsChanged: 'Changements apportés',
+      releaseNotes: 'Notes de Version',
       viewOnGithub: 'Voir sur GitHub',
       syncStatus: 'Synchronisé avec GitHub Releases',
       noReleases: 'Aucune version publique trouvée.'
@@ -567,6 +571,7 @@ export const translations = {
       downloadLinux: 'Linux向けにダウンロード',
       comingSoon: '近日公開',
       whatsChanged: '変更内容',
+      releaseNotes: 'リリースノート',
       viewOnGithub: 'GitHubで表示',
       syncStatus: 'GitHub Releasesと同期済み',
       noReleases: '公開リリースが見つかりませんでした。'
@@ -693,6 +698,7 @@ export const translations = {
       downloadLinux: '下载 Linux 版',
       comingSoon: '敬请期待',
       whatsChanged: '更新详情',
+      releaseNotes: '发行说明',
       viewOnGithub: '在 GitHub 上查看',
       syncStatus: '已与 GitHub Releases 同步',
       noReleases: '未找到公开发布版本。'

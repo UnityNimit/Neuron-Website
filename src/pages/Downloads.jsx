@@ -7,16 +7,17 @@ const REPO_OWNER = 'UnityNimit';
 const REPO_NAME = 'Neuron';
 const RELEASES_API = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/releases`;
 const CACHE_KEY = 'neuron_github_releases_cache';
+const CACHE_TTL_MS = 15 * 60 * 1000; // 15 minutes TTL to preserve 60 req/hr rate limits
 
 const FALLBACK_RELEASES = [
   {
-    id: 1,
+    id: 1319035123,
     tag_name: 'v1.0.0',
-    name: 'Initial Release (v1.0.0)',
-    published_at: '2026-09-24T00:00:00Z',
+    name: 'Neuron Beta Release (v1.0.0)',
+    published_at: '2026-09-24T13:00:52Z',
     html_url: `https://github.com/${REPO_OWNER}/${REPO_NAME}/releases/tag/v1.0.0`,
     prerelease: false,
-    body: 'Automated clean build of the Neuron App on Windows.\n\n- Zero-lag PixiJS v8 2D canvas & spatial graph topology.\n- Procedural Louvain modularity clustering and community nebulae detection.\n- Interactive cross-domain AST linking with CSP Guard protection.\n- Localhost offline intelligence and real-time AST symbol inspector.',
+    body: `Welcome to the initial beta release of Neuron. This marks the first official Windows setup executable distribution.\n\nNeuron is a powerful, locally-run desktop application designed to interface with your codebase using advanced AI agents and spatial/graph-based code representations.\n\n### Key Features & Capabilities\n- Local AI Engine: Integrated Google Antigravity AI Engine for intelligent, context-aware codebase interactions.\n- Multi-Language AST Parsing: Full tree-sitter integration to syntactically parse and map Python, JavaScript, TypeScript, C, C++, and Java codebases.\n- Graph Machine Learning: Highly optimized graph processing powered by NetworkX to map codebase architecture, dependency trees, and relationships.\n- Native Desktop Experience: Built natively with Tauri and Rust for a lightweight, secure, and performant Windows client.\n- Self-Contained Architecture: Embedded Python backend sidecar ensuring zero external Python dependencies are required on the host environment.\n\n### Installation Instructions\n1. Download Neuron_1.0.0_x64-setup.exe from the installer download link.\n2. Run the installer and follow the standard installation prompts.\n3. Launch Neuron and begin interacting with your codebase.\n\n### Known Beta Limitations\nAs this is a beta release, you may encounter edge-case bugs or unoptimized performance on extremely large codebases. Please report any issues or submit feedback via our GitHub repository.`,
     assets: [
       {
         id: 101,
@@ -48,7 +49,7 @@ function formatDate(dateString) {
   }
 }
 
-// Clean markdown-to-JSX renderer for release changelogs
+// Clean, unboxed markdown renderer for release changelogs
 function ReleaseNotes({ body }) {
   if (!body || !body.trim()) {
     return (
@@ -61,26 +62,48 @@ function ReleaseNotes({ body }) {
   const lines = body.split('\n');
 
   return (
-    <div className="space-y-1.5 text-xs text-[var(--text-secondary)] font-normal leading-relaxed">
+    <div className="space-y-2 text-xs text-[var(--text-secondary)] font-normal leading-relaxed">
       {lines.map((line, idx) => {
         const trimmed = line.trim();
         if (!trimmed) {
-          return <div key={idx} className="h-1" />;
+          return <div key={idx} className="h-1.5" />;
         }
 
         // Markdown headings: ### Title
         if (trimmed.startsWith('### ')) {
           return (
-            <h4 key={idx} className="text-xs font-semibold text-[var(--text-primary)] mt-3 mb-1">
+            <h4 key={idx} className="text-xs font-semibold text-[var(--text-primary)] pt-3 pb-1 tracking-tight">
               {trimmed.replace(/^###\s+/, '')}
             </h4>
           );
         }
         if (trimmed.startsWith('## ')) {
           return (
-            <h3 key={idx} className="text-sm font-semibold text-[var(--text-primary)] mt-3 mb-1">
+            <h3 key={idx} className="text-sm font-semibold text-[var(--text-primary)] pt-3 pb-1 tracking-tight">
               {trimmed.replace(/^##\s+/, '')}
             </h3>
+          );
+        }
+        if (trimmed.startsWith('# ')) {
+          return (
+            <h2 key={idx} className="text-sm font-bold text-[var(--text-primary)] pt-3 pb-1 tracking-tight">
+              {trimmed.replace(/^#\s+/, '')}
+            </h2>
+          );
+        }
+
+        // Numbered lists: 1. item
+        if (/^\d+\.\s+/.test(trimmed)) {
+          const numMatch = trimmed.match(/^(\d+)\.\s+(.*)/);
+          const num = numMatch ? numMatch[1] : '1';
+          const itemText = numMatch ? numMatch[2] : trimmed;
+          return (
+            <div key={idx} className="flex items-start gap-2.5 pl-0.5">
+              <span className="text-[var(--text-muted)] font-mono text-[11px] select-none shrink-0 w-3.5">
+                {num}.
+              </span>
+              <span className="flex-1">{renderInlineStyles(itemText)}</span>
+            </div>
           );
         }
 
@@ -89,14 +112,14 @@ function ReleaseNotes({ body }) {
           const itemText = trimmed.replace(/^[-*]\s+/, '');
           return (
             <div key={idx} className="flex items-start gap-2 pl-0.5">
-              <span className="text-[var(--accent-color)] select-none leading-none mt-1 text-[10px]">•</span>
+              <span className="text-[var(--text-muted)] select-none text-[11px] leading-relaxed">•</span>
               <span className="flex-1">{renderInlineStyles(itemText)}</span>
             </div>
           );
         }
 
         return (
-          <p key={idx} className="text-xs text-[var(--text-secondary)]">
+          <p key={idx} className="text-xs text-[var(--text-secondary)] leading-relaxed">
             {renderInlineStyles(trimmed)}
           </p>
         );
@@ -110,7 +133,7 @@ function renderInlineStyles(text) {
   return parts.map((part, i) => {
     if (part.startsWith('`') && part.endsWith('`')) {
       return (
-        <code key={i} className="px-1 py-0.5 rounded bg-[var(--bg-app)] border border-[var(--border-subtle)] font-mono text-[11px] text-[var(--text-primary)]">
+        <code key={i} className="px-1 py-0.5 rounded bg-[var(--bg-card)] border border-[var(--border-subtle)] font-mono text-[11px] text-[var(--text-primary)]">
           {part.slice(1, -1)}
         </code>
       );
@@ -130,20 +153,28 @@ export default function Downloads() {
   const { t } = useLanguage();
   const [releases, setReleases] = useState(FALLBACK_RELEASES);
   const [isLoading, setIsLoading] = useState(false);
-  const [lastSynced, setLastSynced] = useState(null);
-  const [syncError, setSyncError] = useState(null);
+  const [lastSynced, setLastSynced] = useState(new Date('2026-09-24T13:00:52Z'));
+  const [syncNotice, setSyncNotice] = useState(null);
 
   const fetchReleases = useCallback(async (isManualRefresh = false) => {
     setIsLoading(true);
-    setSyncError(null);
 
     try {
       const res = await fetch(RELEASES_API, {
         headers: { Accept: 'application/vnd.github.v3+json' }
       });
 
+      if (res.status === 403) {
+        // GitHub API unauthenticated 60 req/hr rate limit reached
+        if (isManualRefresh) {
+          setSyncNotice('GitHub rate limit reached (60/hr) · Serving cached release');
+          setTimeout(() => setSyncNotice(null), 5000);
+        }
+        return;
+      }
+
       if (!res.ok) {
-        throw new Error(`GitHub API returned status ${res.status}`);
+        throw new Error(`HTTP ${res.status}`);
       }
 
       const data = await res.json();
@@ -153,16 +184,18 @@ export default function Downloads() {
           try {
             localStorage.setItem(CACHE_KEY, JSON.stringify({ data, timestamp: Date.now() }));
           } catch {
-            // local storage write fallback
+            // ignore
           }
         } else {
           setReleases([]);
         }
         setLastSynced(new Date());
-      } else {
-        throw new Error('Unexpected response format from GitHub');
+        if (isManualRefresh) {
+          setSyncNotice(null);
+        }
       }
-    } catch (err) {
+    } catch {
+      // Fallback gracefully to cached release
       try {
         const cached = localStorage.getItem(CACHE_KEY);
         if (cached) {
@@ -176,7 +209,8 @@ export default function Downloads() {
         // use default fallback
       }
       if (isManualRefresh) {
-        setSyncError(err.message || 'Failed to sync with GitHub API');
+        setSyncNotice('Sync unavailable · Serving latest cached release');
+        setTimeout(() => setSyncNotice(null), 5000);
       }
     } finally {
       setIsLoading(false);
@@ -184,19 +218,29 @@ export default function Downloads() {
   }, []);
 
   useEffect(() => {
+    let hasFreshCache = false;
     try {
       const cached = localStorage.getItem(CACHE_KEY);
       if (cached) {
         const parsed = JSON.parse(cached);
-        if (Array.isArray(parsed?.data)) {
+        if (Array.isArray(parsed?.data) && parsed.data.length > 0) {
           setReleases(parsed.data);
-          if (parsed.timestamp) setLastSynced(new Date(parsed.timestamp));
+          if (parsed.timestamp) {
+            setLastSynced(new Date(parsed.timestamp));
+            if (Date.now() - parsed.timestamp < CACHE_TTL_MS) {
+              hasFreshCache = true;
+            }
+          }
         }
       }
     } catch {
       // ignore
     }
-    fetchReleases(false);
+
+    // Only auto-fetch if no fresh cache exists
+    if (!hasFreshCache) {
+      fetchReleases(false);
+    }
   }, [fetchReleases]);
 
   return (
@@ -216,33 +260,36 @@ export default function Downloads() {
           </div>
 
           {/* GitHub Sync Status: Only the icon and no text with the time only and no boxs */}
-          <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] font-mono self-start sm:self-auto shrink-0 pb-1">
-            <button
-              onClick={() => fetchReleases(true)}
-              disabled={isLoading}
-              title="Refresh releases from GitHub"
-              className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer disabled:opacity-50 p-0 bg-transparent border-0 outline-none inline-flex items-center justify-center"
-              aria-label="Refresh releases"
-            >
-              <RefreshCw size={13} className={isLoading ? 'animate-spin text-[var(--accent-color)]' : ''} />
-            </button>
-            {lastSynced && (
-              <span className="text-xs text-[var(--text-muted)] select-none">
-                {lastSynced.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          <div className="flex flex-col items-start sm:items-end gap-1 self-start sm:self-auto shrink-0 pb-1">
+            <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] font-mono">
+              <button
+                onClick={() => fetchReleases(true)}
+                disabled={isLoading}
+                title="Refresh releases from GitHub"
+                className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer disabled:opacity-50 p-0 bg-transparent border-0 outline-none inline-flex items-center justify-center"
+                aria-label="Refresh releases"
+              >
+                <RefreshCw size={13} className={isLoading ? 'animate-spin text-[var(--accent-color)]' : ''} />
+              </button>
+              {lastSynced && (
+                <span className="text-xs text-[var(--text-muted)] select-none">
+                  {lastSynced.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </span>
+              )}
+            </div>
+
+            {/* Pure, clean text notice: Zero boxes, zero containers */}
+            {syncNotice && (
+              <span className="text-[11px] font-mono text-[var(--text-muted)] transition-opacity select-none">
+                {syncNotice}
               </span>
             )}
           </div>
         </div>
 
-        {syncError && (
-          <div className="mb-6 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs flex items-center gap-2">
-            <span>{syncError} (Serving latest cached release data)</span>
-          </div>
-        )}
-
-        {/* Releases List - Stretched to full width matching the header line */}
+        {/* Releases List - Stretched to full width matching the header line, completely unboxed */}
         {releases.length === 0 ? (
-          <div className="p-8 text-center rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-[var(--text-muted)] text-sm w-full">
+          <div className="py-12 text-center text-[var(--text-muted)] text-sm w-full">
             <p>{t('versions.noReleases', 'No public releases found.')}</p>
             <a 
               href={`https://github.com/${REPO_OWNER}/${REPO_NAME}/releases`}
@@ -254,7 +301,7 @@ export default function Downloads() {
             </a>
           </div>
         ) : (
-          <div className="space-y-6 w-full text-left">
+          <div className="w-full text-left space-y-12">
             {releases.map((rel) => {
               const winAsset = rel.assets?.find(a => a.name.endsWith('.exe') || a.name.endsWith('.msi')) || rel.assets?.[0];
               const winDownloadUrl = winAsset?.browser_download_url || `https://github.com/${REPO_OWNER}/${REPO_NAME}/releases/download/${rel.tag_name}/Neuron_1.0.0_x64-setup.exe`;
@@ -262,12 +309,12 @@ export default function Downloads() {
               return (
                 <article
                   key={rel.id || rel.tag_name}
-                  className="w-full rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] p-6 sm:p-7 shadow-sm transition-all hover:border-[var(--border-hover)]"
+                  className="w-full pb-12 border-b border-[var(--border-subtle)] last:border-b-0 last:pb-0"
                 >
                   {/* Release Header */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-4 border-b border-[var(--border-subtle)]">
-                    <div className="flex items-center gap-3 flex-wrap">
-                      <span className="font-mono text-base font-bold text-[var(--text-primary)]">
+                  <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 mb-6 pb-3 border-b border-[var(--border-subtle)]/60">
+                    <div className="flex items-baseline gap-3 flex-wrap">
+                      <span className="font-mono text-lg sm:text-xl font-bold tracking-tight text-[var(--text-primary)]">
                         {rel.tag_name}
                       </span>
 
@@ -278,8 +325,8 @@ export default function Downloads() {
                       )}
 
                       {rel.prerelease && (
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-medium bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                          Pre-release
+                        <span className="text-[11px] font-mono text-amber-500/90 font-medium">
+                          (pre-release)
                         </span>
                       )}
                     </div>
@@ -298,18 +345,18 @@ export default function Downloads() {
                     </div>
                   </div>
 
-                  {/* Release Changelog Body */}
+                  {/* Release Notes - Completely unboxed, clean typography */}
                   <div className="mb-6">
-                    <h3 className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)] font-medium mb-2.5">
-                      {t('versions.whatsChanged', "What's Changed")}
+                    <h3 className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)] font-medium mb-3">
+                      {t('versions.releaseNotes', 'Release Notes')}
                     </h3>
-                    <div className="p-4 rounded-lg bg-[var(--bg-card)] border border-[var(--border-subtle)]">
+                    <div className="text-xs text-[var(--text-secondary)] leading-relaxed">
                       <ReleaseNotes body={rel.body} />
                     </div>
                   </div>
 
                   {/* Single Download Button */}
-                  <div className="pt-1 flex items-center">
+                  <div className="pt-2 flex items-center">
                     <a
                       href={winDownloadUrl}
                       download
