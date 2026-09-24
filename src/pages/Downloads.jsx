@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Download, ExternalLink, RefreshCw, CheckCircle2, Tag, Calendar, AlertCircle } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import Footer from '../components/Footer';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -48,12 +48,12 @@ function formatDate(dateString) {
   }
 }
 
-// Simple, clean markdown-to-JSX renderer for release bodies
+// Clean markdown-to-JSX renderer for release changelogs
 function ReleaseNotes({ body }) {
   if (!body || !body.trim()) {
     return (
-      <p className="text-xs text-[var(--text-muted)] italic">
-        Automated clean release build of Neuron.
+      <p className="text-xs text-[var(--text-muted)] font-normal">
+        Automated release build of Neuron.
       </p>
     );
   }
@@ -78,7 +78,7 @@ function ReleaseNotes({ body }) {
         }
         if (trimmed.startsWith('## ')) {
           return (
-            <h3 key={idx} className="text-sm font-bold text-[var(--text-primary)] mt-3 mb-1">
+            <h3 key={idx} className="text-sm font-semibold text-[var(--text-primary)] mt-3 mb-1">
               {trimmed.replace(/^##\s+/, '')}
             </h3>
           );
@@ -88,8 +88,8 @@ function ReleaseNotes({ body }) {
         if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
           const itemText = trimmed.replace(/^[-*]\s+/, '');
           return (
-            <div key={idx} className="flex items-start gap-2 pl-1">
-              <span className="text-[var(--accent-color)] select-none leading-none mt-1">•</span>
+            <div key={idx} className="flex items-start gap-2 pl-0.5">
+              <span className="text-[var(--accent-color)] select-none leading-none mt-1 text-[10px]">•</span>
               <span className="flex-1">{renderInlineStyles(itemText)}</span>
             </div>
           );
@@ -105,7 +105,6 @@ function ReleaseNotes({ body }) {
   );
 }
 
-// Helper for backticks code and bold text
 function renderInlineStyles(text) {
   const parts = text.split(/(`[^`]+`|\*\*[^*]+\*\*)/g);
   return parts.map((part, i) => {
@@ -157,7 +156,6 @@ export default function Downloads() {
             // local storage write fallback
           }
         } else {
-          // Empty release array on GitHub
           setReleases([]);
         }
         setLastSynced(new Date());
@@ -165,7 +163,6 @@ export default function Downloads() {
         throw new Error('Unexpected response format from GitHub');
       }
     } catch (err) {
-      // Fallback to cache if available
       try {
         const cached = localStorage.getItem(CACHE_KEY);
         if (cached) {
@@ -187,7 +184,6 @@ export default function Downloads() {
   }, []);
 
   useEffect(() => {
-    // Initial fetch from cache then network
     try {
       const cached = localStorage.getItem(CACHE_KEY);
       if (cached) {
@@ -215,23 +211,23 @@ export default function Downloads() {
               {t('versions.title', 'Versions')}
             </h1>
             <p className="text-[var(--text-secondary)] text-xs sm:text-sm leading-relaxed max-w-2xl font-normal">
-              {t('versions.desc', 'Release history and downloads for Neuron. All versions run locally on your workstation.')}
+              {t('versions.desc', 'Release history and workstation downloads for Neuron.')}
             </p>
           </div>
 
-          {/* GitHub Sync Status & Refresh Button */}
-          <div className="flex items-center gap-2.5 text-xs text-[var(--text-muted)] self-start sm:self-auto shrink-0 font-mono">
+          {/* GitHub Sync Status: Only the icon and no text with the time only and no boxs */}
+          <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] font-mono self-start sm:self-auto shrink-0 pb-1">
             <button
               onClick={() => fetchReleases(true)}
               disabled={isLoading}
               title="Refresh releases from GitHub"
-              className="p-1.5 rounded-md hover:bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all cursor-pointer disabled:opacity-50 inline-flex items-center gap-1.5"
+              className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer disabled:opacity-50 p-0 bg-transparent border-0 outline-none inline-flex items-center justify-center"
+              aria-label="Refresh releases"
             >
               <RefreshCw size={13} className={isLoading ? 'animate-spin text-[var(--accent-color)]' : ''} />
-              <span className="hidden sm:inline text-[11px]">{t('versions.syncStatus', 'Synced with GitHub Releases')}</span>
             </button>
             {lastSynced && (
-              <span className="text-[10px] hidden md:inline text-[var(--text-muted)]">
+              <span className="text-xs text-[var(--text-muted)] select-none">
                 {lastSynced.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </span>
             )}
@@ -240,14 +236,13 @@ export default function Downloads() {
 
         {syncError && (
           <div className="mb-6 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs flex items-center gap-2">
-            <AlertCircle size={14} className="shrink-0" />
             <span>{syncError} (Serving latest cached release data)</span>
           </div>
         )}
 
-        {/* Releases List */}
+        {/* Releases List - Stretched to full width matching the header line */}
         {releases.length === 0 ? (
-          <div className="p-8 text-center rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-[var(--text-muted)] text-sm">
+          <div className="p-8 text-center rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-[var(--text-muted)] text-sm w-full">
             <p>{t('versions.noReleases', 'No public releases found.')}</p>
             <a 
               href={`https://github.com/${REPO_OWNER}/${REPO_NAME}/releases`}
@@ -256,42 +251,29 @@ export default function Downloads() {
               className="mt-3 inline-flex items-center gap-1 text-xs text-[var(--accent-color)] hover:underline"
             >
               <span>{t('versions.viewOnGithub', 'View on GitHub')}</span>
-              <ExternalLink size={12} />
             </a>
           </div>
         ) : (
-          <div className="space-y-6 max-w-4xl text-left">
-            {releases.map((rel, index) => {
-              const isLatest = index === 0 && !rel.prerelease;
-              const winAsset = rel.assets?.find(a => a.name.endsWith('.exe') || a.name.endsWith('.msi'));
-              const macAsset = rel.assets?.find(a => a.name.endsWith('.dmg') || a.name.endsWith('.pkg'));
-              const linuxAsset = rel.assets?.find(a => a.name.endsWith('.AppImage') || a.name.endsWith('.deb') || a.name.endsWith('.rpm') || a.name.endsWith('.tar.gz'));
-
-              // Default download URL for windows
+          <div className="space-y-6 w-full text-left">
+            {releases.map((rel) => {
+              const winAsset = rel.assets?.find(a => a.name.endsWith('.exe') || a.name.endsWith('.msi')) || rel.assets?.[0];
               const winDownloadUrl = winAsset?.browser_download_url || `https://github.com/${REPO_OWNER}/${REPO_NAME}/releases/download/${rel.tag_name}/Neuron_1.0.0_x64-setup.exe`;
 
               return (
                 <article
                   key={rel.id || rel.tag_name}
-                  className="rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] p-6 sm:p-7 shadow-sm transition-all hover:border-[var(--border-hover)]"
+                  className="w-full rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] p-6 sm:p-7 shadow-sm transition-all hover:border-[var(--border-hover)]"
                 >
                   {/* Release Header */}
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-4 border-b border-[var(--border-subtle)]">
                     <div className="flex items-center gap-3 flex-wrap">
-                      <div className="flex items-center gap-1.5 font-mono text-sm sm:text-base font-bold text-[var(--text-primary)]">
-                        <Tag size={15} className="text-[var(--accent-color)]" />
-                        <span>{rel.tag_name}</span>
-                      </div>
+                      <span className="font-mono text-base font-bold text-[var(--text-primary)]">
+                        {rel.tag_name}
+                      </span>
 
                       {rel.name && rel.name !== rel.tag_name && (
-                        <span className="text-xs sm:text-sm font-semibold text-[var(--text-secondary)]">
+                        <span className="text-xs sm:text-sm font-medium text-[var(--text-secondary)]">
                           {rel.name}
-                        </span>
-                      )}
-
-                      {isLatest && (
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                          Latest
                         </span>
                       )}
 
@@ -302,25 +284,21 @@ export default function Downloads() {
                       )}
                     </div>
 
-                    <div className="flex items-center gap-3 text-xs text-[var(--text-muted)] font-mono">
-                      <div className="flex items-center gap-1">
-                        <Calendar size={12} />
-                        <span>{formatDate(rel.published_at)}</span>
-                      </div>
+                    <div className="flex items-center gap-4 text-xs text-[var(--text-muted)] font-mono">
+                      <span>{formatDate(rel.published_at)}</span>
                       <a
                         href={rel.html_url}
                         target="_blank"
                         rel="noreferrer"
-                        className="hover:text-[var(--text-primary)] transition-colors inline-flex items-center gap-1"
+                        className="hover:text-[var(--text-primary)] transition-colors underline-offset-4 hover:underline"
                         title={t('versions.viewOnGithub', 'View on GitHub')}
                       >
-                        <span className="hidden sm:inline">{t('versions.viewOnGithub', 'View on GitHub')}</span>
-                        <ExternalLink size={12} />
+                        {t('versions.viewOnGithub', 'View on GitHub')}
                       </a>
                     </div>
                   </div>
 
-                  {/* Release Changelog Body ("What's Changed in this version") */}
+                  {/* Release Changelog Body */}
                   <div className="mb-6">
                     <h3 className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)] font-medium mb-2.5">
                       {t('versions.whatsChanged', "What's Changed")}
@@ -330,78 +308,20 @@ export default function Downloads() {
                     </div>
                   </div>
 
-                  {/* 3 Download Buttons Side-by-Side (Windows, Mac, Linux) */}
-                  <div className="pt-2 flex flex-wrap items-center gap-2.5 sm:gap-3">
-                    {/* Windows: Active Download */}
+                  {/* Single Download Button */}
+                  <div className="pt-1 flex items-center">
                     <a
                       href={winDownloadUrl}
                       download
-                      className="h-8 px-4 rounded-lg bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] font-semibold text-xs hover:opacity-90 transition-all inline-flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.98] shadow-sm shrink-0"
+                      className="h-8 px-4 rounded-lg bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] font-semibold text-xs hover:opacity-90 transition-all inline-flex items-center justify-center cursor-pointer active:scale-[0.98] shadow-sm shrink-0"
                     >
-                      <Download size={13} />
                       <span>{t('hero.downloadWindows', 'Download for Windows')}</span>
                       {winAsset?.size && (
-                        <span className="opacity-70 text-[10px] font-mono font-normal">
+                        <span className="opacity-70 text-[10px] font-mono font-normal ml-1.5">
                           ({formatBytes(winAsset.size)})
                         </span>
                       )}
                     </a>
-
-                    {/* Mac Download or Coming Soon */}
-                    {macAsset ? (
-                      <a
-                        href={macAsset.browser_download_url}
-                        download
-                        className="h-8 px-4 rounded-lg bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] font-semibold text-xs hover:opacity-90 transition-all inline-flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.98] shadow-sm shrink-0"
-                      >
-                        <Download size={13} />
-                        <span>{t('hero.downloadMac', 'Download for Mac')}</span>
-                        {macAsset.size && (
-                          <span className="opacity-70 text-[10px] font-mono font-normal">
-                            ({formatBytes(macAsset.size)})
-                          </span>
-                        )}
-                      </a>
-                    ) : (
-                      <button
-                        disabled
-                        title={t('hero.comingSoon', 'Coming Soon')}
-                        className="h-8 px-3.5 rounded-lg bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-muted)] opacity-60 font-medium text-xs inline-flex items-center justify-center gap-1.5 cursor-not-allowed select-none transition-all shrink-0"
-                      >
-                        <span>{t('hero.downloadMac', 'Download for Mac')}</span>
-                        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-[var(--border-subtle)] text-[var(--text-muted)] leading-none">
-                          {t('hero.comingSoon', 'Coming Soon')}
-                        </span>
-                      </button>
-                    )}
-
-                    {/* Linux Download or Coming Soon */}
-                    {linuxAsset ? (
-                      <a
-                        href={linuxAsset.browser_download_url}
-                        download
-                        className="h-8 px-4 rounded-lg bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] font-semibold text-xs hover:opacity-90 transition-all inline-flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.98] shadow-sm shrink-0"
-                      >
-                        <Download size={13} />
-                        <span>{t('hero.downloadLinux', 'Download for Linux')}</span>
-                        {linuxAsset.size && (
-                          <span className="opacity-70 text-[10px] font-mono font-normal">
-                            ({formatBytes(linuxAsset.size)})
-                          </span>
-                        )}
-                      </a>
-                    ) : (
-                      <button
-                        disabled
-                        title={t('hero.comingSoon', 'Coming Soon')}
-                        className="h-8 px-3.5 rounded-lg bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-muted)] opacity-60 font-medium text-xs inline-flex items-center justify-center gap-1.5 cursor-not-allowed select-none transition-all shrink-0"
-                      >
-                        <span>{t('hero.downloadLinux', 'Download for Linux')}</span>
-                        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-[var(--border-subtle)] text-[var(--text-muted)] leading-none">
-                          {t('hero.comingSoon', 'Coming Soon')}
-                        </span>
-                      </button>
-                    )}
                   </div>
                 </article>
               );
