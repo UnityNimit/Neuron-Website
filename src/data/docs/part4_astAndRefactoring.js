@@ -103,7 +103,7 @@ def calculate_complexity(node: Optional[Node]) -> int:
         title: '1. Why Visual Refactoring Requires a Constraint Solver',
         desc: 'Dragging a function moon from File A and dropping it onto File B looks simple on a 2D canvas, but naive code movement can silently break a repository in subtle ways.',
         paragraphs: [
-          'Suppose Function X in File A calls a private helper Function Y in File A, while Function Z in File B already imports from File A. If you blindly move Function X into File B, File B must now import Function Y from File A, while File A must import Function X from File B—instantly creating a fatal circular import deadlock (ImportError: cannot import name ... from partially initialized module).',
+          'Suppose Function X in File A calls a private helper Function Y in File A, while Function Z in File B already imports from File A. If you blindly move Function X into File B, File B must now import Function Y from File A, while File A must import Function X from File B, instantly creating a fatal circular import deadlock (ImportError: cannot import name ... from partially initialized module).',
           'To make visual refactoring 100% safe, backend/ai/csp_guard.py evaluates every proposed symbol move through an 8-invariant Arc Consistency (AC-3) validation pipeline (ac3_validate_refactor) before a single character on disk is modified.'
         ],
         table: {

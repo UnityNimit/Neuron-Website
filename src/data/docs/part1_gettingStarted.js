@@ -72,24 +72,24 @@ export const PART1_GETTING_STARTED_DOCS = {
         ],
         points: [
           {
-            label: 'Pillar I — Multi-Language Tree-Sitter AST Parser (backend/core/parser.py)',
-            text: 'Instantiates persistent, in-memory C-compiled Tree-Sitter grammars for Python, JavaScript, JSX, TypeScript, TSX, C, C++, and Java. Extracts classes, functions, parameters, cyclomatic decision triggers, imports, exports, and cross-stack HTTP/WebSocket URIs with an mtime + byte-size incremental AST cache.'
+            label: 'Pillar 1: Multi-Language Tree-Sitter AST Parser (backend/core/parser.py)',
+            text: 'Instantiates persistent, in-memory C-compiled Tree-Sitter grammars for Python, JavaScript, JSX, TypeScript, TSX, C, C++, and Java. Extracts classes, functions, parameters, cyclomatic decision triggers, imports, exports, and cross-stack HTTP and WebSocket URIs with an incremental AST cache based on modification times and byte sizes.'
           },
           {
-            label: 'Pillar II — Multi-Modal Graph ML & Risk Analyzer (backend/ml/analyzer.py)',
-            text: 'Constructs dual NetworkX graphs (undirected weighted G for Louvain modularity clustering and directed DiG for authority flow). Computes PageRank, Betweenness Centrality, Fan-In/Fan-Out ratios, and Shannon character entropy to assemble a 10-dimensional feature tensor evaluated by an unsupervised Isolation Forest.'
+            label: 'Pillar 2: Multi-Modal Graph ML and Risk Analyzer (backend/ml/analyzer.py)',
+            text: 'Constructs dual NetworkX graphs: an undirected weighted graph for Louvain modularity clustering and a directed graph for authority flow. Computes PageRank, Betweenness Centrality, Fan-In and Fan-Out ratios, and Shannon character entropy to assemble a 10-dimensional feature tensor evaluated by an unsupervised Isolation Forest.'
           },
           {
-            label: 'Pillar III — PixiJS v8 WebGPU Spatial Canvas & D3 Physics (frontend/src/components/canvas/)',
-            text: 'Simulates perpetual cosmic equilibrium using customized D3-force laws (orbit distances, tiered repulsion, collision radii) while rendering 8 depth-sorted graphics layers including blurred convex hull nebulae, laser photon bridges, and blast radius shockwaves.'
+            label: 'Pillar 3: PixiJS v8 WebGPU Spatial Canvas and D3 Physics (frontend/src/components/canvas/)',
+            text: 'Maintains interactive layout balance using customized D3 physical force rules while rendering eight depth-sorted graphics layers, including smooth convex hull cluster nebulae, animated laser photon bridges, and blast radius shockwaves.'
           },
           {
-            label: 'Pillar IV — AC-3 Refactoring Shield & Lossless Mutators (backend/ai/csp_guard.py & backend/core/mutator.py)',
-            text: 'Validates every symbol move against four mathematical invariants (Domain, Scope, Mutual Coupling, and Global Arc Consistency) before executing formatting-preserving source surgery via LibCST (Python) or byte-span Tree-Sitter AST slicing (JS/TS/JSX).'
+            label: 'Pillar 4: AC-3 Refactoring Shield and Lossless Mutators (backend/ai/csp_guard.py & backend/core/mutator.py)',
+            text: 'Validates every symbol move against four mathematical invariants (Domain, Scope, Mutual Coupling, and Global Arc Consistency) before executing formatting-preserving source surgery via LibCST for Python or byte-span AST slicing for JavaScript and TypeScript.'
           },
           {
-            label: 'Pillar V — Autonomous AI Studio & Horizon 3 Agent Supervisor (backend/services/ai_service.py)',
-            text: 'Features zero-hardcode live BYOK provider discovery across 9 cloud providers plus local Ollama inference, equipped with 9 autonomous workspace tools, pre-flight in-RAM AST syntax validation, interactive approval gates, and a real-time Agent Supervisor HUD.'
+            label: 'Pillar 5: Autonomous AI Studio and Horizon 3 Agent Supervisor (backend/services/ai_service.py)',
+            text: 'Features live BYOK provider discovery across nine cloud providers plus local Ollama inference, equipped with nine autonomous workspace tools, pre-flight in-RAM AST syntax validation, interactive approval gates, and a real-time Agent Supervisor HUD.'
           }
         ]
       },
@@ -161,7 +161,7 @@ export const PART1_GETTING_STARTED_DOCS = {
         desc: 'When you launch Neuron for the first time, it automatically initializes a permanent, writable workspace so you can explore the spatial canvas immediately without configuration.',
         paragraphs: [
           'Unlike browser sandboxes or temporary extractors, Neuron guarantees that your active project directory never points inside a read-only installation folder or a temporary PyInstaller _MEI extraction directory. On startup, the backend state manager (backend/core/state.py) resolves your workspace directory using a strict three-tier priority hierarchy: CLI flags (--target-dir), environment variables (NEURON_WORKSPACE_DIR), and finally ~/NeuronProjects.',
-          'If ~/NeuronProjects does not yet exist on your workstation, Neuron creates it automatically and seeds two starter modules—server.py and App.jsx—so the AST parser and spatial physics engine immediately render a live multi-language graph.'
+          'If ~/NeuronProjects does not yet exist on your workstation, Neuron creates it automatically and seeds two starter modules (server.py and App.jsx) so the AST parser and spatial physics engine immediately render a live multi-language graph.'
         ],
         codeBlocks: [
           {
@@ -338,7 +338,7 @@ C:/Users/<Username>/NeuronProjects/
         title: '2. Frozen Sidecar Lifecycle & Headless Crash Shield',
         desc: 'How Neuron guarantees rock-solid stability when spawning the Python FastAPI engine as a headless desktop subprocess:',
         paragraphs: [
-          'In production desktop builds, Tauri spawns neuron-backend.exe without an attached console window (headless mode). On Windows, when a Python process compiled with PyInstaller (--noconsole) attempts to write to sys.stdout or sys.stderr—such as Uvicorn access logs or print statements—Python normally raises an unhandled OSError: [Errno 9] Bad file descriptor or AttributeError: NoneType object has no attribute write, crashing the backend immediately.',
+          'In production desktop builds, Tauri spawns neuron-backend.exe without an attached console window in headless mode. On Windows, when a Python process compiled with PyInstaller (--noconsole) attempts to write to sys.stdout or sys.stderr (such as Uvicorn access logs or print statements), Python normally raises an unhandled OSError: [Errno 9] Bad file descriptor or AttributeError: NoneType object has no attribute write, crashing the backend immediately.',
           'To eliminate this failure mode permanently, backend/main.py implements a Line-1 Headless Crash Shield (SafeStreamWriter) before importing FastAPI, Uvicorn, or any third-party module.'
         ],
         codeBlocks: [
@@ -515,7 +515,7 @@ python build_sidecar.py`
         points: [
           {
             label: 'Non-Blocking Thread Offloading (asyncio.to_thread)',
-            text: 'Within backend/api/websocket_router.py, every CPU-intensive operation—such as get_workspace_state(), vector_engine.query(), refactor_symbol_move_service(), and run_code_polyglot_sync()—is dispatched via asyncio.to_thread() so the FastAPI event loop remains responsive to PING heartbeats and terminal streams at all times.'
+            text: 'Within backend/api/websocket_router.py, every CPU-intensive operation (including get_workspace_state(), vector_engine.query(), refactor_symbol_move_service(), and run_code_polyglot_sync()) is dispatched via asyncio.to_thread() so the FastAPI event loop remains responsive to PING heartbeats and terminal streams at all times.'
           },
           {
             label: 'Multi-Connection Resilient Broadcasting',
@@ -712,7 +712,7 @@ $env:NEURON_WORKSPACE_DIR = "D:/Engineering/MyService"
     sections: [
       {
         id: 'v1-0-0-release',
-        title: 'v1.0.0 — Production Spatial Intelligence & Autonomous Studio Release',
+        title: 'v1.0.0: Production Spatial Intelligence and Autonomous Studio Release',
         desc: 'Major production milestone unifying the 2D WebGPU Spatial Canvas, Multi-Modal Graph ML Engine, AC-3 Refactoring Shield, Polyglot Code Runner, and Zero-Hardcode Autonomous AI Studio.',
         points: [
           {

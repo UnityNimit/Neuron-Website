@@ -11,7 +11,7 @@ export const PART3_AI_STUDIO_DOCS = {
         title: '1. Architectural Overview of the Neuron AI Studio',
         desc: 'Unlike external browser chat windows or stateless autocomplete plugins, Neuron embeds a full multi-session autonomous engineering studio directly inside the right workspace container (RightPanelContainer.jsx).',
         paragraphs: [
-          'The AI Studio consists of three tightly coordinated frontend components—AiChatView.jsx, AiSidebar.jsx, and ModelSelectorDropdown.jsx—driven by the useAiStudio.js state hook and backed by backend/services/ai_service.py over full-duplex WebSockets.',
+          'The AI Studio consists of three tightly coordinated frontend components (AiChatView.jsx, AiSidebar.jsx, and ModelSelectorDropdown.jsx) driven by the useAiStudio.js state hook and backed by backend/services/ai_service.py over full-duplex WebSockets.',
           'Every conversation thread in Neuron is scoped to the active workspace directory and persisted atomically to disk inside <workspace_root>/.neuron/conversations.json. When you switch repositories via File > Open Project, the AI Studio automatically loads the conversation history, architectural memory (.neuron/memory.md), and custom rules belonging to that specific project.'
         ],
         table: {
@@ -203,7 +203,7 @@ if any(t in m_lower for t in ("exp", "preview", "beta", "test")):
         points: [
           {
             label: 'Balanced-Brace JSON Tool Call Extractor (parse_tool_calls_from_text)',
-            text: 'In addition to native SDK function calling (Google GenAI), Neuron includes a balanced-brace JSON parser that extracts tool calls from fenced ```json blocks or inline JSON objects emitted by OpenAI-compatible, Anthropic, and local Ollama models—automatically unwrapping nested argument schemas.'
+            text: 'In addition to native SDK function calling (Google GenAI), Neuron includes a balanced-brace JSON parser that extracts tool calls from fenced ```json blocks or inline JSON objects emitted by OpenAI-compatible, Anthropic, and local Ollama models, automatically unwrapping nested argument schemas.'
           }
         ]
       },
@@ -400,11 +400,11 @@ Active File Content:
         table: {
           headers: ['Safety Guard in extract_refactor_proposal()', 'Trigger Condition', 'Protective Behavior'],
           rows: [
-            ['Guard 0 — Autonomous Tool Deduplication', 'tools_executed == True', 'If the agent already wrote or modified files directly via autonomous tools during the turn, suppresses redundant proposal cards'],
-            ['Guard 1 — Conversational & Operational Intent Filter', 'Prompt starts with question words ("what is", "explain", "how does") or operational verbs ("run", "execute", "test", "install") without mutation verbs', 'Returns None immediately so asking "how do I run this?" never offers to overwrite your code'],
-            ['Guard 2 — Shell & Terminal Language Block Filter', 'Code fence language is bash, sh, shell, zsh, cmd, powershell, terminal, console, or bat', 'Never treats terminal or shell script blocks as source file refactors'],
-            ['Guard 3 — CLI Command Prefix Filter', 'First non-empty line starts with python, pip, npm, npx, node, git, cargo, docker, pytest, curl, uvicorn, etc.', 'Blocks single-line or multi-line CLI commands from being misclassified as source code'],
-            ['Guard 4 — Explicit Filepath Resolution', 'Checks ```lang:filepath, # filepath: comments, prose hints ("saved in game.py"), and finally active_file', 'Ensures new scripts (e.g., snake.py) are routed to their intended filename rather than blindly overwriting the currently open file']
+            ['Guard 0: Autonomous Tool Deduplication', 'tools_executed == True', 'If the agent already wrote or modified files directly via autonomous tools during the turn, suppresses redundant proposal cards'],
+            ['Guard 1: Conversational and Operational Intent Filter', 'Prompt starts with question words ("what is", "explain", "how does") or operational verbs ("run", "execute", "test", "install") without mutation verbs', 'Returns None immediately so asking "how do I run this?" never offers to overwrite your code'],
+            ['Guard 2: Shell and Terminal Language Block Filter', 'Code fence language is bash, sh, shell, zsh, cmd, powershell, terminal, console, or bat', 'Never treats terminal or shell script blocks as source file refactors'],
+            ['Guard 3: CLI Command Prefix Filter', 'First non-empty line starts with python, pip, npm, npx, node, git, cargo, docker, pytest, curl, uvicorn, etc.', 'Blocks single-line or multi-line CLI commands from being misclassified as source code'],
+            ['Guard 4: Explicit Filepath Resolution', 'Checks ```lang:filepath, # filepath: comments, prose hints ("saved in game.py"), and finally active_file', 'Ensures new scripts (such as snake.py) are routed to their intended filename rather than blindly overwriting the currently open file']
           ]
         },
         points: [

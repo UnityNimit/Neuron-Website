@@ -17,10 +17,10 @@ export const PART2_SPATIAL_ENGINE_DOCS = {
         table: {
           headers: ['Celestial Tier', 'AST Entity Type (nodeType)', 'Base Size (px)', 'Collision Radius', 'Default Theme Color', 'Gravitational Role'],
           rows: [
-            ['Tier 0 — Suns', 'folder (Directory Containers)', '36 px - 44 px', '40 px', '#e4ef61 / #3b82f6', 'High-repulsion (-1800) gravitational anchors that separate top-level subsystems (e.g., backend/, frontend/, services/)'],
-            ['Tier 1 — Planets', 'file (Source Code Modules)', '18 px - 26 px', '22 px', '#3b82f6 / #eab308', 'Medium-repulsion (-600) nodes that orbit their parent Folder Sun at planetOrbit distance (95 px)'],
-            ['Tier 2 — Moons', 'function (Functions, Classes, Methods, Routes)', '10 px - 14 px', '12 px', '#8b5cf6 / #a855f7', 'Low-repulsion (-150) callable symbols that orbit their parent File Planet at moonOrbit distance (45 px)'],
-            ['Macro LOD — Super-Nodes', 'superNode (Top-Level Cluster Aggregates)', '28 px - 90 px (Log10 LOC)', 'Dynamic', 'Cluster Nebula Tint', 'Rendered automatically when camera zoom drops below 0.22 to summarize entire subsystems cleanly']
+            ['Tier 0: Suns', 'folder (Directory Containers)', '36 px - 44 px', '40 px', '#e4ef61 / #3b82f6', 'High-repulsion (-1800) gravitational anchors that separate top-level subsystems (such as backend/, frontend/, services/)'],
+            ['Tier 1: Planets', 'file (Source Code Modules)', '18 px - 26 px', '22 px', '#3b82f6 / #eab308', 'Medium-repulsion (-600) nodes that orbit their parent Folder Sun at planetOrbit distance (95 px)'],
+            ['Tier 2: Moons', 'function (Functions, Classes, Methods, Routes)', '10 px - 14 px', '12 px', '#8b5cf6 / #a855f7', 'Low-repulsion (-150) callable symbols that orbit their parent File Planet at moonOrbit distance (45 px)'],
+            ['Macro LOD: Super Nodes', 'superNode (Top-Level Cluster Aggregates)', '28 px - 90 px (Log10 LOC)', 'Dynamic', 'Cluster Nebula Tint', 'Rendered automatically when camera zoom drops below 0.22 to summarize entire subsystems cleanly']
           ]
         },
         points: [

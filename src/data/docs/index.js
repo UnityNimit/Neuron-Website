@@ -3,14 +3,16 @@ import { PART1_GETTING_STARTED_DOCS } from './part1_gettingStarted';
 import { PART2_SPATIAL_ENGINE_DOCS } from './part2_spatialEngine';
 import { PART3_AI_STUDIO_DOCS } from './part3_aiStudioAndAgents';
 import { PART4_AST_AND_REFACTORING_DOCS } from './part4_astAndRefactoring';
-import { PART3_REMAINING_DOCS } from './part3_remaining';
+import { PART5_EDITOR_TERMINAL_GIT_DOCS } from './part5_editorTerminalGit';
+import { PART6_REFERENCE_AND_TROUBLESHOOTING_DOCS } from './part6_referenceAndTroubleshooting';
 
 export const DOCS_DATA = {
-  ...PART3_REMAINING_DOCS,
   ...PART1_GETTING_STARTED_DOCS,
   ...PART2_SPATIAL_ENGINE_DOCS,
   ...PART3_AI_STUDIO_DOCS,
   ...PART4_AST_AND_REFACTORING_DOCS,
+  ...PART5_EDITOR_TERMINAL_GIT_DOCS,
+  ...PART6_REFERENCE_AND_TROUBLESHOOTING_DOCS,
 };
 
 export const DOCS_NAV_GROUPS = [
