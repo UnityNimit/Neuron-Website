@@ -111,7 +111,7 @@ export default function Footer({ className = "mt-4 sm:mt-6" }) {
         {/* Left: Brand Column */}
         <div className="flex flex-col gap-3 max-w-sm">
           <Link to="/" onClick={scrollToTop} className="flex items-center gap-2.5 cursor-pointer">
-            <img src="/logo.png" alt="Neuron" className="h-6 w-6 object-contain" />
+            <img src="/logon.svg" alt="Neuron" className="h-6 w-6 object-contain brand-logo" />
             <span className="font-semibold text-[var(--text-primary)] tracking-wide text-sm">Neuron</span>
           </Link>
           <p className="text-[var(--text-secondary)] text-xs leading-relaxed">

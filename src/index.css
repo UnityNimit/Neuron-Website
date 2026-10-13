@@ -138,3 +138,8 @@ body {
   box-shadow: 0 0 24px rgba(59, 130, 246, 0.75), inset 0 0 10px rgba(255, 255, 255, 0.3);
   transform: translateY(-0.5px);
 }
+
+/* Brand logo theme inversion for crisp contrast */
+html.light .brand-logo {
+  filter: invert(1);
+}

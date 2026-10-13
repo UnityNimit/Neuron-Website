@@ -1341,9 +1341,10 @@ export default function NeuronHeroEngine() {
         <div className="flex items-center gap-3">
           <div className="flex items-center pr-1 cursor-pointer" title="Neuron IDE">
             <img 
-              src="/logo.png" 
+              src="/logon.svg" 
               alt="Neuron" 
               className="h-5 w-5 object-contain opacity-95" 
+              style={{ filter: activeTheme?.isDark ? 'none' : 'invert(1)' }}
               onError={(e) => { e.target.style.display = 'none'; }}
             />
           </div>

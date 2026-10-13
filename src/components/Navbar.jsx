@@ -62,7 +62,7 @@ export default function Navbar() {
         {/* Left Side: Brand Logo */}
         <div className="flex items-center gap-3">
           <Link to="/" className="flex items-center gap-2.5 group shrink-0">
-            <img src="/logo.png" alt="Neuron" className="h-6 w-6 object-contain" />
+            <img src="/logon.svg" alt="Neuron" className="h-6 w-6 object-contain brand-logo" />
             <span className="font-semibold text-[var(--text-primary)] tracking-tight text-sm">Neuron</span>
           </Link>
         </div>
