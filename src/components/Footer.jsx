@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { X, ShieldCheck, FileText, Lock, Database } from 'lucide-react';
+import { X } from 'lucide-react';
 import ThemeLangControls from './ThemeLangControls';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -50,51 +50,55 @@ export default function Footer({ className = "mt-4 sm:mt-6" }) {
     document.body.scrollTop = 0;
   };
 
+  useEffect(() => {
+    if (!activeLegal) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') setActiveLegal(null);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeLegal]);
+
   const LEGAL_DOCS = {
     tos: {
       title: t('footer.tos', 'Terms of Service'),
-      icon: FileText,
-      content: `By downloading, installing, or browsing Neuron, you agree to comply with and be bound by these Terms of Service. Neuron is distributed as a completely open-source desktop software under the permissive MIT License.
+      content: `Neuron is completely free and open source under the permissive MIT License. You are welcome to use, explore, modify, fork, or build upon the software however you like.
 
-1. Permissive License Grant: Subject to the MIT License, you are granted full permission to run, inspect, modify, fork, and distribute Neuron without license fees or subscription paywalls.
-2. "As Is" Warranty Disclaimer: The software and website are provided on an "as is" and "as available" basis without warranties of any kind, whether express, statutory, or implied.
-3. User Workstations: You retain 100% ownership and control over all code repositories, abstract syntax trees, and computational resources executed locally through Neuron.`
+Everything in Neuron runs directly on your computer. You retain full ownership and control over your source code, your projects, and your personal data.
+
+The software is provided as is without warranties of any kind. We work continuously to ensure Neuron is fast, secure, and reliable, and we encourage you to use it responsibly.`
     },
     aup: {
       title: t('footer.aup', 'Acceptable Use Policy'),
-      icon: ShieldCheck,
-      content: `Neuron is engineered exclusively for developers, researchers, and engineers building graph machine learning and spatial software architectures.
+      content: `We built Neuron to give developers a faster and more intuitive way to navigate complex codebases. We want our tools and community to remain safe and productive for everyone.
 
-1. Ethical Code Analysis: You may not use Neuron or its local AST parser engines to reverse-engineer, inject malware into, or exploit vulnerable third-party codebases without explicit authorization.
-2. Network Integrity: Local IPC sockets (127.0.0.1) must not be bridged into public unauthenticated networks or utilized for denial-of-service simulations.
-3. Open-Source Respect: Redistribution of Neuron modifications must retain existing copyright notices and MIT license declarations.`
+Please do not use Neuron or its local analysis tools to compromise software systems or inspect private codebases without proper authorization.
+
+Keep your local connections safe and private. If you distribute modified versions of Neuron, please keep the original MIT license and copyright notices intact.`
     },
     privacy: {
       title: t('footer.privacy', 'Privacy Policy'),
-      icon: Lock,
-      content: `At Neuron, privacy is not merely a policy—it is our core architectural invariant. Neuron operates on an uncompromising local-first execution model.
+      content: `Your privacy is our core priority. Neuron operates entirely on a local first model, meaning your code never leaves your own computer.
 
-1. Zero Telemetry: We do not log, track, store, or transmit your keystrokes, opened projects, terminal sessions, or file paths.
-2. Zero Cloud Code Ingestion: Abstract syntax tree parsing, D3 force-directed relaxation, and vector embeddings execute 100% on your workstation's CPU and GPU.
-3. No Third-Party Trackers: Our marketing website contains zero tracking pixels, intrusive analytics scripts, or data-broker conduits.`
+We do not collect telemetry, analytics, or background usage data. We never track your keystrokes, your file paths, or the projects you open.
+
+Our website contains no tracking pixels, advertising cookies, or third party data collection scripts. When you use Neuron, your work stays entirely your own.`
     },
     data: {
       title: t('footer.data', 'Data Use'),
-      icon: Database,
-      content: `Understanding how your codebase data is processed by the Neuron engine:
+      content: `Neuron parses and indexes your code directly on your machine. All file inspection and graph visualizations happen in local memory and are never uploaded to any remote server.
 
-1. In-Memory AST Buffers: Source files are parsed via local Tree-Sitter daemons into transient memory buffers. When you close a project, AST partitions are cleanly freed.
-2. Local SQLite Caches: Topological cluster partitions and project metadata are saved in a local SQLite file within your user profile directory. No data leaves your machine.
-3. Bring Your Own Key (BYOK): External LLM completions occur only when you connect an API key or point to local inference engines (e.g. Ollama). All transmissions go directly from your machine to your chosen provider.`
+Project caches and graph layouts are saved locally on your device so that your workspaces open quickly. You can clear or remove this cached data at any time.
+
+If you choose to use AI features, requests are sent directly to your chosen provider using your own API key or local model. We never store, inspect, or intercept your prompts.`
     },
     security: {
       title: t('footer.security', 'Security'),
-      icon: ShieldCheck,
-      content: `Neuron enforces rigorous security baselines across desktop native wrappers and local IPC daemons.
+      content: `Security is fundamental to Neuron. All background processes and communication channels bind strictly to your local machine using secure loopback connections.
 
-1. Loopback Origin Validation: All daemon IPC channels bind strictly to 127.0.0.1 with unique session handshake tokens, preventing unauthorized browser tab access.
-2. Sandboxed Subprocesses: Native language servers and terminal sessions run strictly under your local operating system user permissions without administrative elevation.
-3. Vulnerability Reporting: We take security reports seriously. Please direct responsible disclosure inquiries directly to neuron.spatial.ide@gmail.com.`
+Neuron runs with your standard operating system permissions and never requests elevated administrative access. Terminals and scripts execute with the exact same permissions you already have.
+
+If you discover a security issue or have any concerns, please reach out directly to neuron.spatial.ide@gmail.com and our team will address it promptly.`
     }
   };
 
@@ -260,49 +264,33 @@ export default function Footer({ className = "mt-4 sm:mt-6" }) {
 
       {/* Interactive Legal Document Modal */}
       {activeLegal && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 animate-fadeIn">
+        <div 
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 animate-fadeIn"
+          onClick={() => setActiveLegal(null)}
+        >
           <div 
-            className="border rounded-2xl w-full max-w-xl max-h-[85vh] overflow-hidden flex flex-col shadow-2xl transition-colors duration-200"
-            style={{
-              backgroundColor: 'var(--modal-bg)',
-              borderColor: 'var(--border-subtle)'
-            }}
+            className="relative border border-[var(--border-subtle)] bg-[var(--modal-bg)] rounded-xl w-full max-w-lg max-h-[85vh] overflow-y-auto p-6 sm:p-8 shadow-2xl transition-colors duration-200"
+            onClick={(e) => e.stopPropagation()}
           >
-            {/* Modal Header */}
-            <div className="p-5 border-b border-[var(--border-subtle)] flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-[#60A5FA]/10 border border-[#60A5FA]/20 flex items-center justify-center text-[#60A5FA]">
-                  <activeLegal.icon size={16} />
-                </div>
-                <h3 className="text-base font-semibold text-[var(--text-primary)] tracking-tight">
-                  {activeLegal.title}
-                </h3>
-              </div>
-              <button
-                onClick={() => setActiveLegal(null)}
-                className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded-lg hover:bg-[var(--border-subtle)] transition-colors cursor-pointer"
-                aria-label="Close dialog"
-              >
-                <X size={18} />
-              </button>
-            </div>
+            {/* Cross close button */}
+            <button
+              onClick={() => setActiveLegal(null)}
+              className="absolute top-5 right-5 p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded-md hover:bg-[var(--border-subtle)] transition-colors cursor-pointer"
+              aria-label="Close dialog"
+            >
+              <X size={16} />
+            </button>
 
-            {/* Modal Content */}
-            <div className="p-6 overflow-y-auto text-[var(--text-secondary)] text-xs sm:text-sm leading-relaxed whitespace-pre-line space-y-4">
-              {activeLegal.content}
-            </div>
+            {/* Document Title */}
+            <h3 className="text-base sm:text-lg font-semibold text-[var(--text-primary)] tracking-tight mb-4 pr-8">
+              {activeLegal.title}
+            </h3>
 
-            {/* Modal Footer */}
-            <div className="p-4 border-t border-[var(--border-subtle)] bg-[var(--bg-surface)] flex items-center justify-between">
-              <span className="text-[11px] text-[var(--text-muted)]">
-                {t('footer.legalGovernance', 'Neuron Open Source Governance')}
-              </span>
-              <button
-                onClick={() => setActiveLegal(null)}
-                className="h-7 px-4 rounded-lg bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] font-semibold text-xs hover:opacity-90 transition-colors cursor-pointer"
-              >
-                {t('footer.doneBtn', 'Done')}
-              </button>
+            {/* Simple Human-Written Text */}
+            <div className="text-[var(--text-secondary)] text-xs sm:text-[13px] leading-relaxed space-y-3.5">
+              {activeLegal.content.split('\n\n').map((paragraph, idx) => (
+                <p key={idx}>{paragraph}</p>
+              ))}
             </div>
           </div>
         </div>
