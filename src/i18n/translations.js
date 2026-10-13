@@ -112,7 +112,7 @@ export const translations = {
       ]
     },
     footer: {
-      brandDesc: 'The high-performance 2D spatial development environment and graph topological IDE. Built from the ground up for developers navigating massive codebases.',
+      brandDesc: 'The better and cooler IDE.',
       navigation: 'Navigation',
       legal: 'Legal',
       socials: 'Socials',
@@ -239,7 +239,7 @@ export const translations = {
       ]
     },
     footer: {
-      brandDesc: 'Die hochperformante räumliche 2D-Entwicklungsumgebung und graph-topologische IDE. Entwickelt für die Navigation in riesigen Codebasen.',
+      brandDesc: 'Die bessere und coolere IDE.',
       navigation: 'Navigation',
       legal: 'Rechtliches',
       socials: 'Soziales',
@@ -366,7 +366,7 @@ export const translations = {
       ]
     },
     footer: {
-      brandDesc: 'El entorno de desarrollo espacial 2D de alto rendimiento y el IDE topológico de grafos. Creado desde cero para desarrolladores que navegan por bases de código masivas.',
+      brandDesc: 'El IDE mejor y más genial.',
       navigation: 'Navegación',
       legal: 'Legal',
       socials: 'Redes Sociales',
@@ -493,7 +493,7 @@ export const translations = {
       ]
     },
     footer: {
-      brandDesc: "L'environnement de développement spatial 2D haute performance et l'IDE topologique en graphes. Conçu pour les développeurs explorant des bases de code massives.",
+      brandDesc: "L'IDE meilleur et plus cool.",
       navigation: 'Navigation',
       legal: 'Mentions Légales',
       socials: 'Réseaux Sociaux',
@@ -620,7 +620,7 @@ export const translations = {
       ]
     },
     footer: {
-      brandDesc: '大規模なコードベースをナビゲートする開発者のためにゼロから構築された、高性能2D空間開発環境およびグラフトポロジカルIDE。',
+      brandDesc: 'より優れ、よりクールなIDE。',
       navigation: 'ナビゲーション',
       legal: '法務情報',
       socials: 'ソーシャル',
@@ -747,7 +747,7 @@ export const translations = {
       ]
     },
     footer: {
-      brandDesc: '专为梳理超大型代码库的开发者打造的高性能 2D 空间开发环境与图拓扑 IDE。',
+      brandDesc: '更好、更酷的 IDE。',
       navigation: '导航',
       legal: '法律声明',
       socials: '社交媒体',

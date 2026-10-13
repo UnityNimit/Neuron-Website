@@ -119,7 +119,7 @@ If you discover a security issue or have any concerns, please reach out directly
             <span className="font-semibold text-[var(--text-primary)] tracking-wide text-sm">Neuron</span>
           </Link>
           <p className="text-[var(--text-secondary)] text-xs leading-relaxed">
-            {t('footer.brandDesc', 'The high-performance 2D spatial development environment and graph topological IDE. Built from the ground up for developers navigating massive codebases.')}
+            {t('footer.brandDesc', 'The better and cooler IDE.')}
           </p>
         </div>
 
