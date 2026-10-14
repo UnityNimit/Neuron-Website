@@ -115,7 +115,7 @@ If you discover a security issue or have any concerns, please reach out directly
         {/* Left: Brand Column */}
         <div className="flex flex-col gap-3 max-w-sm">
           <Link to="/" onClick={scrollToTop} className="flex items-center gap-2.5 cursor-pointer">
-            <img src="/logon.svg" alt="Neuron" className="h-6 w-6 object-contain brand-logo" />
+            <img src="/logo.svg" alt="Neuron" className="h-6 w-6 object-contain brand-logo" />
             <span className="font-semibold text-[var(--text-primary)] tracking-wide text-sm">Neuron</span>
           </Link>
           <p className="text-[var(--text-secondary)] text-xs leading-relaxed">
