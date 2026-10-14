@@ -15,7 +15,7 @@ import { useReleases } from '../context/ReleaseContext';
 export default function Home() {
   const { t } = useLanguage();
   const { isDark } = useTheme();
-  const { downloads, userPlatform } = useReleases();
+  const { downloads, userPlatform, isMobile } = useReleases();
   const [scrollOpacity, setScrollOpacity] = useState(1);
 
   const primaryBtnClass = "h-8 px-4 rounded-lg bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] font-semibold text-xs hover:opacity-90 transition-all inline-flex items-center justify-center cursor-pointer active:scale-[0.98] shadow-sm shrink-0";
@@ -111,35 +111,43 @@ export default function Home() {
               </ScrambledText>
             </div>
 
-            {/* Utilitarian CTA Buttons - 3 Side-by-Side (Windows, Mac, Linux) */}
-            <div id="download-hero" className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 w-full max-w-2xl pointer-events-auto">
-              {/* Windows: Active */}
-              <a 
-                href={downloads.windows?.url}
-                download={downloads.windows?.name}
-                className={userPlatform === 'windows' ? primaryBtnClass : secondaryBtnClass}
-              >
-                <span>{t('hero.downloadWindows', 'Download for Windows')}</span>
-              </a>
+            {/* Utilitarian CTA Buttons - 3 Side-by-Side (Windows, Mac, Linux) OR Mobile Notice */}
+            {isMobile ? (
+              <div id="download-hero" className="flex items-center justify-center w-full max-w-2xl pointer-events-auto py-1">
+                <span className="text-xs sm:text-sm text-[var(--text-secondary)] font-medium select-none">
+                  {t('hero.comingSoonDevice', 'Coming soon on your device')}
+                </span>
+              </div>
+            ) : (
+              <div id="download-hero" className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 w-full max-w-2xl pointer-events-auto">
+                {/* Windows: Active */}
+                <a 
+                  href={downloads.windows?.url}
+                  download={downloads.windows?.name}
+                  className={userPlatform === 'windows' ? primaryBtnClass : secondaryBtnClass}
+                >
+                  <span>{t('hero.downloadWindows', 'Download for Windows')}</span>
+                </a>
 
-              {/* Mac: Active */}
-              <a
-                href={downloads.mac?.url}
-                download={downloads.mac?.name}
-                className={userPlatform === 'mac' ? primaryBtnClass : secondaryBtnClass}
-              >
-                <span>{t('hero.downloadMac', 'Download for Mac')}</span>
-              </a>
+                {/* Mac: Active */}
+                <a
+                  href={downloads.mac?.url}
+                  download={downloads.mac?.name}
+                  className={userPlatform === 'mac' ? primaryBtnClass : secondaryBtnClass}
+                >
+                  <span>{t('hero.downloadMac', 'Download for Mac')}</span>
+                </a>
 
-              {/* Linux: Active */}
-              <a
-                href={downloads.linux?.url}
-                download={downloads.linux?.name}
-                className={userPlatform === 'linux' ? primaryBtnClass : secondaryBtnClass}
-              >
-                <span>{t('hero.downloadLinux', 'Download for Linux')}</span>
-              </a>
-            </div>
+                {/* Linux: Active */}
+                <a
+                  href={downloads.linux?.url}
+                  download={downloads.linux?.name}
+                  className={userPlatform === 'linux' ? primaryBtnClass : secondaryBtnClass}
+                >
+                  <span>{t('hero.downloadLinux', 'Download for Linux')}</span>
+                </a>
+              </div>
+            )}
           </div>
 
           {/* Super Cool Minimalist Scroll Indicator with text & fade-away animation */}
@@ -217,34 +225,42 @@ export default function Home() {
                 style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', lineHeight: 1.05 }}
                 className="font-black tracking-tighter text-[var(--text-primary)] mb-6 select-none"
               />
-              <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 max-w-2xl mx-auto">
-                {/* Windows: Active */}
-                <a 
-                  href={downloads.windows?.url}
-                  download={downloads.windows?.name}
-                  className={userPlatform === 'windows' ? primaryBtnClass : secondaryBtnClass}
-                >
-                  <span>{t('hero.downloadWindows', 'Download for Windows')}</span>
-                </a>
+              {isMobile ? (
+                <div className="flex items-center justify-center max-w-2xl mx-auto py-1">
+                  <span className="text-xs sm:text-sm text-[var(--text-secondary)] font-medium select-none">
+                    {t('hero.comingSoonDevice', 'Coming soon on your device')}
+                  </span>
+                </div>
+              ) : (
+                <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 max-w-2xl mx-auto">
+                  {/* Windows: Active */}
+                  <a 
+                    href={downloads.windows?.url}
+                    download={downloads.windows?.name}
+                    className={userPlatform === 'windows' ? primaryBtnClass : secondaryBtnClass}
+                  >
+                    <span>{t('hero.downloadWindows', 'Download for Windows')}</span>
+                  </a>
 
-                {/* Mac: Active */}
-                <a
-                  href={downloads.mac?.url}
-                  download={downloads.mac?.name}
-                  className={userPlatform === 'mac' ? primaryBtnClass : secondaryBtnClass}
-                >
-                  <span>{t('hero.downloadMac', 'Download for Mac')}</span>
-                </a>
+                  {/* Mac: Active */}
+                  <a
+                    href={downloads.mac?.url}
+                    download={downloads.mac?.name}
+                    className={userPlatform === 'mac' ? primaryBtnClass : secondaryBtnClass}
+                  >
+                    <span>{t('hero.downloadMac', 'Download for Mac')}</span>
+                  </a>
 
-                {/* Linux: Active */}
-                <a
-                  href={downloads.linux?.url}
-                  download={downloads.linux?.name}
-                  className={userPlatform === 'linux' ? primaryBtnClass : secondaryBtnClass}
-                >
-                  <span>{t('hero.downloadLinux', 'Download for Linux')}</span>
-                </a>
-              </div>
+                  {/* Linux: Active */}
+                  <a
+                    href={downloads.linux?.url}
+                    download={downloads.linux?.name}
+                    className={userPlatform === 'linux' ? primaryBtnClass : secondaryBtnClass}
+                  >
+                    <span>{t('hero.downloadLinux', 'Download for Linux')}</span>
+                  </a>
+                </div>
+              )}
             </section>
           </ScrollReveal>
         </div>

@@ -203,12 +203,50 @@ export const FALLBACK_RELEASES = [
   }
 ];
 
-function detectUserPlatform() {
-  if (typeof window === 'undefined') return 'windows';
-  const ua = navigator.userAgent || '';
-  if (/Macintosh|Mac OS X/i.test(ua)) return 'mac';
-  if (/Linux/i.test(ua) && !/Android/i.test(ua)) return 'linux';
-  return 'windows';
+export function detectPlatformInfo() {
+  if (typeof window === 'undefined') {
+    return { platform: 'windows', isMobile: false };
+  }
+
+  const nav = window.navigator;
+  const ua = nav.userAgent || '';
+  const platform = nav.platform || '';
+  const maxTouchPoints = nav.maxTouchPoints || 0;
+
+  // Mobile Detection: Android, iOS (iPhone, iPad, iPod)
+  const isAndroid = /Android/i.test(ua);
+  const isIOS = /iPhone|iPad|iPod/i.test(ua) || (platform === 'MacIntel' && maxTouchPoints > 1);
+  const isMobileUA = /Mobile|webOS|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+  const isClientHintsMobile = Boolean(nav.userAgentData?.mobile);
+
+  if (isAndroid || isIOS || isMobileUA || isClientHintsMobile) {
+    return { platform: 'mobile', isMobile: true };
+  }
+
+  // Desktop Client Hints
+  const uadPlatform = (nav.userAgentData?.platform || '').toLowerCase();
+  if (uadPlatform.includes('win')) {
+    return { platform: 'windows', isMobile: false };
+  }
+  if (uadPlatform.includes('mac')) {
+    return { platform: 'mac', isMobile: false };
+  }
+  if (uadPlatform.includes('linux')) {
+    return { platform: 'linux', isMobile: false };
+  }
+
+  // Desktop User-Agent & Platform checks
+  if (/Macintosh|Mac OS X/i.test(ua) || /MacIntel|MacPPC/i.test(platform)) {
+    return { platform: 'mac', isMobile: false };
+  }
+  if (/Linux/i.test(ua) || /Linux/i.test(platform)) {
+    return { platform: 'linux', isMobile: false };
+  }
+  if (/Win/i.test(ua) || /Win/i.test(platform)) {
+    return { platform: 'windows', isMobile: false };
+  }
+
+  return { platform: 'windows', isMobile: false };
 }
 
 const ReleaseContext = createContext({
@@ -219,6 +257,7 @@ const ReleaseContext = createContext({
   lastSynced: null,
   syncNotice: null,
   userPlatform: 'windows',
+  isMobile: false,
   fetchReleases: () => {}
 });
 
@@ -227,7 +266,9 @@ export function ReleaseProvider({ children }) {
   const [isLoading, setIsLoading] = useState(false);
   const [lastSynced, setLastSynced] = useState(null);
   const [syncNotice, setSyncNotice] = useState(null);
-  const [userPlatform] = useState(() => detectUserPlatform());
+  const [platformInfo] = useState(() => detectPlatformInfo());
+  const userPlatform = platformInfo.platform;
+  const isMobile = platformInfo.isMobile;
 
   const fetchReleases = useCallback(async (isManualRefresh = false) => {
     setIsLoading(true);
@@ -365,6 +406,7 @@ export function ReleaseProvider({ children }) {
     lastSynced,
     syncNotice,
     userPlatform,
+    isMobile,
     fetchReleases
   };
 

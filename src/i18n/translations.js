@@ -33,6 +33,7 @@ export const translations = {
       downloadMac: 'Download for Mac',
       downloadLinux: 'Download for Linux',
       comingSoon: 'Coming Soon',
+      comingSoonDevice: 'Coming soon on your device',
       scrollExplore: 'Scroll down to explore Neuron',
       scrollFuture: 'Scroll into the future of IDEs'
     },
@@ -160,6 +161,7 @@ export const translations = {
       downloadMac: 'Für Mac herunterladen',
       downloadLinux: 'Für Linux herunterladen',
       comingSoon: 'Demnächst',
+      comingSoonDevice: 'Demnächst auf Ihrem Gerät verfügbar',
       scrollExplore: 'Nach unten scrollen, um Neuron zu erkunden',
       scrollFuture: 'Scrollen Sie in die Zukunft der IDEs'
     },
@@ -287,6 +289,7 @@ export const translations = {
       downloadMac: 'Descargar para Mac',
       downloadLinux: 'Descargar para Linux',
       comingSoon: 'Próximamente',
+      comingSoonDevice: 'Próximamente en tu dispositivo',
       scrollExplore: 'Desplázate hacia abajo para explorar Neuron',
       scrollFuture: 'Desplázate hacia el futuro de los IDE'
     },
@@ -414,6 +417,7 @@ export const translations = {
       downloadMac: 'Télécharger pour Mac',
       downloadLinux: 'Télécharger pour Linux',
       comingSoon: 'Bientôt disponible',
+      comingSoonDevice: 'Bientôt disponible sur votre appareil',
       scrollExplore: 'Faites défiler pour explorer Neuron',
       scrollFuture: "Faites défiler vers l'avenir des IDE"
     },
@@ -541,6 +545,7 @@ export const translations = {
       downloadMac: 'Mac向けにダウンロード',
       downloadLinux: 'Linux向けにダウンロード',
       comingSoon: '近日公開',
+      comingSoonDevice: 'お使いのデバイスで近日公開',
       scrollExplore: '下にスクロールしてNeuronを探索',
       scrollFuture: 'IDEの未来へとスクロール'
     },
@@ -668,6 +673,7 @@ export const translations = {
       downloadMac: '下载 Mac 版',
       downloadLinux: '下载 Linux 版',
       comingSoon: '敬请期待',
+      comingSoonDevice: '即将支持您的设备',
       scrollExplore: '向下滚动以探索 Neuron',
       scrollFuture: '滚动进入IDE的未来'
     },

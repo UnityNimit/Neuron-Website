@@ -16,7 +16,7 @@ export default function Navbar() {
   const { searchQuery, setSearchQuery } = useDocsSearch();
   const { theme, setTheme, isDark } = useTheme();
   const { t } = useLanguage();
-  const { downloads, userPlatform } = useReleases();
+  const { downloads, userPlatform, isMobile } = useReleases();
 
   const userDownload = downloads[userPlatform] || downloads.windows;
 
@@ -178,13 +178,22 @@ export default function Navbar() {
             )}
           </button>
 
-          <a 
-            href={userDownload?.url || 'https://github.com/UnityNimit/Neuron/releases/latest'}
-            download={userDownload?.name || 'Neuron-Setup.exe'}
-            className="h-7 px-2.5 rounded-md bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] text-xs font-semibold header-download-glow inline-flex items-center justify-center"
-          >
-            {t('nav.download', 'Download')}
-          </a>
+          {isMobile ? (
+            <Link
+              to="/versions"
+              className="h-7 px-2.5 rounded-md bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] text-xs font-semibold header-download-glow inline-flex items-center justify-center"
+            >
+              {t('nav.download', 'Download')}
+            </Link>
+          ) : (
+            <a 
+              href={userDownload?.url || 'https://github.com/UnityNimit/Neuron/releases/latest'}
+              download={userDownload?.name || 'Neuron-Setup.exe'}
+              className="h-7 px-2.5 rounded-md bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] text-xs font-semibold header-download-glow inline-flex items-center justify-center"
+            >
+              {t('nav.download', 'Download')}
+            </a>
+          )}
           <button 
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
