@@ -4,6 +4,7 @@ import { Menu, X, ExternalLink, Search, Sun, Moon, Monitor } from 'lucide-react'
 import { useDocsSearch } from '../context/DocsSearchContext';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
+import { useReleases } from '../context/ReleaseContext';
 import ThemeLangControls from './ThemeLangControls';
 
 export default function Navbar() {
@@ -15,6 +16,9 @@ export default function Navbar() {
   const { searchQuery, setSearchQuery } = useDocsSearch();
   const { theme, setTheme, isDark } = useTheme();
   const { t } = useLanguage();
+  const { downloads, userPlatform } = useReleases();
+
+  const userDownload = downloads[userPlatform] || downloads.windows;
 
   const isDocs = pathname.startsWith('/docs');
   const isVersions = pathname.startsWith('/versions');
@@ -148,8 +152,8 @@ export default function Navbar() {
           </button>
           
           <a 
-            href="https://github.com/UnityNimit/Neuron/releases/download/v1.0.0/Neuron_1.0.0_x64-setup.exe"
-            download="Neuron-Setup.exe"
+            href={userDownload?.url || 'https://github.com/UnityNimit/Neuron/releases/latest'}
+            download={userDownload?.name || 'Neuron-Setup.exe'}
             className="h-8 px-3 sm:px-4 rounded-lg bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] text-xs font-semibold hover:opacity-90 header-download-glow inline-flex items-center justify-center cursor-pointer transition-all active:scale-[0.98]"
           >
             {t('nav.download', 'Download')}
@@ -175,8 +179,8 @@ export default function Navbar() {
           </button>
 
           <a 
-            href="https://github.com/UnityNimit/Neuron/releases/download/v1.0.0/Neuron_1.0.0_x64-setup.exe"
-            download="Neuron-Setup.exe"
+            href={userDownload?.url || 'https://github.com/UnityNimit/Neuron/releases/latest'}
+            download={userDownload?.name || 'Neuron-Setup.exe'}
             className="h-7 px-2.5 rounded-md bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] text-xs font-semibold header-download-glow inline-flex items-center justify-center"
           >
             {t('nav.download', 'Download')}

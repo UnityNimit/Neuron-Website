@@ -10,11 +10,16 @@ import NeuronThemeShowcase from '../components/showcase/NeuronThemeShowcase';
 import { ScrollReveal, ScrollWriteHeading } from '../components/ScrollReveal';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
+import { useReleases } from '../context/ReleaseContext';
 
 export default function Home() {
   const { t } = useLanguage();
   const { isDark } = useTheme();
+  const { downloads, userPlatform } = useReleases();
   const [scrollOpacity, setScrollOpacity] = useState(1);
+
+  const primaryBtnClass = "h-8 px-4 rounded-lg bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] font-semibold text-xs hover:opacity-90 transition-all inline-flex items-center justify-center cursor-pointer active:scale-[0.98] shadow-sm shrink-0";
+  const secondaryBtnClass = "h-8 px-4 rounded-lg bg-[var(--bg-surface)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-strong)] text-[var(--text-primary)] font-medium text-xs hover:border-[var(--text-muted)] transition-all inline-flex items-center justify-center cursor-pointer active:scale-[0.98] shrink-0";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -110,30 +115,30 @@ export default function Home() {
             <div id="download-hero" className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 w-full max-w-2xl pointer-events-auto">
               {/* Windows: Active */}
               <a 
-                href="https://github.com/UnityNimit/Neuron/releases/download/v1.0.0/Neuron_1.0.0_x64-setup.exe"
-                download="Neuron-Setup.exe"
-                className="h-8 px-4 rounded-lg bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] font-semibold text-xs hover:opacity-90 transition-all inline-flex items-center justify-center cursor-pointer active:scale-[0.98] shadow-sm shrink-0"
+                href={downloads.windows?.url}
+                download={downloads.windows?.name}
+                className={userPlatform === 'windows' ? primaryBtnClass : secondaryBtnClass}
               >
                 <span>{t('hero.downloadWindows', 'Download for Windows')}</span>
               </a>
 
-              {/* Mac: Greyed out Coming Soon */}
-              <button
-                disabled
-                className="h-8 px-3.5 rounded-lg bg-slate-800 text-slate-400 font-medium text-xs inline-flex items-center justify-center gap-1.5 cursor-not-allowed select-none transition-all shrink-0"
+              {/* Mac: Active */}
+              <a
+                href={downloads.mac?.url}
+                download={downloads.mac?.name}
+                className={userPlatform === 'mac' ? primaryBtnClass : secondaryBtnClass}
               >
                 <span>{t('hero.downloadMac', 'Download for Mac')}</span>
-                
-              </button>
+              </a>
 
-              {/* Linux: Greyed out Coming Soon */}
-              <button
-                disabled
-                className="h-8 px-3.5 rounded-lg bg-slate-800 text-slate-400 font-medium text-xs inline-flex items-center justify-center gap-1.5 cursor-not-allowed select-none transition-all shrink-0"
+              {/* Linux: Active */}
+              <a
+                href={downloads.linux?.url}
+                download={downloads.linux?.name}
+                className={userPlatform === 'linux' ? primaryBtnClass : secondaryBtnClass}
               >
                 <span>{t('hero.downloadLinux', 'Download for Linux')}</span>
-                
-              </button>
+              </a>
             </div>
           </div>
 
@@ -215,30 +220,30 @@ export default function Home() {
               <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 max-w-2xl mx-auto">
                 {/* Windows: Active */}
                 <a 
-                  href="https://github.com/UnityNimit/Neuron/releases/download/v1.0.0/Neuron_1.0.0_x64-setup.exe"
-                  download="Neuron-Setup.exe"
-                  className="h-8 px-4 rounded-lg bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] font-semibold text-xs hover:opacity-90 transition-all inline-flex items-center justify-center cursor-pointer active:scale-[0.98] shadow-sm shrink-0"
+                  href={downloads.windows?.url}
+                  download={downloads.windows?.name}
+                  className={userPlatform === 'windows' ? primaryBtnClass : secondaryBtnClass}
                 >
                   <span>{t('hero.downloadWindows', 'Download for Windows')}</span>
                 </a>
 
-                {/* Mac: Greyed out Coming Soon */}
-                <button
-                  disabled
-                className="h-8 px-3.5 rounded-lg bg-slate-800 text-slate-400 font-medium text-xs inline-flex items-center justify-center gap-1.5 cursor-not-allowed select-none transition-all shrink-0"
+                {/* Mac: Active */}
+                <a
+                  href={downloads.mac?.url}
+                  download={downloads.mac?.name}
+                  className={userPlatform === 'mac' ? primaryBtnClass : secondaryBtnClass}
                 >
                   <span>{t('hero.downloadMac', 'Download for Mac')}</span>
-                  
-                </button>
+                </a>
 
-                {/* Linux: Greyed out Coming Soon */}
-                <button
-                  disabled
-                className="h-8 px-3.5 rounded-lg bg-slate-800 text-slate-400 font-medium text-xs inline-flex items-center justify-center gap-1.5 cursor-not-allowed select-none transition-all shrink-0"
+                {/* Linux: Active */}
+                <a
+                  href={downloads.linux?.url}
+                  download={downloads.linux?.name}
+                  className={userPlatform === 'linux' ? primaryBtnClass : secondaryBtnClass}
                 >
                   <span>{t('hero.downloadLinux', 'Download for Linux')}</span>
-                  
-                </button>
+                </a>
               </div>
             </section>
           </ScrollReveal>
