@@ -101,17 +101,14 @@ export default function Downloads() {
   return (
     <div className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans relative selection:bg-[#3B82F6]/30 selection:text-white flex flex-col justify-between transition-colors duration-200">
 
-      <main className="relative z-10 pt-[72px] pb-16 px-6 sm:px-8 md:px-12 w-full max-w-7xl mx-auto">
+      <main className="relative z-10 pt-[72px] pb-16 px-6 sm:px-8 md:px-12 w-full max-w-7xl mx-auto flex-1">
         
         {/* Header with Title and GitHub Sync Status */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 pb-6 border-b border-[var(--border-subtle)]">
           <div className="text-left">
-            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-[var(--text-primary)] mb-2">
+            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-[var(--text-primary)]">
               {t('versions.title', 'Versions')}
             </h1>
-            <p className="text-[var(--text-secondary)] text-xs sm:text-sm leading-relaxed max-w-2xl font-normal">
-              {t('versions.desc', 'Release history and workstation downloads for Neuron.')}
-            </p>
           </div>
 
           {/* GitHub Sync Status: Only the icon and no text with the time only and no boxs */}

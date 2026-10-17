@@ -298,19 +298,19 @@ export default function Docs() {
         )}
 
         {/* MAIN DOCUMENTATION CONTENT */}
-        <main className="flex-1 px-6 sm:px-10 md:px-14 lg:px-18 pt-8 pb-16 min-h-[calc(100vh-12rem)] flex flex-col justify-between max-w-5xl">
+        <main className="flex-1 px-6 sm:px-8 md:px-12 pt-4 pb-16 min-h-[calc(100vh-12rem)] flex flex-col justify-between max-w-5xl">
           <div>
             {/* Category Header + Divider matching Versions & Help pages */}
-            <div className="pb-6 mb-8 border-b border-[var(--border-subtle)]">
-              <div className="text-[11px] font-mono text-[#60A5FA] mb-2 font-medium uppercase tracking-widest">
+            <div className="mb-10 pb-6 border-b border-[var(--border-subtle)]">
+              <div className="text-xs font-mono text-[#60A5FA] mb-2 font-medium uppercase tracking-wider">
                 {activeDoc.category}
               </div>
 
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[var(--text-primary)] mb-3 leading-tight">
+              <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-[var(--text-primary)] mb-2">
                 {activeDoc.title}
               </h1>
 
-              <p className="text-[var(--text-secondary)] text-sm sm:text-base leading-relaxed font-normal">
+              <p className="text-[var(--text-secondary)] text-xs sm:text-sm leading-relaxed font-normal">
                 {activeDoc.subtitle}
               </p>
             </div>
