@@ -252,7 +252,7 @@ If you discover a security issue or have any concerns, please reach out directly
           </span>
           <span className="hidden sm:inline text-[var(--text-muted)]">•</span>
           <span className="text-[var(--text-secondary)]">
-            {t('footer.openSourceNote', 'A complete open-source project released under the MIT License. Developed for the global software engineering community.')}
+            {t('footer.openSourceNote', 'Completely free and open source under the MIT License.')}
           </span>
         </div>
 
