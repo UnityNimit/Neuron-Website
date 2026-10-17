@@ -88,19 +88,18 @@ export default function Help() {
   return (
     <div className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans relative selection:bg-[#3B82F6]/30 selection:text-white flex flex-col justify-between transition-colors duration-200">
 
-      <main className="relative z-10 pt-[72px] pb-16 px-6 sm:px-8 w-full max-w-3xl mx-auto flex-1">
+      <main className="relative z-10 pt-[72px] pb-16 px-6 sm:px-8 md:px-12 w-full max-w-7xl mx-auto flex-1">
         
-        {/* Centered Header */}
-        <div className="text-center mb-12 pb-8 border-b border-[var(--border-subtle)]">
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-[var(--text-primary)] mb-3">
-            {t('help.title', 'Help & Queries')}
-          </h1>
-          <p className="text-[var(--text-secondary)] text-xs sm:text-sm leading-relaxed max-w-xl mx-auto font-normal">
-            {t('help.desc', 'Find answers to common technical questions about the spatial engine, localhost runtime, or submit inquiries directly to the team.')}
-          </p>
+        {/* Header with Title and the same horizontal line as Versions */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 pb-6 border-b border-[var(--border-subtle)]">
+          <div className="text-left">
+            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-[var(--text-primary)]">
+              {t('help.title', 'Help & Queries')}
+            </h1>
+          </div>
         </div>
 
-        {/* FAQs Section - Completely unboxed, hairline dividers */}
+        {/* FAQs Section - Full width across page, completely unboxed, hairline dividers */}
         <section className="mb-14 w-full">
           <h2 className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)] font-medium mb-6">
             {t('help.faqTitle', 'Frequently Asked Questions')}
@@ -142,37 +141,38 @@ export default function Help() {
           </div>
         </section>
 
-        {/* Inquiry Form Section - Completely unboxed */}
-        <section className="w-full pt-4">
-          <div className="mb-6">
-            <h2 className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)] font-medium mb-2">
-              {t('help.formTitle', 'Send an Inquiry')}
-            </h2>
-            <p className="text-[var(--text-secondary)] text-xs sm:text-sm leading-relaxed font-normal">
-              {t('help.formDesc', 'Have a question, feedback, or a technical inquiry? Send a message directly to our team.')}
-            </p>
-          </div>
-
-          {submitted ? (
-            <div className="py-8 text-left space-y-2">
-              <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
-                <Check size={16} />
-                <h3 className="text-sm font-semibold">
-                  {t('help.successTitle', 'Message Dispatched')}
-                </h3>
-              </div>
-              <p className="text-xs text-[var(--text-secondary)] leading-relaxed font-normal">
-                {t('help.successDesc', 'Thank you for reaching out. We will review your inquiry shortly.')}
+        {/* Inquiry Form Section - Centered and compact */}
+        <section className="w-full pt-4 flex flex-col items-center">
+          <div className="w-full max-w-xl mx-auto">
+            <div className="mb-6 text-center">
+              <h2 className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)] font-medium mb-2">
+                {t('help.formTitle', 'Send an Inquiry')}
+              </h2>
+              <p className="text-[var(--text-secondary)] text-xs sm:text-sm leading-relaxed font-normal">
+                {t('help.formDesc', 'Have a question, feedback, or a technical inquiry? Send a message directly to our team.')}
               </p>
-              <button
-                onClick={() => setSubmitted(false)}
-                className="mt-3 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] underline cursor-pointer p-0 bg-transparent border-0 outline-none block"
-              >
-                {t('help.sendAnother', 'Send Another Message')}
-              </button>
             </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-4 text-xs font-sans w-full">
+
+            {submitted ? (
+              <div className="py-8 text-center space-y-2">
+                <div className="flex items-center justify-center gap-2 text-emerald-600 dark:text-emerald-400">
+                  <Check size={16} />
+                  <h3 className="text-sm font-semibold">
+                    {t('help.successTitle', 'Message Dispatched')}
+                  </h3>
+                </div>
+                <p className="text-xs text-[var(--text-secondary)] leading-relaxed font-normal">
+                  {t('help.successDesc', 'Thank you for reaching out. We will review your inquiry shortly.')}
+                </p>
+                <button
+                  onClick={() => setSubmitted(false)}
+                  className="mt-3 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] underline cursor-pointer p-0 bg-transparent border-0 outline-none inline-block mx-auto"
+                >
+                  {t('help.sendAnother', 'Send Another Message')}
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-4 text-xs font-sans w-full">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label className="text-[var(--text-muted)] text-[11px] font-mono uppercase tracking-wider block">
@@ -244,6 +244,7 @@ export default function Help() {
               </div>
             </form>
           )}
+          </div>
         </section>
 
       </main>
