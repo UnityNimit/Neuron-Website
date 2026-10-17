@@ -88,18 +88,16 @@ export default function Help() {
   return (
     <div className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans relative selection:bg-[#3B82F6]/30 selection:text-white flex flex-col justify-between transition-colors duration-200">
 
-      <main className="relative z-10 pt-[72px] pb-16 px-6 sm:px-8 md:px-12 w-full max-w-7xl mx-auto">
+      <main className="relative z-10 pt-[72px] pb-16 px-6 sm:px-8 w-full max-w-3xl mx-auto flex-1">
         
-        {/* Header with Title and the same horizontal line as Versions */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 pb-6 border-b border-[var(--border-subtle)]">
-          <div className="text-left">
-            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-[var(--text-primary)] mb-2">
-              {t('help.title', 'Help & Queries')}
-            </h1>
-            <p className="text-[var(--text-secondary)] text-xs sm:text-sm leading-relaxed max-w-2xl font-normal">
-              {t('help.desc', 'Find answers to common technical questions about the spatial engine, localhost runtime, or submit inquiries directly to the team.')}
-            </p>
-          </div>
+        {/* Centered Header */}
+        <div className="text-center mb-12 pb-8 border-b border-[var(--border-subtle)]">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-[var(--text-primary)] mb-3">
+            {t('help.title', 'Help & Queries')}
+          </h1>
+          <p className="text-[var(--text-secondary)] text-xs sm:text-sm leading-relaxed max-w-xl mx-auto font-normal">
+            {t('help.desc', 'Find answers to common technical questions about the spatial engine, localhost runtime, or submit inquiries directly to the team.')}
+          </p>
         </div>
 
         {/* FAQs Section - Completely unboxed, hairline dividers */}
@@ -150,7 +148,7 @@ export default function Help() {
             <h2 className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)] font-medium mb-2">
               {t('help.formTitle', 'Send an Inquiry')}
             </h2>
-            <p className="text-[var(--text-secondary)] text-xs sm:text-sm leading-relaxed max-w-2xl font-normal">
+            <p className="text-[var(--text-secondary)] text-xs sm:text-sm leading-relaxed font-normal">
               {t('help.formDesc', 'Have a question, feedback, or a technical inquiry? Send a message directly to our team.')}
             </p>
           </div>
@@ -163,7 +161,7 @@ export default function Help() {
                   {t('help.successTitle', 'Message Dispatched')}
                 </h3>
               </div>
-              <p className="text-xs text-[var(--text-secondary)] max-w-md leading-relaxed font-normal">
+              <p className="text-xs text-[var(--text-secondary)] leading-relaxed font-normal">
                 {t('help.successDesc', 'Thank you for reaching out. We will review your inquiry shortly.')}
               </p>
               <button
@@ -174,7 +172,7 @@ export default function Help() {
               </button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-4 text-xs font-sans max-w-2xl">
+            <form onSubmit={handleSubmit} className="space-y-4 text-xs font-sans w-full">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label className="text-[var(--text-muted)] text-[11px] font-mono uppercase tracking-wider block">
