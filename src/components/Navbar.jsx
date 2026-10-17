@@ -6,9 +6,11 @@ import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useReleases } from '../context/ReleaseContext';
 import ThemeLangControls from './ThemeLangControls';
+import NeuronLogo from './NeuronLogo';
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLogoHovered, setIsLogoHovered] = useState(false);
   const location = useLocation();
   const pathname = location.pathname;
   const searchInputRef = useRef(null);
@@ -65,8 +67,13 @@ export default function Navbar() {
       >
         {/* Left Side: Brand Logo */}
         <div className="flex items-center gap-3">
-          <Link to="/" className="flex items-center gap-2.5 group shrink-0">
-            <img src="/logo.svg" alt="Neuron" className="h-6 w-6 object-contain brand-logo" />
+          <Link 
+            to="/" 
+            onMouseEnter={() => setIsLogoHovered(true)}
+            onMouseLeave={() => setIsLogoHovered(false)}
+            className="flex items-center gap-2.5 group shrink-0"
+          >
+            <NeuronLogo isHovered={isLogoHovered} className="h-6 w-6 shrink-0" />
             <span className="font-semibold text-[var(--text-primary)] tracking-tight text-sm">Neuron</span>
           </Link>
         </div>
