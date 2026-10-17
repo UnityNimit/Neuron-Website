@@ -48,7 +48,8 @@ export default function Help() {
           })
         });
       } else {
-        response = await fetch('https://formsubmit.co/ajax/neuron.spatial.ide@gmail.com', {
+        const formSubmitToken = import.meta.env.VITE_FORMSUBMIT_TOKEN || '220535c9fb0e026fd61cfc6c1f6feece';
+        response = await fetch(`https://formsubmit.co/ajax/${formSubmitToken}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
