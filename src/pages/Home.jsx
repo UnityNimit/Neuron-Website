@@ -87,7 +87,7 @@ export default function Home() {
         {/* 1. HERO VIEWPORT (Only Brand & Download visible on initial load)          */}
         {/* ========================================================================= */}
         <section 
-          className="min-h-[100dvh] max-w-7xl mx-auto flex flex-col justify-between items-center text-center px-4 sm:px-8 md:px-12 pt-16 sm:pt-20 pb-4 sm:pb-6 relative"
+          className="min-h-0 sm:min-h-[100dvh] max-w-7xl mx-auto flex flex-col justify-between items-center text-center px-4 sm:px-8 md:px-12 pt-14 sm:pt-20 pb-6 sm:pb-6 relative"
           style={{
             paddingLeft: 'max(1rem, env(safe-area-inset-left))',
             paddingRight: 'max(1rem, env(safe-area-inset-right))'
@@ -95,7 +95,7 @@ export default function Home() {
         >
           
           {/* Centered Brand & Utilitarian Download Button - Positioned Higher */}
-          <div className="flex flex-col items-center max-w-5xl mx-auto mt-2 sm:mt-10 md:mt-14 mb-auto w-full">
+          <div className="flex flex-col items-center max-w-5xl mx-auto mt-2 sm:mt-10 md:mt-14 mb-4 sm:mb-auto w-full">
             
             {/* Headline & Bold Brand */}
             <div className="flex flex-col items-center gap-1 sm:gap-1.5 mb-4 sm:mb-8 pointer-events-auto max-w-5xl mx-auto px-2">
@@ -156,7 +156,7 @@ export default function Home() {
             )}
           </div>
 
-          {/* Super Cool Minimalist Scroll Indicator with text & fade-away animation */}
+          {/* Super Cool Minimalist Scroll Indicator with text & fade-away animation - Desktop Only */}
           <div 
             style={{ 
               opacity: scrollOpacity,
@@ -164,7 +164,7 @@ export default function Home() {
               pointerEvents: scrollOpacity <= 0.05 ? 'none' : 'auto',
               transition: 'opacity 0.15s ease-out, transform 0.15s ease-out'
             }}
-            className="w-full flex flex-col items-center justify-center pb-8 shrink-0 select-none"
+            className="hidden sm:flex w-full flex-col items-center justify-center pb-8 shrink-0 select-none"
           >
             <span className="text-[11px] font-mono tracking-widest uppercase text-[var(--text-muted)] mb-2 transition-colors">
               {t('hero.scrollFuture', 'Scroll into the future of IDEs')}

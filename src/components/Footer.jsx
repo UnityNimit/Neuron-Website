@@ -131,7 +131,7 @@ If you discover a security issue or have any concerns, please reach out directly
         </div>
 
         {/* Right Columns: Navigation, Legal, Socials */}
-        <div className="flex flex-wrap gap-12 sm:gap-16 md:gap-20 justify-start lg:justify-end text-left">
+        <div className="grid grid-cols-3 gap-3 sm:flex sm:flex-wrap sm:gap-14 md:gap-20 justify-start lg:justify-end text-left w-full lg:w-auto">
           
           {/* Navigation */}
           <div className="flex flex-col gap-2.5">

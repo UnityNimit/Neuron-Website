@@ -486,14 +486,14 @@ function HotspotDetectionBox() {
       </div>
 
       <div className="lg:col-span-7 w-full">
-        <div className="w-full bg-[#121314] border border-white/[0.08] rounded-xl overflow-hidden shadow-2xl h-[420px] sm:h-[460px] relative">
+        <div className="w-full bg-[#121314] border border-white/[0.08] rounded-xl overflow-hidden shadow-2xl h-[260px] sm:h-[360px] md:h-[460px] relative">
           <canvas
             ref={canvasRef}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
             onPointerLeave={handlePointerUp}
-            className="w-full h-full block touch-none cursor-grab active:cursor-grabbing"
+            className="w-full h-full block touch-pan-y md:touch-none cursor-grab active:cursor-grabbing"
           />
         </div>
       </div>
@@ -925,14 +925,14 @@ function InteractiveCouplingBox() {
   return (
     <div ref={containerRef} className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
       <div className="lg:col-span-7 w-full order-2 lg:order-1">
-        <div className="w-full bg-[#121314] border border-white/[0.08] rounded-xl overflow-hidden shadow-2xl h-[420px] sm:h-[460px] relative">
+        <div className="w-full bg-[#121314] border border-white/[0.08] rounded-xl overflow-hidden shadow-2xl h-[260px] sm:h-[360px] md:h-[460px] relative">
           <canvas
             ref={canvasRef}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
             onPointerLeave={handlePointerUp}
-            className="w-full h-full block touch-none cursor-crosshair"
+            className="w-full h-full block touch-pan-y md:touch-none cursor-crosshair"
           />
         </div>
       </div>
@@ -1198,11 +1198,11 @@ function DeepCodeInspectionBox() {
       </div>
 
       <div className="lg:col-span-7 w-full">
-        <div className="w-full bg-[#121314] border border-white/[0.08] rounded-xl overflow-hidden shadow-2xl h-[420px] sm:h-[460px] relative">
+        <div className="w-full bg-[#121314] border border-white/[0.08] rounded-xl overflow-hidden shadow-2xl h-[260px] sm:h-[360px] md:h-[460px] relative">
           <canvas
             ref={canvasRef}
             onPointerDown={handlePointerDown}
-            className="w-full h-full block touch-none cursor-pointer"
+            className="w-full h-full block touch-pan-y md:touch-none cursor-pointer"
           />
         </div>
       </div>
@@ -1525,14 +1525,14 @@ function ClusterDetectionBox() {
   return (
     <div ref={containerRef} className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
       <div className="lg:col-span-7 w-full order-2 lg:order-1">
-        <div className="w-full bg-[#121314] border border-white/[0.08] rounded-xl overflow-hidden shadow-2xl h-[420px] sm:h-[460px] relative">
+        <div className="w-full bg-[#121314] border border-white/[0.08] rounded-xl overflow-hidden shadow-2xl h-[260px] sm:h-[360px] md:h-[460px] relative">
           <canvas
             ref={canvasRef}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
             onPointerLeave={handlePointerUp}
-            className="w-full h-full block touch-none cursor-grab active:cursor-grabbing"
+            className="w-full h-full block touch-pan-y md:touch-none cursor-grab active:cursor-grabbing"
           />
         </div>
       </div>

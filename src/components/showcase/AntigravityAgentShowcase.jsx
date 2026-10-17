@@ -273,7 +273,7 @@ export default function AntigravityAgentShowcase() {
 
         {/* RIGHT COLUMN: Clean Interactive Assistant Window matching AiChatView.jsx */}
         <div className="lg:col-span-7 w-full">
-          <div className="w-full bg-[#141516] border border-[#242628] rounded-2xl overflow-hidden shadow-2xl font-sans text-xs text-[#cbd5e1] flex flex-col h-[480px] sm:h-[500px] justify-between">
+          <div className="w-full bg-[#141516] border border-[#242628] rounded-2xl overflow-hidden shadow-2xl font-sans text-xs text-[#cbd5e1] flex flex-col h-[360px] sm:h-[440px] md:h-[500px] justify-between">
             
             {/* Header matching AiChatView.jsx */}
             <div className="h-10 bg-[#191a1b] border-b border-[#242628] px-3.5 flex items-center justify-between select-none shrink-0">
@@ -293,7 +293,7 @@ export default function AntigravityAgentShowcase() {
             </div>
 
             {/* Messages Flow matching AiChatView.jsx */}
-            <div ref={messagesBoxRef} className="flex-1 p-4 sm:p-5 space-y-4 overflow-y-auto bg-[#141516] font-mono text-[12px] [&::-webkit-scrollbar]:w-1">
+            <div ref={messagesBoxRef} className="flex-1 p-3.5 sm:p-5 space-y-3 sm:space-y-4 overflow-y-auto bg-[#141516] font-mono text-[12px] overscroll-contain touch-pan-y [&::-webkit-scrollbar]:w-1">
               {messages.map(msg => {
                 if (msg.sender === 'user') {
                   return (

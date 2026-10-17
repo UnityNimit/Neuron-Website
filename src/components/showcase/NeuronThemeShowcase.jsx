@@ -197,7 +197,7 @@ export default function NeuronThemeShowcase() {
             </div>
 
             {/* Main Area: ActivityBar + Explorer + Center Code Viewport */}
-            <div className="flex flex-1 min-h-[380px] sm:min-h-[420px] relative">
+            <div className="flex flex-1 min-h-[280px] sm:min-h-[360px] md:min-h-[420px] relative">
               
               {/* Left ActivityBar */}
               <div 

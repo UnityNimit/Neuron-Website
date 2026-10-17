@@ -1321,7 +1321,7 @@ export default function NeuronHeroEngine() {
     <div 
       ref={containerRef}
       onBlur={() => setIsCanvasFocused(false)}
-      className="w-full h-[620px] md:h-[680px] rounded-xl overflow-hidden shadow-2xl flex flex-col font-sans select-none relative text-left border transition-colors duration-200"
+      className="w-full h-[360px] sm:h-[480px] md:h-[680px] rounded-xl overflow-hidden shadow-2xl flex flex-col font-sans select-none relative text-left border transition-colors duration-200"
       style={{
         backgroundColor: activeTheme.background,
         borderColor: activeTheme.border,
@@ -2073,7 +2073,7 @@ export default function NeuronHeroEngine() {
                   onPointerMove={handlePointerMove}
                   onPointerUp={handlePointerUp}
                   onPointerLeave={handlePointerLeave}
-                  className={`w-full h-full block touch-none ${isDragging ? 'cursor-grabbing' : (hoveredNode ? 'cursor-pointer' : 'cursor-default')}`}
+                  className={`w-full h-full block touch-pan-y md:touch-none ${isDragging ? 'cursor-grabbing' : (hoveredNode ? 'cursor-pointer' : 'cursor-default')}`}
                 />
 
                 {/* Spatial Radar Minimap */}
