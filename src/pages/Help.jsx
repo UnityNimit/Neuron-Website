@@ -88,7 +88,13 @@ export default function Help() {
   return (
     <div className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans relative selection:bg-[#3B82F6]/30 selection:text-white flex flex-col justify-between transition-colors duration-200">
 
-      <main className="relative z-10 pt-[72px] pb-16 px-6 sm:px-8 md:px-12 w-full max-w-7xl mx-auto flex-1">
+      <main 
+        className="relative z-10 pt-[72px] pb-16 px-4 sm:px-8 md:px-12 w-full max-w-7xl mx-auto flex-1"
+        style={{
+          paddingLeft: 'max(1rem, env(safe-area-inset-left))',
+          paddingRight: 'max(1rem, env(safe-area-inset-right))'
+        }}
+      >
         
         {/* Header with Title and the same horizontal line as Versions */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 pb-6 border-b border-[var(--border-subtle)]">
@@ -223,7 +229,7 @@ export default function Help() {
               )}
 
               <div className="pt-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                <div className="text-[11px] text-[var(--text-muted)] font-mono">
+                <div className="text-[11px] text-[var(--text-muted)] font-mono break-all sm:break-normal">
                   Direct email: <a href="mailto:neuron.spatial.ide@gmail.com" className="hover:text-[var(--text-primary)] underline underline-offset-2 transition-colors">neuron.spatial.ide@gmail.com</a>
                 </div>
 

@@ -63,7 +63,11 @@ export default function Navbar() {
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-[var(--bg-header)] backdrop-blur-md border-b border-[var(--border-subtle)] transition-colors duration-200">
       <nav 
-        className="h-14 w-full flex items-center justify-between px-4 font-sans relative"
+        className="h-14 w-full flex items-center justify-between px-3 sm:px-6 md:px-8 font-sans relative"
+        style={{
+          paddingLeft: 'max(0.75rem, env(safe-area-inset-left))',
+          paddingRight: 'max(0.75rem, env(safe-area-inset-right))'
+        }}
       >
         {/* Left Side: Brand Logo */}
         <div className="flex items-center gap-3">
@@ -80,7 +84,7 @@ export default function Navbar() {
 
         {/* Center: Perfectly Centered Animated Docs Search */}
         {isDocs && (
-          <div className="hidden sm:flex items-center absolute left-1/2 -translate-x-1/2 transition-all duration-300 animate-docs-search z-20 pointer-events-auto">
+          <div className="hidden md:flex items-center absolute left-1/2 -translate-x-1/2 transition-all duration-300 animate-docs-search z-20 pointer-events-auto">
             <div className="relative w-64 sm:w-72 md:w-80 lg:w-96">
               <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none" />
               <input
@@ -213,7 +217,13 @@ export default function Navbar() {
 
       {/* Mobile Slide-down Menu (< 520px) */}
       {isMobileMenuOpen && (
-        <div className="min-[520px]:hidden bg-[var(--bg-header)] border-b border-[var(--border-subtle)] px-6 py-5 flex flex-col gap-3.5 text-xs font-sans">
+        <div 
+          className="min-[520px]:hidden bg-[var(--bg-header)] border-b border-[var(--border-subtle)] px-6 py-5 flex flex-col gap-3.5 text-xs font-sans max-h-[calc(100dvh-3.5rem)] overflow-y-auto"
+          style={{
+            paddingLeft: 'max(1.5rem, env(safe-area-inset-left))',
+            paddingRight: 'max(1.5rem, env(safe-area-inset-right))'
+          }}
+        >
           {isDocs && (
             <div className="relative w-full mb-1">
               <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none" />

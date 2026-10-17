@@ -155,7 +155,13 @@ export default function Docs() {
     <div className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans relative selection:bg-[#3B82F6]/30 selection:text-white flex flex-col justify-between transition-colors duration-200">
       
       {/* Edge-to-edge full-width container */}
-      <div className="w-full flex-1 flex flex-col md:flex-row px-0 pt-14 pb-0">
+      <div 
+        className="w-full flex-1 flex flex-col md:flex-row px-0 pt-14 pb-0"
+        style={{
+          paddingLeft: 'env(safe-area-inset-left)',
+          paddingRight: 'env(safe-area-inset-right)'
+        }}
+      >
         
         {/* LEFT SIDEBAR (Desktop - Docked flush to left edge) */}
         <aside className="w-60 lg:w-68 border-r border-[var(--border-subtle)] hidden md:flex flex-col justify-between pt-6 pb-10 px-5 shrink-0 font-sans text-xs sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto">
@@ -298,7 +304,7 @@ export default function Docs() {
         )}
 
         {/* MAIN DOCUMENTATION CONTENT */}
-        <main className="flex-1 px-6 sm:px-8 md:px-12 pt-4 pb-16 min-h-[calc(100vh-12rem)] flex flex-col justify-between max-w-5xl">
+        <main className="flex-1 px-4 sm:px-8 md:px-12 pt-4 pb-16 min-h-[calc(100vh-12rem)] flex flex-col justify-between max-w-5xl">
           <div>
             {/* Category Header + Divider matching Versions & Help pages */}
             <div className="mb-10 pb-6 border-b border-[var(--border-subtle)]">

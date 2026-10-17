@@ -101,7 +101,13 @@ export default function Downloads() {
   return (
     <div className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans relative selection:bg-[#3B82F6]/30 selection:text-white flex flex-col justify-between transition-colors duration-200">
 
-      <main className="relative z-10 pt-[72px] pb-16 px-6 sm:px-8 md:px-12 w-full max-w-7xl mx-auto flex-1">
+      <main 
+        className="relative z-10 pt-[72px] pb-16 px-4 sm:px-8 md:px-12 w-full max-w-7xl mx-auto flex-1"
+        style={{
+          paddingLeft: 'max(1rem, env(safe-area-inset-left))',
+          paddingRight: 'max(1rem, env(safe-area-inset-right))'
+        }}
+      >
         
         {/* Header with Title and GitHub Sync Status */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 pb-6 border-b border-[var(--border-subtle)]">
@@ -223,7 +229,7 @@ export default function Downloads() {
                               className="group py-2.5 flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 sm:gap-4 transition-colors cursor-pointer"
                             >
                               <div className="flex items-baseline gap-2.5 flex-wrap">
-                                <span className="font-mono text-xs font-semibold text-[var(--accent-color)] group-hover:underline">
+                                <span className="font-mono text-xs font-semibold text-[var(--accent-color)] group-hover:underline break-all sm:break-normal">
                                   {asset.name}
                                 </span>
                                 <span className="text-[11px] font-sans text-[var(--text-secondary)]">

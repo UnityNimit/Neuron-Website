@@ -86,22 +86,28 @@ export default function Home() {
         {/* ========================================================================= */}
         {/* 1. HERO VIEWPORT (Only Brand & Download visible on initial load)          */}
         {/* ========================================================================= */}
-        <section className="min-h-[100dvh] max-w-7xl mx-auto flex flex-col justify-between items-center text-center px-6 sm:px-8 md:px-12 pt-20 pb-6 relative">
+        <section 
+          className="min-h-[100dvh] max-w-7xl mx-auto flex flex-col justify-between items-center text-center px-4 sm:px-8 md:px-12 pt-16 sm:pt-20 pb-4 sm:pb-6 relative"
+          style={{
+            paddingLeft: 'max(1rem, env(safe-area-inset-left))',
+            paddingRight: 'max(1rem, env(safe-area-inset-right))'
+          }}
+        >
           
           {/* Centered Brand & Utilitarian Download Button - Positioned Higher */}
-          <div className="flex flex-col items-center max-w-5xl mx-auto mt-6 sm:mt-10 md:mt-14 mb-auto w-full">
+          <div className="flex flex-col items-center max-w-5xl mx-auto mt-2 sm:mt-10 md:mt-14 mb-auto w-full">
             
             {/* Headline & Bold Brand */}
-            <div className="flex flex-col items-center gap-1.5 mb-8 pointer-events-auto max-w-5xl mx-auto px-2">
+            <div className="flex flex-col items-center gap-1 sm:gap-1.5 mb-4 sm:mb-8 pointer-events-auto max-w-5xl mx-auto px-2">
               <h1 
-                style={{ fontSize: 'clamp(2.75rem, 7.5vw, 6.25rem)', lineHeight: 1.05 }}
+                style={{ fontSize: 'clamp(2rem, 6vw, 6.25rem)', lineHeight: 1.05 }}
                 className="font-black tracking-tighter text-[var(--text-primary)] uppercase select-none"
               >
                 {t('hero.spatialIde', 'THE SPATIAL IDE')}
               </h1>
               <ScrambledText
-                style={{ fontSize: 'clamp(2.25rem, 6vw, 4.5rem)', lineHeight: 1.05 }}
-                className="!m-0 !max-w-none !font-sans font-bold tracking-tighter text-black dark:text-[#60A5FA] mt-1"
+                style={{ fontSize: 'clamp(1.75rem, 5vw, 4.5rem)', lineHeight: 1.05 }}
+                className="!m-0 !max-w-none !font-sans font-bold tracking-tighter text-black dark:text-[#60A5FA] mt-0.5 sm:mt-1"
                 radius={150}
                 duration={1.5}
                 speed={0.4}
@@ -182,7 +188,14 @@ export default function Home() {
         {/* 2. SPATIAL IDE DEMO WINDOW (Revealed smoothly upon scrolling)              */}
         {/* ========================================================================= */}
         <ScrollReveal>
-          <section id="demo-viewport" className="w-full max-w-7xl mx-auto mb-20 sm:mb-28 px-6 sm:px-8 md:px-12 pt-4">
+          <section 
+            id="demo-viewport" 
+            className="w-full max-w-7xl mx-auto mb-16 sm:mb-28 px-4 sm:px-8 md:px-12 pt-4"
+            style={{
+              paddingLeft: 'max(1rem, env(safe-area-inset-left))',
+              paddingRight: 'max(1rem, env(safe-area-inset-right))'
+            }}
+          >
             <div className="w-full text-left">
               <NeuronHeroEngine />
             </div>
@@ -190,7 +203,13 @@ export default function Home() {
         </ScrollReveal>
 
         {/* Container for remaining showcase sections */}
-        <div className="w-full max-w-7xl mx-auto px-6 sm:px-8 md:px-12">
+        <div 
+          className="w-full max-w-7xl mx-auto px-4 sm:px-8 md:px-12"
+          style={{
+            paddingLeft: 'max(1rem, env(safe-area-inset-left))',
+            paddingRight: 'max(1rem, env(safe-area-inset-right))'
+          }}
+        >
           {/* ========================================================================= */}
           {/* SPATIAL OBSERVABILITY FEATURE SNIPPETS WALKTHROUGH                         */}
           {/* ========================================================================= */}
@@ -222,7 +241,7 @@ export default function Home() {
                 as="h2"
                 speed={35}
                 delay={100}
-                style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', lineHeight: 1.05 }}
+                style={{ fontSize: 'clamp(2rem, 5.5vw, 4.5rem)', lineHeight: 1.05 }}
                 className="font-black tracking-tighter text-[var(--text-primary)] mb-6 select-none"
               />
               {isMobile ? (

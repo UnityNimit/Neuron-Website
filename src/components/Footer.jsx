@@ -107,7 +107,14 @@ If you discover a security issue or have any concerns, please reach out directly
   };
 
   return (
-    <footer className={`border-t border-[var(--border-subtle)] bg-[var(--bg-footer)] pt-10 pb-8 px-6 sm:px-10 md:px-16 w-full text-xs font-sans relative z-10 text-[var(--text-muted)] transition-colors duration-200 ${className}`}>
+    <footer 
+      className={`border-t border-[var(--border-subtle)] bg-[var(--bg-footer)] pt-10 pb-8 px-4 sm:px-8 md:px-12 w-full text-xs font-sans relative z-10 text-[var(--text-muted)] transition-colors duration-200 ${className}`}
+      style={{
+        paddingLeft: 'max(1rem, env(safe-area-inset-left))',
+        paddingRight: 'max(1rem, env(safe-area-inset-right))',
+        paddingBottom: 'max(2rem, env(safe-area-inset-bottom))'
+      }}
+    >
       
       {/* Top Grid: Brand, Navigation, Legal, Socials */}
       <div className="w-full flex flex-col lg:flex-row justify-between items-start gap-10">
