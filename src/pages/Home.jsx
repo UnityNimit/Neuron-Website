@@ -32,9 +32,9 @@ export default function Home() {
   }, []);
 
   const scrollToDemo = () => {
-    const demoEl = document.getElementById('demo-viewport');
-    if (demoEl) {
-      demoEl.scrollIntoView({ behavior: 'smooth' });
+    const targetEl = document.getElementById('demo-viewport') || document.getElementById('features-viewport');
+    if (targetEl) {
+      targetEl.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
@@ -164,7 +164,7 @@ export default function Home() {
               pointerEvents: scrollOpacity <= 0.05 ? 'none' : 'auto',
               transition: 'opacity 0.15s ease-out, transform 0.15s ease-out'
             }}
-            className="hidden sm:flex w-full flex-col items-center justify-center pb-8 shrink-0 select-none"
+            className="hidden md:flex w-full flex-col items-center justify-center pb-8 shrink-0 select-none"
           >
             <span className="text-[11px] font-mono tracking-widest uppercase text-[var(--text-muted)] mb-2 transition-colors">
               {t('hero.scrollFuture', 'Scroll into the future of IDEs')}
@@ -185,26 +185,29 @@ export default function Home() {
         </section>
 
         {/* ========================================================================= */}
-        {/* 2. SPATIAL IDE DEMO WINDOW (Revealed smoothly upon scrolling)              */}
+        {/* 2. SPATIAL IDE DEMO WINDOW (Desktop only, hidden on mobile)                */}
         {/* ========================================================================= */}
-        <ScrollReveal>
-          <section 
-            id="demo-viewport" 
-            className="w-full max-w-7xl mx-auto mb-16 sm:mb-28 px-4 sm:px-8 md:px-12 pt-4"
-            style={{
-              paddingLeft: 'max(1rem, env(safe-area-inset-left))',
-              paddingRight: 'max(1rem, env(safe-area-inset-right))'
-            }}
-          >
-            <div className="w-full text-left">
-              <NeuronHeroEngine />
-            </div>
-          </section>
-        </ScrollReveal>
+        {!isMobile && (
+          <ScrollReveal className="hidden md:block">
+            <section 
+              id="demo-viewport" 
+              className="w-full max-w-7xl mx-auto mb-16 sm:mb-28 px-4 sm:px-8 md:px-12 pt-4"
+              style={{
+                paddingLeft: 'max(1rem, env(safe-area-inset-left))',
+                paddingRight: 'max(1rem, env(safe-area-inset-right))'
+              }}
+            >
+              <div className="w-full text-left">
+                <NeuronHeroEngine />
+              </div>
+            </section>
+          </ScrollReveal>
+        )}
 
         {/* Container for remaining showcase sections */}
         <div 
-          className="w-full max-w-7xl mx-auto px-4 sm:px-8 md:px-12"
+          id="features-viewport"
+          className="w-full max-w-7xl mx-auto px-4 sm:px-8 md:px-12 pt-6 sm:pt-0"
           style={{
             paddingLeft: 'max(1rem, env(safe-area-inset-left))',
             paddingRight: 'max(1rem, env(safe-area-inset-right))'
@@ -218,18 +221,22 @@ export default function Home() {
           </ScrollReveal>
 
           {/* ========================================================================= */}
-          {/* AI INTEGRATION SHOWCASE                                                   */}
+          {/* AI INTEGRATION SHOWCASE (Desktop only, hidden on mobile)                  */}
           {/* ========================================================================= */}
-          <ScrollReveal>
-            <AntigravityAgentShowcase />
-          </ScrollReveal>
+          {!isMobile && (
+            <ScrollReveal className="hidden md:block">
+              <AntigravityAgentShowcase />
+            </ScrollReveal>
+          )}
 
           {/* ========================================================================= */}
-          {/* THEME SHOWCASE                                                            */}
+          {/* THEME SHOWCASE (Desktop only, hidden on mobile)                           */}
           {/* ========================================================================= */}
-          <ScrollReveal>
-            <NeuronThemeShowcase />
-          </ScrollReveal>
+          {!isMobile && (
+            <ScrollReveal className="hidden md:block">
+              <NeuronThemeShowcase />
+            </ScrollReveal>
+          )}
 
           {/* ========================================================================= */}
           {/* BOTTOM CALL-TO-ACTION WITH WRITE ANIMATION                                 */}
