@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Check, ChevronDown } from 'lucide-react';
+import { Check, ChevronDown, Loader2 } from 'lucide-react';
 import Footer from '../components/Footer';
 import { useLanguage } from '../context/LanguageContext';
 import { translations } from '../i18n/translations';
@@ -12,6 +12,8 @@ export default function Help() {
     message: ''
   });
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
   const { t } = useLanguage();
 
   const faqs = t('help.faqs');
@@ -19,15 +21,67 @@ export default function Help() {
     ? faqs 
     : (Array.isArray(translations.en?.help?.faqs) ? translations.en.help.faqs : []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formState.email || !formState.message) return;
-    
-    const subject = encodeURIComponent(`[Neuron Query] From ${formState.name}`);
-    const body = encodeURIComponent(formState.message);
-    const mailtoUrl = `mailto:neuron.spatial.ide@gmail.com?subject=${subject}&body=${body}`;
-    window.open(mailtoUrl, '_blank');
-    setSubmitted(true);
+    if (!formState.email || !formState.message || isSubmitting) return;
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    const web3Key = import.meta.env.VITE_WEB3FORMS_KEY || '';
+
+    try {
+      let response;
+      if (web3Key) {
+        response = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            access_key: web3Key,
+            name: formState.name || 'Anonymous Developer',
+            email: formState.email,
+            message: formState.message,
+            subject: `[Neuron Inquiry] From ${formState.name || formState.email}`
+          })
+        });
+      } else {
+        response = await fetch('https://formsubmit.co/ajax/neuron.spatial.ide@gmail.com', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            name: formState.name || 'Anonymous Developer',
+            email: formState.email,
+            message: formState.message,
+            _subject: `[Neuron Inquiry] From ${formState.name || formState.email}`,
+            _template: 'table',
+            _captcha: 'false'
+          })
+        });
+      }
+
+      const data = await response.json().catch(() => ({}));
+
+      if (response.ok && (data.success === 'true' || data.success === true || response.status === 200)) {
+        setSubmitted(true);
+        setFormState({ name: '', email: '', message: '' });
+      } else {
+        if (data.message && data.message.includes('Activation')) {
+          setSubmitError('First-time activation sent to team inbox. Please try again shortly or write to neuron.spatial.ide@gmail.com directly.');
+        } else {
+          setSubmitError(data.message || 'Unable to dispatch message right now. Please write to neuron.spatial.ide@gmail.com directly.');
+        }
+      }
+    } catch {
+      setSubmitError('Network error connecting to form service. Please write to neuron.spatial.ide@gmail.com directly.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -163,6 +217,12 @@ export default function Help() {
                 />
               </div>
 
+              {submitError && (
+                <div className="text-[11px] font-mono text-rose-500 dark:text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-lg p-3">
+                  {submitError}
+                </div>
+              )}
+
               <div className="pt-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div className="text-[11px] text-[var(--text-muted)] font-mono">
                   Direct email: <a href="mailto:neuron.spatial.ide@gmail.com" className="hover:text-[var(--text-primary)] underline underline-offset-2 transition-colors">neuron.spatial.ide@gmail.com</a>
@@ -170,9 +230,17 @@ export default function Help() {
 
                 <button
                   type="submit"
-                  className="h-8 px-4 rounded-lg bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] font-semibold text-xs hover:opacity-90 transition-all inline-flex items-center justify-center cursor-pointer active:scale-[0.98] shadow-sm shrink-0"
+                  disabled={isSubmitting}
+                  className="h-8 px-4 rounded-lg bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] font-semibold text-xs hover:opacity-90 transition-all inline-flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98] shadow-sm shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <span>{t('help.submitBtn', 'Send Message')}</span>
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 size={13} className="animate-spin" />
+                      <span>{t('help.sending', 'Sending...')}</span>
+                    </>
+                  ) : (
+                    <span>{t('help.submitBtn', 'Send Message')}</span>
+                  )}
                 </button>
               </div>
             </form>
